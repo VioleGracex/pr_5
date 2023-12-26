@@ -25,3 +25,24 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/* Add this to your CSS file or style tag in React component */
+.rounded {
+  border-radius: 10px; /* Adjust the value as needed */
+}
+/* Add this to your stylesheet or in a style tag within the component */
+.bg-Menu-panel{
+  background-color: #201e1e; /* Use your desired color code for the left panel */
+  border: 1px solid #555; /* Use a lighter color code for the border */
+}
+
+.bg-left-panel {
+  background-color: #272424; /* Use your desired color code for the left panel */
+  border: 1px solid #555; /* Use a lighter color code for the border */
+}
+
+.bg-right-panel {
+  background-color: #272424; /* Use your desired color code for the right panel */
+  border: 1px solid #555; /* Use a lighter color code for the border */
+}
+

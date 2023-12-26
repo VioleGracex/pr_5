@@ -1,15 +1,33 @@
 // components/MenuBar.tsx
 "use client"; // This is a client component 👈🏽
 import React, { useState, useEffect, useRef } from 'react';
+import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes } from 'react-icons/fa';
 
 const MenuBar: React.FC = () => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleExit = () => {
+    // Handle the exit logic here
+    console.log('Exit button clicked');
+  };
+
+  const handleMinimize = () => {
+    // Handle the minimize logic here
+    console.log('Minimize button clicked');
+  };
+
+  const handleFullscreen = () => {
+    // Handle the fullscreen logic here
+    setIsFullscreen(!isFullscreen);
+    console.log('Fullscreen button clicked');
+  };
+
   return (
-    <div className="bg-gray-800 text-white p-4 flex justify-between items-center relative z-50">
+    <div className=" text-white p-4 flex justify-between items-center relative z-50">
       {/* Left Side: Logo */}
       <div className="flex items-center">
-      <img src="/Logo.png" alt="Logo" className="h-12 w-auto mr-8" />
+        <img src="/Logo.png" alt="Logo" className="h-12 w-auto mr-8" />
 
-        
         {/* Middle: Menu Text */}
         <div className="flex ml-auto space-x-4">
           {/* File Menu */}
@@ -65,8 +83,35 @@ const MenuBar: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Side: Menus */}
+      {/* Right Side: Menus and Buttons */}
       <div className="flex space-x-6">
+        {/* Minimize Button */}
+        <button
+          onClick={handleMinimize}
+          className="whitespace-nowrap cursor-pointer"
+          title="Minimize"
+        >
+          <FaWindowMinimize />
+        </button>
+
+        {/* Fullscreen Button */}
+        <button
+          onClick={handleFullscreen}
+          className="whitespace-nowrap cursor-pointer"
+          title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+        >
+          {isFullscreen ? <FaWindowRestore /> : <FaRegWindowMaximize />}
+        </button>
+
+        {/* Exit Button */}
+        <button
+          onClick={handleExit}
+          className="whitespace-nowrap cursor-pointer"
+          title="Exit"
+        >
+          <FaTimes />
+        </button>
+
         {/* ... any additional right-side content ... */}
       </div>
     </div>
