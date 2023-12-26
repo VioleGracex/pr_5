@@ -10,6 +10,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@mantine/carousel": "^7.3.2",
     "@mantine/code-highlight": "^7.3.2",
     "@mantine/core": "^7.3.2",
@@ -35,9 +38,12 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.9",
+    "@types/body-parser": "^1.19.5",
+    "@types/connect": "^3.4.38",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@vue/cli": "^5.0.8",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",

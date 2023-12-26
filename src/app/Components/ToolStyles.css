@@ -1,0 +1,12 @@
+/* src/styles.css */
+
+/* Add your styles here */
+.tool-buttons {
+    margin-bottom: 0.2rem;
+  }
+  
+  .tool-icon {
+    color: #ffffff; /* Adjust the color as needed */
+    cursor: pointer;
+  }
+  
