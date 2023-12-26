@@ -9,7 +9,7 @@ import './MenuBar.css'; // Import the CSS file
 
 const MenuBar: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { handleMouseDown } = useDrag();
+  const { handleMouseDown } = useDrag(() => handleToggleMaximize(setIsFullscreen));
 
   return (
     <div className="relative">

@@ -12,7 +12,7 @@
     left: -5px; /* Adjust the left value to make it slightly bigger */
     right: -5px; /* Adjust the right value to make it slightly bigger */
     bottom: -5px; /* Adjust the bottom value to make it slightly bigger */
-    background-color: #d1d1d1; /* Change this color to your desired hover effect color */
+    background-color: #534e4e; /* Change this color to your desired hover effect color */
     opacity: 0;
     z-index: -1;
     transition: opacity 0.3s ease;

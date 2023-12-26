@@ -38,8 +38,10 @@ export const handleToggleMaximize = async (setIsFullscreen: React.Dispatch<React
   console.log('Toggle Maximize button clicked');
 };
 
-export const useDrag = () => {
+export const useDrag = (handleDoubleClick: () => void) => {
   const [isDragging, setIsDragging] = useState(false);
+  let clickCount = 0;
+  let timeoutId: NodeJS.Timeout;
 
   const handleMouseDown = (event: React.MouseEvent) => {
     const clickedElement = event.target as HTMLElement;
@@ -50,6 +52,18 @@ export const useDrag = () => {
     // If it's a button, don't start dragging
     if (isButton) {
       return;
+    }
+
+    // Handle double-click
+    clickCount++;
+    if (clickCount === 1) {
+      timeoutId = setTimeout(() => {
+        clickCount = 0;
+      }, 300);
+    } else if (clickCount === 2) {
+      clearTimeout(timeoutId);
+      clickCount = 0;
+      handleDoubleClick();
     }
 
     setIsDragging(true);
