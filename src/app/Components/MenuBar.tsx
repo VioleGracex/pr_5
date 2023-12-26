@@ -3,53 +3,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { appWindow } from '@tauri-apps/api/window';
 import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes } from 'react-icons/fa';
-import { useDrag } from '../Functions/useDrag';
-
+//import { useDrag } from '../Functions/useDrag';
+import { useDrag, handleMinimize, handleToggleMaximize, handleExit } from './TitleFunctions'; // Import functions from TitleFunctions
 const MenuBar: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { handleMouseDown } = useDrag();
-  const handleExit = async () => {
-    // Close the app window
-    await appWindow.close();
-  
-    // Log the event
-    console.log('Exit button clicked');
-  };
-
-  const handleMinimize = async () => {
-    // Minimize the app window
-    await appWindow.minimize();
-  
-    // Log the event
-    console.log('Minimize button clicked');
-  };
-
-  const handleToggleMaximize = async () => {
-    // Check if the window is currently maximized
-    const isMaximized = await appWindow.isMaximized();
-  
-    if (isMaximized) {
-      // If maximized, restore the window size
-      await appWindow.unmaximize();
-    } else {
-      // If not maximized, maximize the window
-      await appWindow.maximize();
-    }
-  
-    // Update the state or perform additional logic
-    setIsFullscreen((prevIsFullscreen) => !prevIsFullscreen);
-  
-    // Log the event
-    console.log('Toggle Maximize button clicked');
-  };
-  
 
   return (
-    <div className=" text-white p-4 flex justify-between items-center relative z-50" onMouseDown={handleMouseDown}>
+    <div className="relative">
+    {/* Background Element */}
+    <div
+        className="fixed top-0 left-0 w-full h-16 bg-black-2000 opacity-100 z-10" // Adjust height (h-16) to match your MenuBar's height
+      ></div>
+      {/* Draggable Area */}
+      <div
+        className="fixed top-0 left-0 w-full h-16 mb-4 bg-black opacity-0 z-10"
+        onMouseDown={handleMouseDown}
+      ></div>
+    <div className="text-white p-4 w-40  flex justify-between items-center relative z-50">
       {/* Left Side: Logo */}
       <div className="flex items-center">
         <img src="/Logo.png" alt="Logo" className="h-12 w-auto mr-8" />
-
+  
         {/* Middle: Menu Text */}
         <div className="flex ml-auto space-x-4">
           {/* File Menu */}
@@ -58,21 +33,21 @@ const MenuBar: React.FC = () => {
             <MenuItem label="Open" />
             {/* ... other file menu items ... */}
           </Menu>
-
+  
           {/* Edit Menu */}
           <Menu label="Edit" index={1}>
             <MenuItem label="Undo" />
             <MenuItem label="Redo" />
             {/* ... other edit menu items ... */}
           </Menu>
-
+  
           {/* Image Menu */}
           <Menu label="Image" index={2}>
             <MenuItem label="Insert Image" />
             <MenuItem label="Edit Image" />
             {/* ... other image menu items ... */}
           </Menu>
-
+  
           {/* Layer Menu */}
           <Menu label="Layer" index={3}>
             <MenuItem label="Add Layer" />
@@ -81,7 +56,7 @@ const MenuBar: React.FC = () => {
             <MenuItem label="Layer Order" />
             {/* ... other layer menu items ... */}
           </Menu>
-
+  
           {/* Select Menu */}
           <Menu label="Select" index={4}>
             <MenuItem label="Select Objects" />
@@ -89,7 +64,7 @@ const MenuBar: React.FC = () => {
             <MenuItem label="Select All" />
             {/* ... other select menu items ... */}
           </Menu>
-
+  
           {/* View Menu */}
           <Menu label="View" index={5}>
             <MenuItem label="Zoom In" />
@@ -99,14 +74,14 @@ const MenuBar: React.FC = () => {
             <MenuItem label="Snap to Grid" />
             {/* ... other view menu items ... */}
           </Menu>
-          
+  
           {/* Rest of the Menus */}
           {/* ... Add more menus and items following the same pattern ... */}
         </div>
       </div>
-
+  
       {/* Right Side: Menus and Buttons */}
-      <div className="flex space-x-6">
+      <div className="fixed space-x-6 mt-2 right-4 top-4 justify-end">
         {/* Minimize Button */}
         <button
           onClick={handleMinimize}
@@ -115,16 +90,16 @@ const MenuBar: React.FC = () => {
         >
           <FaWindowMinimize />
         </button>
-
+  
         {/* Fullscreen Button */}
         <button
-          onClick={handleToggleMaximize}
+          onClick={() => handleToggleMaximize(setIsFullscreen)}
           className="whitespace-nowrap cursor-pointer"
           title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
         >
           {isFullscreen ? <FaWindowRestore /> : <FaRegWindowMaximize />}
         </button>
-
+  
         {/* Exit Button */}
         <button
           onClick={handleExit}
@@ -133,11 +108,12 @@ const MenuBar: React.FC = () => {
         >
           <FaTimes />
         </button>
-
+  
         {/* ... any additional right-side content ... */}
       </div>
     </div>
-  );
+    </div>
+  );  
 };
 
 interface MenuProps {
