@@ -59,7 +59,8 @@
         "height": 600,
         "resizable": true,
         "title": "pr_5",
-        "width": 800
+        "width": 800,
+        "decorations": false
       }
     ]
   }

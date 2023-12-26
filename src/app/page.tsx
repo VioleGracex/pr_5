@@ -1,9 +1,10 @@
 // pages/page.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import ToolPanel from './Components/ToolPanel';
-import MenuBar from './Components/MenuBar'; // Import the MenuBar component
+import MenuBar from './Components/MenuBar';
 
 const Home: React.FC = () => {
+
   const gridSize = 100; // Number of cells per row and column
 
   return (
