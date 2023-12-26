@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { appWindow } from '@tauri-apps/api/window';
 import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes } from 'react-icons/fa';
+import { useDrag } from '../Functions/useDrag';
 
 const MenuBar: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-
+  const { handleMouseDown } = useDrag();
   const handleExit = async () => {
     // Close the app window
     await appWindow.close();
@@ -15,8 +16,11 @@ const MenuBar: React.FC = () => {
     console.log('Exit button clicked');
   };
 
-  const handleMinimize = () => {
-    // Handle the minimize logic here
+  const handleMinimize = async () => {
+    // Minimize the app window
+    await appWindow.minimize();
+  
+    // Log the event
     console.log('Minimize button clicked');
   };
 
@@ -41,7 +45,7 @@ const MenuBar: React.FC = () => {
   
 
   return (
-    <div className=" text-white p-4 flex justify-between items-center relative z-50">
+    <div className=" text-white p-4 flex justify-between items-center relative z-50" onMouseDown={handleMouseDown}>
       {/* Left Side: Logo */}
       <div className="flex items-center">
         <img src="/Logo.png" alt="Logo" className="h-12 w-auto mr-8" />
