@@ -1,13 +1,17 @@
 // components/MenuBar.tsx
 "use client"; // This is a client component 👈🏽
 import React, { useState, useEffect, useRef } from 'react';
+import { appWindow } from '@tauri-apps/api/window';
 import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes } from 'react-icons/fa';
 
 const MenuBar: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const handleExit = () => {
-    // Handle the exit logic here
+  const handleExit = async () => {
+    // Close the app window
+    await appWindow.close();
+  
+    // Log the event
     console.log('Exit button clicked');
   };
 
@@ -16,11 +20,25 @@ const MenuBar: React.FC = () => {
     console.log('Minimize button clicked');
   };
 
-  const handleFullscreen = () => {
-    // Handle the fullscreen logic here
-    setIsFullscreen(!isFullscreen);
-    console.log('Fullscreen button clicked');
+  const handleToggleMaximize = async () => {
+    // Check if the window is currently maximized
+    const isMaximized = await appWindow.isMaximized();
+  
+    if (isMaximized) {
+      // If maximized, restore the window size
+      await appWindow.unmaximize();
+    } else {
+      // If not maximized, maximize the window
+      await appWindow.maximize();
+    }
+  
+    // Update the state or perform additional logic
+    setIsFullscreen((prevIsFullscreen) => !prevIsFullscreen);
+  
+    // Log the event
+    console.log('Toggle Maximize button clicked');
   };
+  
 
   return (
     <div className=" text-white p-4 flex justify-between items-center relative z-50">
@@ -96,7 +114,7 @@ const MenuBar: React.FC = () => {
 
         {/* Fullscreen Button */}
         <button
-          onClick={handleFullscreen}
+          onClick={handleToggleMaximize}
           className="whitespace-nowrap cursor-pointer"
           title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
         >
