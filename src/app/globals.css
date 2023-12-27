@@ -34,15 +34,18 @@ body {
 .bg-Menu-panel{
   background-color: #201e1e; /* Use your desired color code for the left panel */
   border: 1px solid #555; /* Use a lighter color code for the border */
+  user-select: none;
 }
 
 .bg-left-panel {
   background-color: #272424; /* Use your desired color code for the left panel */
   border: 1px solid #555; /* Use a lighter color code for the border */
+  user-select: none;
 }
 
 .bg-right-panel {
   background-color: #272424; /* Use your desired color code for the right panel */
   border: 1px solid #555; /* Use a lighter color code for the border */
+  user-select: none;
 }
 

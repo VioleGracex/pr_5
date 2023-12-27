@@ -2,20 +2,6 @@
 "use client"; // This is a client component 👈🏽
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowsAlt,
-  faSquare,
-  faCrop,
-  faPen,
-  faPencil,
-  faPaintBrush,
-  faSearch,
-  faFont,
-  faHandPaper,
-  faShapes,
-  faFillDrip,
-  faRuler,
-} from '@fortawesome/free-solid-svg-icons';
 import toolConfig from './tools/toolConfig';
 
 const tools = toolConfig;

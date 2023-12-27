@@ -86,3 +86,28 @@ export const useDrag = (handleDoubleClick: () => void) => {
     handleMouseDown,
   };
 };
+
+export const justDrag = () => {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleMouseDown = () => {
+    setIsDragging(true);
+    appWindow.startDragging();
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
+  return {
+    handleMouseDown,
+  };
+};
