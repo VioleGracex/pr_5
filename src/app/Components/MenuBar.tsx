@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { appWindow } from '@tauri-apps/api/window';
 import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes } from 'react-icons/fa';
 //import { useDrag } from '../Functions/useDrag';
-import { useDrag, handleMinimize, handleToggleMaximize, handleExit } from './TitleFunctions'; // Import functions from TitleFunctions
+import { useDrag, handleMinimize, handleToggleMaximize, handleExit } from './Functions/TitleFunctions'; // Import functions from TitleFunctions
 import './MenuBar.css'; // Import the CSS file
 
 const MenuBar: React.FC = () => {
@@ -148,11 +148,11 @@ const Menu: React.FC<MenuProps> = ({ label, children, index }) => {
 
   return (
     <div className="group relative" ref={menuRef}>
-      <button className="btn cursor-pointer whitespace-nowrap" onClick={toggleMenu}>
+      <button className=" cursor-pointer whitespace-nowrap" onClick={toggleMenu}>
         {label}
       </button>
       {activeChild === index && (
-        <div className="absolute bg-white text-gray-800 p-2 space-y-2 border border-gray-300">
+        <div className="absolute  bg-black text-white-800 p-2 space-y-2 border border-gray-300">
           {children}
         </div>
       )}
@@ -166,7 +166,7 @@ interface MenuItemProps {
 
 const MenuItem: React.FC<MenuItemProps> = ({ label }) => {
   return (
-    <button className="btn text-sm -cursor-pointer text-left w-full text-gray-800 px-4 py-2 hover:bg-gray-300 focus:outline-none focus:bg-gray-300 whitespace-nowrap">
+    <button className=" text-sm -cursor-pointer text-left w-full text-white-800 px-4 py-2 hover:bg-gray-300 focus:outline-none focus:bg-gray-300 whitespace-nowrap">
       {label}
     </button>
   );
