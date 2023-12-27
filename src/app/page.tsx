@@ -1,18 +1,21 @@
 // pages/page.tsx
 "use client"; // This is a client component 👈🏽
 import React from 'react';
-import ToolPanel from './Components/ToolPanel';
 import MenuBar from './Components/MenuBar';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import {LeftPanel, RightPanel} from './Panels/MainPanels'
+import { LeftPanel, RightPanel } from './Panels/MainPanels';
 
 const Home: React.FC = () => {
   const gridSize = 100; // Number of cells per row and column
 
+  const handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault(); // Prevent the default right-click behavior
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex flex-col h-screen bg-Menu-panel rounded">
+      <div className="flex flex-col h-screen bg-Menu-panel rounded" onContextMenu={handleContextMenu}>
         {/* Top MenuBar */}
         <MenuBar />
 
@@ -22,7 +25,10 @@ const Home: React.FC = () => {
           <LeftPanel />
 
           {/* Center/Main Area with Grid */}
-          <div className="flex-1 relative overflow-hidden rounded">
+          <div
+            className="flex-1 relative overflow-hidden rounded"
+            onContextMenu={handleContextMenu} // Add the context menu handler here
+          >
             {/* Add your main app content here */}
             <h1 className="text-2xl font-bold mb-4">Main App Area</h1>
 

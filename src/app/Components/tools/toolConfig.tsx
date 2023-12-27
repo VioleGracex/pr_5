@@ -1,7 +1,6 @@
 // toolConfig.ts
 import {
     faArrowsAlt,
-    faSquare,
     faCrop,
     faPen,
     faPencil,
@@ -13,10 +12,12 @@ import {
     faFillDrip,
     faRuler,
   } from '@fortawesome/free-solid-svg-icons';
-
-const toolConfig = [
+  import { faSquare } from '@fortawesome/free-regular-svg-icons'; // Import dashed square icon
+  import MarqueeToolImage from '../imgs/MarqueeTool.png';
+  
+  const toolConfig = [
     { icon: faArrowsAlt, name: "Move Tool", shortcut: "V" },
-    { icon: faSquare, name: "Marquee tool", shortcut: "M" },
+    { Image: MarqueeToolImage, name: "Marquee tool", shortcut: "M" }, // Use dashed square icon here
     { icon: faCrop, name: "Crop Tool", shortcut: "C" },
     { icon: faPen, name: "Pen Tool", shortcut: "P" },
     { icon: faPencil, name: "Pencil", shortcut: "B" },

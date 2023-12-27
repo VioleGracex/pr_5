@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import toolConfig from './tools/toolConfig';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 const tools = toolConfig;
 
@@ -42,6 +43,7 @@ const ToolPanel: React.FC = () => {
         <ToolIcon
           key={index}
           icon={tool.icon}
+          Image={tool.Image}
           name={tool.name}
           shortcut={tool.shortcut}
           active={activeTool === tool.name}
@@ -56,7 +58,8 @@ const ToolPanel: React.FC = () => {
 };
 
 const ToolIcon: React.FC<{
-  icon: any;
+  icon?: IconDefinition;
+  Image?: { src: string; height: number; width: number }; // Assuming Image is a path to the file
   name: string;
   shortcut: string;
   active: boolean;
@@ -64,7 +67,7 @@ const ToolIcon: React.FC<{
   onClick: () => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-}> = ({ icon, name, shortcut, active, isHovered, onClick, onMouseEnter, onMouseLeave }) => {
+}> = ({ icon, Image, name, shortcut, active, isHovered, onClick, onMouseEnter, onMouseLeave }) => {
   return (
     <div
       className={`relative w-12 ml-7 mr-7 space-y-2 group border ${
@@ -74,7 +77,17 @@ const ToolIcon: React.FC<{
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <FontAwesomeIcon icon={icon} className="tool-icon ml-2" size="lg" />
+      {icon && (
+        <FontAwesomeIcon icon={icon} className="tool-icon ml-2" size="lg" />
+      )}
+      {Image && (
+        <img
+          src={Image.src}
+          alt={name}
+          className="tool-icon ml-2"
+          style={{ width: '1.3em', height: '1.3em' }}
+        />
+      )}
       {isHovered && (
         <div
           className={`opacity-100 bg-gray-800 text-white text-sm p-2 rounded-md absolute left-full ml-2 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 whitespace-nowrap`}
