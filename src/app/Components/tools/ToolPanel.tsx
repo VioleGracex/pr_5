@@ -1,78 +1,86 @@
 // ToolPanel.tsx
 "use client"; // This is a client component 👈🏽
 import React, { useState, useEffect, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toolsMain, toolsExtra } from './toolConfig';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import ToolIcon from './ToolIcon'; // Import ToolIcon component
 import ContextMenu from './ContextMenu'; // Import ContextMenu component
-
-const tools = toolsMain;
-const toolsEx = toolsExtra;
 
 const ToolPanel: React.FC = () => {
   const [activeTool, setActiveTool] = useState<string | null>(null);
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
+  const [lastRightClickedTool, setLastRightClickedTool] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [contextMenuPosition, setContextMenuPosition] = useState<{ top: number; left: number } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const [tools, setTools] = useState<typeof toolsMain>(toolsMain);
+  const [toolsEx, setToolsEx] = useState<typeof toolsExtra>(toolsExtra);
+
   const brotherGroup = hoveredTool ? tools.find(tool => tool.name === hoveredTool)?.group : '';
 
+  const swapTools = (tool1: typeof toolsMain[number], tool2: typeof toolsExtra[number]) => {
+    setTools((prevTools) => {
+      const index1 = prevTools.findIndex((tool) => tool.name === tool1.name);
+  
+      if (index1 !== -1) {
+        const updatedTools = [...prevTools];
+        updatedTools[index1] = { ...tool2 };
+        return updatedTools;
+      }
+  
+      return prevTools;
+    });
+  
+    setToolsEx((prevToolsEx) => {
+      const index2 = prevToolsEx.findIndex((tool) => tool.name === tool2.name);
+  
+      if (index2 !== -1) {
+        const updatedToolsEx = [...prevToolsEx];
+        updatedToolsEx[index2] = { ...tool1 };
+        return updatedToolsEx;
+      }
+  
+      return prevToolsEx;
+    });
+  
+    console.log(`Swapping ${tool1.name} with ${tool2.name}`);
+  };
+
   const handleToolClick = (toolName: string, shiftKey: boolean = false) => {
-    // If shiftKey is pressed, swap icon or image and name with the corresponding tool in toolsEx
-    if (shiftKey) {
-      const clickedTool = tools.find(tool => tool.name === toolName);
-      if (clickedTool) {
-        const matchingToolEx = toolsEx.find(tool => tool.group === clickedTool.group);
-  
-        // Swap icon or image and name
-        if (matchingToolEx) {
-          const updatedTools = tools.map(tool =>
-            tool.name === toolName
-              ? { ...tool, icon: matchingToolEx.icon, Image: matchingToolEx.Image, name: matchingToolEx.name }
-              : tool
-          );
-  
-          // Update the tools state
-          // Assuming you have a state setter function for tools, use that here
-          // setTools(updatedTools);
-        }
+    const clickedTool = tools.find(tool => tool.name === toolName);
+
+    if (shiftKey && clickedTool) {
+      const matchingToolEx = toolsEx.find(tool => tool.group === clickedTool.group);
+      if (matchingToolEx) {
+        swapTools(clickedTool, matchingToolEx);
       }
     } else {
-      // Set the active tool normally
       setActiveTool(activeTool === toolName ? null : toolName);
     }
-  
+
     setShowMenu(false);
   };
-  
+
   const handleToolRightClick = (event: React.MouseEvent, toolName: string) => {
     event.preventDefault();
     setHoveredTool(toolName);
-  
-    // Find the hovered tool's position
+    setLastRightClickedTool(toolName);
+
     const hoveredToolElement = document.querySelector(`[data-tool="${toolName}"]`);
     const toolPosition = hoveredToolElement?.getBoundingClientRect();
-  
-    // Check if toolPosition is defined before accessing its properties
+
     if (toolPosition) {
-      // Set the position of the context menu next to the hovered tool
       const menuPosition = {
         top: toolPosition.top - 110,
         left: toolPosition.right + window.scrollX + 10,
       };
-  
-      // Pass the position to state
+
       setContextMenuPosition(menuPosition);
-  
-      // Find all tools in toolsEx
+
       const brotherTools = toolsEx.filter(tool => tool.group === brotherGroup && tool.name !== toolName);
-  
-      // Log the number of brother tools to the console
+
       console.log(`Number of brother tools: ${brotherTools.length}`);
-  
-      // Show the context menu only if there are brother tools
+
       if (brotherTools.length > 0) {
         setShowMenu(true);
       } else {
@@ -81,8 +89,20 @@ const ToolPanel: React.FC = () => {
     }
   };
 
-  const handleMenuToolClick = (toolName: string) => {
-    setActiveTool(toolName);
+  const handleMenuToolClick = () => {
+    const clickedTool = tools.find(tool => tool.name === lastRightClickedTool);
+  
+    // Check if the clicked tool exists
+    if (clickedTool) {
+      const matchingToolEx = toolsEx.find(tool => tool.group === clickedTool.group);
+  
+      // Check if there's a matching tool in toolsEx
+      if (matchingToolEx) {
+        swapTools(clickedTool, matchingToolEx);
+      }
+    }
+  
+    // setActiveTool(lastRightClickedTool);
     setShowMenu(false);
   };
 
