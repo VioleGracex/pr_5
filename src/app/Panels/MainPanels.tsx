@@ -1,7 +1,7 @@
 // Panels/MainPanels.tsx
 "use client"; // This is a client component 👈🏽
 import React from 'react';
-import ToolPanel from '../Components/ToolPanel';
+import ToolPanel from '../Components/tools/ToolPanel';
 import { useDrag } from 'react-dnd'; // Import the useDrag hook
 import { ItemTypes } from '../Components/Constants'; // Define your drag item types
 import { justDrag } from '../Components/Functions/TitleFunctions';
@@ -36,8 +36,8 @@ export const RightPanel: React.FC = () => {
   });
 
   return (
-    <div className={`w-1/7 bg-left-panel rounded z-10 relative ${isDragging ? 'opacity-50' : ''}`}>
-      {/* Draggable area at the top of the left panel */}
+    <div className={`w-1/7 bg-right-panel rounded z-10 relative ${isDragging ? 'opacity-50' : ''}`}>
+      {/* Draggable area at the top of the right panel */}
       <div ref={drag} className="absolute top-0 left-0 w-full h-5 bg-#232323"></div>
       {/* Tool Panel */}
       

@@ -1,9 +1,11 @@
-// components/ToolPanel.tsx
+// ToolPanel.tsx
 "use client"; // This is a client component 👈🏽
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { toolsMain, toolsExtra } from './tools/toolConfig';
+import { toolsMain, toolsExtra } from './toolConfig';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import ToolIcon from './ToolIcon'; // Import ToolIcon component
+import ContextMenu from './ContextMenu'; // Import ContextMenu component
 
 const tools = toolsMain;
 const toolsEx = toolsExtra;
@@ -117,93 +119,12 @@ const ToolPanel: React.FC = () => {
       ))}
       {showMenu && contextMenuPosition && (
         <ContextMenu
-          tools={toolsEx}
+          tools={toolsEx} // Pass the toolsEx array as a prop to ContextMenu
           onMenuItemClick={handleMenuToolClick}
           menuRef={menuRef}
           position={contextMenuPosition}
         />
       )}
-    </div>
-  );
-};
-
-const ToolIcon: React.FC<{
-  icon?: IconDefinition;
-  Image?: { src: string; height: number; width: number }; // Assuming Image is a path to the file
-  name: string;
-  shortcut?: string; // Make shortcut optional
-  active: boolean;
-  isHovered: boolean;
-  onClick: (e: React.MouseEvent) => void; // Update the type of onClick
-  onContextMenu: (e: React.MouseEvent) => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}> = ({ icon, Image, name, shortcut = "", active, isHovered, onClick, onContextMenu, onMouseEnter, onMouseLeave }) => {
-  return (
-    <div
-      className={`relative w-12 ml-7 mr-7 space-y-2 group border ${
-        active ? 'border-blue-500 border-2 rounded ' : 'border-transparent'
-      }`}
-      data-tool={name} // Add data-tool attribute with tool name
-      onClick={onClick}
-      onContextMenu={onContextMenu}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {icon && (
-        <FontAwesomeIcon icon={icon} className="tool-icon ml-2" size="lg" />
-      )}
-      {Image && (
-        <img
-          src={Image.src}
-          alt={name}
-          className="tool-icon ml-2"
-          style={{ width: '1.3em', height: '1.3em' }}
-        />
-      )}
-      {isHovered && (
-        <div
-          className={`opacity-100 bg-gray-800 text-white text-sm p-2 rounded-md absolute left-full ml-2 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 whitespace-nowrap`}
-        >
-          <span className="mr-1">{name}</span>
-          <span className="text-xs font-light">({shortcut})</span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ContextMenu: React.FC<{
-  tools: typeof tools;
-  onMenuItemClick: (toolName: string) => void;
-  menuRef: React.RefObject<HTMLDivElement>;
-  position: { top: number; left: number } | null; // New position prop
-}> = ({ tools, onMenuItemClick, menuRef, position }) => {
-  return (
-    <div
-      ref={menuRef}
-      className="absolute p-2  rounded"
-      style={{ top: position?.top, left: position?.left,backgroundColor: "#3b3a3a" }}
-    >
-      {tools.map((tool) => (
-        <div
-          key={tool.name}
-          className="cursor-pointer text-white p-2 hover:bg-gray-600 rounded flex items-center"
-          onClick={() => onMenuItemClick(tool.name)}
-          style={{ whiteSpace: 'nowrap', fontSize: '0.9em' }}
-        >
-          {tool.icon && <FontAwesomeIcon icon={tool.icon} className="mr-2" />}
-          {tool.Image && (
-            <img
-              src={tool.Image.src}
-              alt={tool.name}
-              className="mr-2"
-              style={{ width: '1.3em', height: '1.3em' }}
-            />
-          )}
-          <span>{tool.name}</span>
-        </div>
-      ))}
     </div>
   );
 };
