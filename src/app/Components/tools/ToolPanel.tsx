@@ -1,9 +1,10 @@
 // ToolPanel.tsx
-"use client"; // This is a client component 👈🏽
+// Uncomment the following line if "use client" is not a comment
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { toolsMain, toolsExtra } from './toolConfig';
-import ToolIcon from './ToolIcon'; // Import ToolIcon component
-import ContextMenu from './ContextMenu'; // Import ContextMenu component
+import ToolIcon from './ToolIcon';
+import ContextMenu from './ContextMenu';
 
 const ToolPanel: React.FC = () => {
   const [activeTool, setActiveTool] = useState<string | null>(null);
@@ -20,29 +21,29 @@ const ToolPanel: React.FC = () => {
 
   const swapTools = (tool1: typeof toolsMain[number], tool2: typeof toolsExtra[number]) => {
     setTools((prevTools) => {
+      const updatedTools = [...prevTools];
       const index1 = prevTools.findIndex((tool) => tool.name === tool1.name);
-  
+
       if (index1 !== -1) {
-        const updatedTools = [...prevTools];
-        updatedTools[index1] = { ...tool2 };
-        return updatedTools;
+        updatedTools.splice(index1, 1);
+        updatedTools.splice(index1, 0, { ...tool2 });
       }
-  
-      return prevTools;
+
+      return updatedTools;
     });
-  
+
     setToolsEx((prevToolsEx) => {
+      const updatedToolsEx = [...prevToolsEx];
       const index2 = prevToolsEx.findIndex((tool) => tool.name === tool2.name);
-  
+
       if (index2 !== -1) {
-        const updatedToolsEx = [...prevToolsEx];
-        updatedToolsEx[index2] = { ...tool1 };
-        return updatedToolsEx;
+        updatedToolsEx.splice(index2, 1);
+        updatedToolsEx.push({ ...tool1 });
       }
-  
-      return prevToolsEx;
+
+      return updatedToolsEx;
     });
-  
+
     console.log(`Swapping ${tool1.name} with ${tool2.name}`);
   };
 
@@ -63,7 +64,7 @@ const ToolPanel: React.FC = () => {
 
   const handleToolRightClick = (event: React.MouseEvent, toolName: string) => {
     event.preventDefault();
-    setHoveredTool(toolName);
+    setHoveredTool(null);
     setLastRightClickedTool(toolName);
 
     const hoveredToolElement = document.querySelector(`[data-tool="${toolName}"]`);
@@ -89,20 +90,14 @@ const ToolPanel: React.FC = () => {
     }
   };
 
-  const handleMenuToolClick = () => {
+  const handleMenuToolClick = (toolExName: string) => {
     const clickedTool = tools.find(tool => tool.name === lastRightClickedTool);
-  
-    // Check if the clicked tool exists
-    if (clickedTool) {
-      const matchingToolEx = toolsEx.find(tool => tool.group === clickedTool.group);
-  
-      // Check if there's a matching tool in toolsEx
-      if (matchingToolEx) {
-        swapTools(clickedTool, matchingToolEx);
-      }
+    const menuTool = toolsEx.find(tool => tool.name === toolExName);
+
+    if (clickedTool && menuTool) {
+      swapTools(clickedTool, menuTool);
     }
-  
-    // setActiveTool(lastRightClickedTool);
+
     setShowMenu(false);
   };
 
@@ -111,6 +106,7 @@ const ToolPanel: React.FC = () => {
       setShowMenu(false);
     }
   };
+
   const handleKeyDown = (event: KeyboardEvent) => {
     if (document.hasFocus()) {
       const matchingTool = tools.find((tool) => tool.shortcut === event.key.toUpperCase());
@@ -150,7 +146,7 @@ const ToolPanel: React.FC = () => {
       ))}
       {showMenu && contextMenuPosition && (
         <ContextMenu
-          tools={toolsEx} // Pass the toolsEx array as a prop to ContextMenu
+          tools={toolsEx}
           onMenuItemClick={handleMenuToolClick}
           menuRef={menuRef}
           position={contextMenuPosition}
