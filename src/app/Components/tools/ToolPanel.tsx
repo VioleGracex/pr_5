@@ -26,7 +26,7 @@ const ToolPanel: React.FC = () => {
 
       if (index1 !== -1) {
         updatedTools.splice(index1, 1);
-        updatedTools.splice(index1, 0, { ...tool2 });
+        updatedTools.splice(index1, 0, { ...tool2, shortcut: tool1.shortcut });
       }
 
       return updatedTools;
@@ -38,7 +38,7 @@ const ToolPanel: React.FC = () => {
 
       if (index2 !== -1) {
         updatedToolsEx.splice(index2, 1);
-        updatedToolsEx.push({ ...tool1 });
+        updatedToolsEx.push({ ...tool1, shortcut: tool2.shortcut });
       }
 
       return updatedToolsEx;
@@ -110,12 +110,20 @@ const ToolPanel: React.FC = () => {
   const handleKeyDown = (event: KeyboardEvent) => {
     if (document.hasFocus()) {
       const matchingTool = tools.find((tool) => tool.shortcut === event.key.toUpperCase());
-      setShowMenu(false);
-      if (matchingTool) {
-        setActiveTool(matchingTool.name);
+  
+      if (event.shiftKey && matchingTool) {
+        const matchingToolEx = toolsEx.find((tool) => tool.group === matchingTool.group);
+        if (matchingToolEx) {
+          swapTools(matchingTool, matchingToolEx);
+        }
+      } else {
+        setShowMenu(false);
+        if (matchingTool) {
+          setActiveTool(matchingTool.name);
+        }
       }
     }
-  };
+  };  
 
   useEffect(() => {
     document.addEventListener('mousedown', handleOutsideClick);
