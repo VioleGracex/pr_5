@@ -49,3 +49,13 @@ body {
   user-select: none;
 }
 
+/* Add this to your CSS or use a styling solution like Tailwind CSS */
+
+.console-bar {
+  height: 30px;
+  background-color: #333;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

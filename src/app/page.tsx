@@ -8,11 +8,19 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LeftPanel, RightPanel } from './Panels/MainPanels';
 import { AppStateProvider } from './state/AppStateContext';
 import { saveStateToFile } from './utils/file';
-import PopupMessage from './utils/PopupMessage';
+
+const ConsoleBar: React.FC<{ lastActivity: string | null }> = ({ lastActivity }) => {
+  return (
+    <div className="console-bar">
+      <span>Last Activity: {lastActivity || 'None'}</span>
+    </div>
+  );
+};
 
 const Home: React.FC = () => {
   const gridSize = 100; // Number of cells per row and column
-  const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const [forceUpdateFlag, setForceUpdateFlag] = useState(false); // State variable to trigger force update
+  const [lastActivity, setLastActivity] = useState<string | null>(null);
   const layersStackRef = useRef([{ id: 1, name: 'Default Layer' }]); // Initialize with one default layer
 
   const handleContextMenu = (event: React.MouseEvent) => {
@@ -24,8 +32,8 @@ const Home: React.FC = () => {
     if (event.ctrlKey && event.key === 's') {
       const fileName = prompt('Enter file name:', 'state_backup');
       if (fileName) {
-        //saveStateToFile(layersStackRef.current, fileName);
-        setPopupMessage(`SAVED: ${fileName}.wise`);
+        setLastActivity(`SAVED: ${fileName}.wise`);
+        setForceUpdateFlag(!forceUpdateFlag); // Toggle the flag to trigger a re-render
       }
     }
 
@@ -41,24 +49,28 @@ const Home: React.FC = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []); // No dependencies, so it runs once on mount
-
-  const closePopup = () => {
-    setPopupMessage(null);
-  };
+  }, [forceUpdateFlag]); // Include forceUpdateFlag as a dependency
 
   const createNewLayer = () => {
+    console.log('Creating a new layer...');
+  
     if (layersStackRef.current.length > 0) {
+      // Generate a new layer ID
       const newLayerId = layersStackRef.current.length + 1;
+  
+      // Create a new layer object
       const newLayer = { id: newLayerId, name: `Layer ${newLayerId}` };
+  
+      // Update the layers stack by adding the new layer
       layersStackRef.current = [...layersStackRef.current, newLayer];
-      forceUpdate(); // Update the component to reflect the changes
+  
+      // Force a component update to reflect the changes
+      setForceUpdateFlag(!forceUpdateFlag); // Toggle the flag to trigger a re-render
+  
+      console.log('New layer created:', newLayer);
+      console.log('Updated layers stack:', layersStackRef.current);
+      setLastActivity('Added layer');
     }
-  };
-
-  const forceUpdate = () => {
-    // Dummy state update to force re-render
-    setPopupMessage(''); 
   };
 
   return (
@@ -79,15 +91,14 @@ const Home: React.FC = () => {
 
             {/* Layer */}
             <Layer gridSize={gridSize} layers={layersStackRef.current} />
-
           </div>
 
           {/* Right Side (Right Panel) */}
-          <RightPanel />
+          <RightPanel numberOfLayers={layersStackRef.current.length} />
         </div>
 
-        {/* Popup Message */}
-        {popupMessage && <PopupMessage message={popupMessage} onClose={closePopup} />}
+        {/* Console Bar */}
+        <ConsoleBar lastActivity={lastActivity} />
       </div>
     </DndProvider>
   );
