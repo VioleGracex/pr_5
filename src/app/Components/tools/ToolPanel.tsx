@@ -111,14 +111,25 @@ const ToolPanel: React.FC = () => {
       setShowMenu(false);
     }
   };
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (document.hasFocus()) {
+      const matchingTool = tools.find((tool) => tool.shortcut === event.key.toUpperCase());
+      setShowMenu(false);
+      if (matchingTool) {
+        setActiveTool(matchingTool.name);
+      }
+    }
+  };
 
   useEffect(() => {
     document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [activeTool, tools]);
 
   return (
     <div className="w-5 ml-7 mr-7 flex flex-col items-center space-y-7 mt-20">
