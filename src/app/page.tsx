@@ -1,19 +1,19 @@
 // pages/page.tsx
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import MenuBar from './Components/MenuBar';
+import Layer from './Components/Layer'; 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LeftPanel, RightPanel } from './Panels/MainPanels';
-import { useAppState } from './state/AppStateContext';
+import { AppStateProvider } from './state/AppStateContext';
 import { saveStateToFile } from './utils/file';
 import PopupMessage from './utils/PopupMessage';
-import { AppStateProvider } from './state/AppStateContext';
 
 const Home: React.FC = () => {
-  //const { state, undo, redo } = useAppState();
   const gridSize = 100; // Number of cells per row and column
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const layersStackRef = useRef([{ id: 1, name: 'Default Layer' }]); // Initialize with one default layer
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault(); // Prevent the default right-click behavior
@@ -24,68 +24,72 @@ const Home: React.FC = () => {
     if (event.ctrlKey && event.key === 's') {
       const fileName = prompt('Enter file name:', 'state_backup');
       if (fileName) {
-        saveStateToFile(state, fileName);
-        setPopupMessage(`SAVED: ${fileName}.wise`); // Update file extension if needed
+        //saveStateToFile(layersStackRef.current, fileName);
+        setPopupMessage(`SAVED: ${fileName}.wise`);
       }
+    }
+
+    // Check if Ctrl + Shift + N is pressed
+    if (event.ctrlKey && event.shiftKey && event.key === 'N') {
+      createNewLayer();
     }
   };
 
-/*   useEffect(() => {
-    if (state) {
-      document.addEventListener('keydown', handleKeyDown);
-    }
-  
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+
     return () => {
-      if (state) {
-        document.removeEventListener('keydown', handleKeyDown);
-      }
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [state]); */
+  }, []); // No dependencies, so it runs once on mount
 
   const closePopup = () => {
     setPopupMessage(null);
   };
 
+  const createNewLayer = () => {
+    if (layersStackRef.current.length > 0) {
+      const newLayerId = layersStackRef.current.length + 1;
+      const newLayer = { id: newLayerId, name: `Layer ${newLayerId}` };
+      layersStackRef.current = [...layersStackRef.current, newLayer];
+      forceUpdate(); // Update the component to reflect the changes
+    }
+  };
+
+  const forceUpdate = () => {
+    // Dummy state update to force re-render
+    setPopupMessage(''); 
+  };
+
   return (
-    <AppStateProvider>
-      <DndProvider backend={HTML5Backend}>
-        <div className="flex flex-col h-screen bg-Menu-panel rounded" onContextMenu={handleContextMenu}>
-          {/* Top MenuBar */}
-          <MenuBar />
+    <DndProvider backend={HTML5Backend}>
+      <div className="flex flex-col h-screen bg-Menu-panel rounded" onContextMenu={handleContextMenu}>
+        {/* Top MenuBar */}
+        <MenuBar />
 
-          {/* Main Content Area */}
-          <div className="flex flex-1">
-            {/* Left Side (Tool Panel) */}
-            <LeftPanel />
+        {/* Main Content Area */}
+        <div className="flex flex-1">
+          {/* Left Side (Tool Panel) */}
+          <LeftPanel />
 
-            {/* Center/Main Area with Grid */}
-            <div
-              className="flex-1 relative overflow-hidden rounded"
-              onContextMenu={handleContextMenu} // Add the context menu handler here
-            >
-              {/* Add your main app content here */}
-              <h1 className="text-2xl font-bold mb-4">Main App Area</h1>
+          {/* Center/Main Area with Layer */}
+          <div className="flex-1 relative overflow-hidden rounded" onContextMenu={handleContextMenu}>
+            {/* Add your main app content here */}
+            <h1 className="text-2xl font-bold mb-4"></h1>
 
-              {/* Infinite Grid */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded">
-                <div className="grid" style={{ gridTemplateColumns: `repeat(${gridSize}, 1fr)` }}>
-                  {/* Grid Cells */}
-                  {Array.from({ length: gridSize * gridSize }, (_, index) => (
-                    <div key={index} className="bg-white border border-gray-300 w-10 h-10 rounded"></div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            {/* Layer */}
+            <Layer gridSize={gridSize} layers={layersStackRef.current} />
 
-            {/* Right Side (Right Panel) */}
-            <RightPanel />
           </div>
 
-          {/* Popup Message */}
-          {popupMessage && <PopupMessage message={popupMessage} onClose={closePopup} />}
+          {/* Right Side (Right Panel) */}
+          <RightPanel />
         </div>
-      </DndProvider>
-      </AppStateProvider>
+
+        {/* Popup Message */}
+        {popupMessage && <PopupMessage message={popupMessage} onClose={closePopup} />}
+      </div>
+    </DndProvider>
   );
 };
 
