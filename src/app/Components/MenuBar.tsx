@@ -2,7 +2,7 @@
 "use client"; // This is a client component 👈🏽
 import React, { useState, useEffect, useRef } from 'react';
 import { appWindow } from '@tauri-apps/api/window';
-import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes } from 'react-icons/fa';
+import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes, FaAngleRight, FaCheck } from 'react-icons/fa';
 //import { useDrag } from '../Functions/useDrag';
 import { useDrag, handleMinimize, handleToggleMaximize, handleExit } from './Functions/TitleFunctions'; // Import functions from TitleFunctions
 import './MenuBar.css'; // Import the CSS file
@@ -22,13 +22,13 @@ const MenuBar: React.FC = () => {
         className="fixed top-0 left-0 w-full h-16 mb-4 bg-black opacity-0 z-10"
         onMouseDown={handleMouseDown}
       ></div>
-      <div className="text-white p-4 w-40  flex justify-between items-center relative z-50">
+      <div className="text-white p-4 w-40 flex justify-between items-center relative z-50">
         {/* Left Side: Logo */}
         <div className="flex items-center">
           <img src="/Logo.png" alt="Logo" className="h-12 w-auto mr-8" />
 
           {/* Middle: Menu Text */}
-          <div className="flex ml-auto space-x-4">
+          <div className="flex ml-auto space-x-6 ">
             {/* File Menu */}
             <Menu label="File" index={0}>
               <MenuItem label="New" />
@@ -75,6 +75,24 @@ const MenuBar: React.FC = () => {
               <MenuItem label="Grid" />
               <MenuItem label="Snap to Grid" />
               {/* ... other view menu items ... */}
+            </Menu>
+            {/* Window Menu */}
+            <Menu label="Window" index={6} >
+              <MenuItem label="Workspace" isNested>
+                <MenuItem label="Essentials" isToggle={true}  />
+                <MenuItem label="Architecture" isToggle={true}  />
+                <MenuItem label="Painter" isToggle={true}  />
+              </MenuItem>
+              {/* Separator */}
+              <div className="border-t border-gray-300 my-2"></div>
+              {/* Toggle Windows get real value later */}
+              <MenuItem label="ToolBar" isToggle  />
+              <MenuItem label="Navigator" isToggle />
+              <MenuItem label="Layer" isToggle />
+              <MenuItem label="Paths" isToggle />
+              <MenuItem label="Buildings"  isToggle />
+              <MenuItem label="NPCS"  isToggle />
+              <MenuItem label="Inspector" isToggle />
             </Menu>
 
             {/* Rest of the Menus */}
@@ -160,15 +178,96 @@ const Menu: React.FC<MenuProps> = ({ label, children, index }) => {
   );
 };
 
+// ... (imports and other code)
+
 interface MenuItemProps {
   label: string;
+  onClick?: () => void;
+  isToggle?: boolean;
+  isActive?: boolean;
+  isNested?: boolean;
+  children?: React.ReactNode;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ label }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ label, onClick, isToggle, isActive, isNested, children }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isSubmenuHovered, setIsSubmenuHovered] = useState(false);
+  const [closeSubmenuTimeout, setCloseSubmenuTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isActiveLocal, setIsActiveLocal] = useState(isActive || false);
+
+  useEffect(() => {
+    // Synchronize local state with prop when it changes
+    setIsActiveLocal(isActive || false);
+  }, [isActive]);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    clearCloseSubmenuTimeout();
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setCloseSubmenuTimeoutIfNotHovered();
+  };
+
+  const handleSubmenuMouseEnter = () => {
+    setIsSubmenuHovered(true);
+    clearCloseSubmenuTimeout();
+  };
+
+  const handleSubmenuMouseLeave = () => {
+    setIsSubmenuHovered(false);
+    setCloseSubmenuTimeoutIfNotHovered();
+  };
+
+  const setCloseSubmenuTimeoutIfNotHovered = () => {
+    if (!isHovered && !isSubmenuHovered) {
+      setCloseSubmenuTimeout(
+        setTimeout(() => {
+          setIsSubmenuHovered(false);
+        }, 1000)
+      );
+    }
+  };
+
+  const clearCloseSubmenuTimeout = () => {
+    if (closeSubmenuTimeout) {
+      clearTimeout(closeSubmenuTimeout);
+      setCloseSubmenuTimeout(null);
+    }
+  };
+
+  const handleClick = () => {
+    if (!isNested) {
+      if (isToggle) {
+        setIsActiveLocal(!isActiveLocal); // Toggle local active state
+      }
+    }
+  };
+
   return (
-    <button className=" text-sm -cursor-pointer text-left w-full text-white-800 px-4 py-2 hover:bg-gray-300 focus:outline-none focus:bg-gray-300 whitespace-nowrap">
-      {label}
-    </button>
+    <div className="relative" onMouseLeave={handleMouseLeave}>
+      <button
+        className={`text-sm cursor-pointer text-left w-full px-4 py-2 hover:bg-gray-300 focus:outline-none focus:bg-gray-300 flex items-center justify-between whitespace-nowrap ${
+          isToggle ? 'flex items-center justify-between' : ''
+        }`}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+      >
+        {label}
+        {isToggle && isActiveLocal && <FaCheck />}
+        {isNested && <FaAngleRight />}
+      </button>
+      {isHovered && isNested && (
+        <div
+          className="absolute w-44 left-full top-0 mt-0 ml-1 bg-black text-white-800 p-2 space-y-2 border border-gray-300"
+          onMouseEnter={handleSubmenuMouseEnter}
+          onMouseLeave={handleSubmenuMouseLeave}
+        >
+          {children}
+        </div>
+      )}
+    </div>
   );
 };
 
