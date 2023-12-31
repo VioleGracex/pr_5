@@ -2,6 +2,7 @@
 "use client"; // This is a client component 👈🏽
 import React, { useEffect, useState } from 'react';
 import { appWindow } from '@tauri-apps/api/window';
+import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes } from 'react-icons/fa';
 
 export const handleExit = async () => {
   // Close the app window
@@ -111,3 +112,33 @@ export const justDrag = () => {
     handleMouseDown,
   };
 };
+
+export const TitleButtons: React.FC<{ isFullscreen: boolean; setIsFullscreen: React.Dispatch<React.SetStateAction<boolean>> }> = ({
+  isFullscreen,
+  setIsFullscreen,
+}) => {
+  return (
+    <div className="fixed space-x-6 mt-2 right-4 top-4 justify-end">
+      {/* Minimize Button */}
+      <button onClick={handleMinimize} className="btn whitespace-nowrap cursor-pointer" title="Minimize">
+        <FaWindowMinimize />
+      </button>
+
+      {/* Fullscreen Button */}
+      <button
+        onClick={() => handleToggleMaximize(setIsFullscreen)}
+        className="btn whitespace-nowrap cursor-pointer"
+        title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+      >
+        {isFullscreen ? <FaWindowRestore /> : <FaRegWindowMaximize />}
+      </button>
+
+      {/* Exit Button */}
+      <button onClick={handleExit} className="btn whitespace-nowrap cursor-pointer exit-btn" title="Exit">
+        <FaTimes />
+      </button>
+    </div>
+  );
+};
+
+export default TitleButtons;

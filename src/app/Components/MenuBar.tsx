@@ -3,13 +3,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { appWindow } from '@tauri-apps/api/window';
 import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes, FaAngleRight, FaCheck } from 'react-icons/fa';
-//import { useDrag } from '../Functions/useDrag';
-import { useDrag, handleMinimize, handleToggleMaximize, handleExit } from './Functions/TitleFunctions'; // Import functions from TitleFunctions
+import {useDrag,handleToggleMaximize,TitleButtons} from './Functions/TitleFunctions'; // Import functions from TitleFunctions
 import './MenuBar.css'; // Import the CSS file
 
 const MenuBar: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { handleMouseDown } = useDrag(() => handleToggleMaximize(setIsFullscreen));
+  
 
   return (
     <div className="relative">
@@ -101,36 +101,7 @@ const MenuBar: React.FC = () => {
         </div>
 
         {/* Right Side: Menus and Buttons */}
-        <div className="fixed space-x-6 mt-2 right-4 top-4 justify-end">
-          {/* Minimize Button */}
-          <button
-            onClick={handleMinimize}
-            className="btn whitespace-nowrap cursor-pointer"
-            title="Minimize"
-          >
-            <FaWindowMinimize />
-          </button>
-
-          {/* Fullscreen Button */}
-          <button
-            onClick={() => handleToggleMaximize(setIsFullscreen)}
-            className="btn whitespace-nowrap cursor-pointer"
-            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-          >
-            {isFullscreen ? <FaWindowRestore /> : <FaRegWindowMaximize />}
-          </button>
-
-          {/* Exit Button */}
-          <button
-            onClick={handleExit}
-            className="btn whitespace-nowrap cursor-pointer exit-btn"
-            title="Exit"
-          >
-            <FaTimes />
-          </button>
-
-          {/* ... any additional right-side content ... */}
-        </div>
+        <TitleButtons isFullscreen={isFullscreen} setIsFullscreen={setIsFullscreen} />
       </div>
     </div>
   );
