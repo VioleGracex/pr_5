@@ -3,8 +3,7 @@ import { WebviewWindow } from '@tauri-apps/api/window';
 
 const createAnotherWindow = () => {
   const anotherWindow = new WebviewWindow('anotherUniqueLabel', {
-    url: 'http://localhost:3000', // Replace with your desired URL or 'index.html' if it's a local file
-    title: '', // Provide an empty string as the title
+    url: 'path/to/another-page.html',
   });
 
   // Handle creation response

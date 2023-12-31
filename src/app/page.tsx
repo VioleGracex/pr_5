@@ -6,8 +6,7 @@ import Layer from './Components/Layer';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LeftPanel, RightPanel } from './Panels/MainPanels';
-import { AppStateProvider } from './state/AppStateContext';
-import { saveStateToFile } from './utils/file';
+import createAnotherWindow from './Components/Windows/AnotherWindow'; // Import the createAnotherWindow function
 
 const ConsoleBar: React.FC<{ lastActivity: string | null }> = ({ lastActivity }) => {
   return (
@@ -36,12 +35,18 @@ const Home: React.FC = () => {
         setForceUpdateFlag(!forceUpdateFlag); // Toggle the flag to trigger a re-render
       }
     }
-
+  
     // Check if Ctrl + Shift + N is pressed
     if (event.ctrlKey && event.shiftKey && event.key === 'N') {
       createNewLayer();
     }
+  
+    // Check if Ctrl + Shift + ] is pressed
+    if (event.ctrlKey && event.shiftKey && event.code === 'BracketRight') {
+      createAnotherWindow();
+    }
   };
+  
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
