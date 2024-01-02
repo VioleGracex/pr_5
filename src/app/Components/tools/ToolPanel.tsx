@@ -143,12 +143,14 @@ const ToolPanel: React.FC = () => {
   
           // Check if the mouse is on a Layer component
           if (layerRect && clientX >= layerRect.left && clientX <= layerRect.right && clientY >= layerRect.top && clientY <= layerRect.bottom) {
-            // Execute the tool function if it exists
+            // Execute the tool function and add an activity
             tool.toolFunction && tool.toolFunction();
+            addActivity(`Used tool function: ${tool.toolFunction?.name || 'Unnamed Function'}`);
           }
         } else {
-          // Execute the tool function directly if it exists
+          // Execute the tool function directly and add an activity
           tool.toolFunction && tool.toolFunction();
+          addActivity(`Used tool function: ${tool.toolFunction?.name || 'Unnamed Function'}`);
         }
       };
   
@@ -162,17 +164,27 @@ const ToolPanel: React.FC = () => {
     }
   };
   
+  
 
   useEffect(() => {
     document.addEventListener('mousedown', handleOutsideClick);
     document.addEventListener('keydown', handleKeyDown);
-
+    
+    // Call useTool to set up event listener for further mouse click events
+    if (activeTool) {
+      const clickedTool = tools.find(tool => tool.name === activeTool);
+      if (clickedTool && clickedTool.toolFunction) {
+        useTool(clickedTool);
+      }
+    }
+  
     // Cleanup the event listeners on component unmount
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [activeTool, tools]);
+  }, [activeTool, tools, addActivity]);
+  
 
   return (
     <div className="w-5 ml-7 mr-7 flex flex-col items-center space-y-7 mt-20">

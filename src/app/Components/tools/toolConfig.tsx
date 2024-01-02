@@ -17,7 +17,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare as farSquare } from '@fortawesome/free-regular-svg-icons'; // Import empty square icon
 import MarqueeToolImage from '../imgs/MarqueeTool.png';
-import { UseCircleDraw, UseSquareDraw, UseRectangleDraw } from '../Functions/ShapeTool';
+import { UseCircleDraw } from '../Functions/ShapeTool';
 
 interface Tool {
   icon?: any;
@@ -45,7 +45,7 @@ const toolsMain: Tool[] = [
 ];
 
 const toolsExtra: Tool[] = [
-  { icon: faCircle, name: "Circle Tool", shortcut: "", group: "shapes", toolFunction: () => UseCircleDraw, inBound: false },
+  { icon: faCircle, name: "Circle Tool", shortcut: "", group: "shapes", toolFunction: () => UseCircleDraw(true), inBound: false },
   { icon: faRectangleAd, name: "Rectangle Tool", shortcut: "", group: "shapes", toolFunction: () => console.log('Rectangle Tool function'), inBound: true },
   // Add more shapes as needed
 ];

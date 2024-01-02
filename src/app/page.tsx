@@ -9,7 +9,6 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LeftPanel, RightPanel } from './Panels/MainPanels';
 import createAnotherWindow from './Components/Windows/AnotherWindow'; // Import the createAnotherWindow function
 import { ConsoleBar,addActivity} from './Panels/ConsoleBar';
-import { UseCircleDraw } from './Components/Functions/ShapeTool';
 
 
 const Home: React.FC = () => {
