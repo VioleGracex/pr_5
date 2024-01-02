@@ -1,10 +1,12 @@
 // ToolPanel.tsx
 // Uncomment the following line if "use client" is not a comment
-"use client";
+// "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { toolsMain, toolsExtra } from './toolConfig';
 import ToolIcon from './ToolIcon';
 import ContextMenu from './ContextMenu';
+import { addActivity } from '@/app/Panels/ConsoleBar';
+import Layer from '../Layer'; // Import your Layer component
 
 const ToolPanel: React.FC = () => {
   const [activeTool, setActiveTool] = useState<string | null>(null);
@@ -16,6 +18,8 @@ const ToolPanel: React.FC = () => {
 
   const [tools, setTools] = useState<typeof toolsMain>(toolsMain);
   const [toolsEx, setToolsEx] = useState<typeof toolsExtra>(toolsExtra);
+
+  const layerRef = useRef<HTMLDivElement>(null); // Add a ref for the Layer component
 
   const brotherGroup = hoveredTool ? tools.find(tool => tool.name === hoveredTool)?.group : '';
 
@@ -57,6 +61,7 @@ const ToolPanel: React.FC = () => {
       }
     } else {
       setActiveTool(activeTool === toolName ? null : toolName);
+      addActivity(`Selected tool: ${toolName}`); // Now you can use addActivity here
     }
 
     setShowMenu(false);
@@ -125,10 +130,44 @@ const ToolPanel: React.FC = () => {
     }
   };  
 
+  const useTool = (tool: typeof toolsMain[number] | typeof toolsExtra[number]) => {
+    const isToolActive = activeTool === tool.name;
+  
+    if (isToolActive && tool.toolFunction) {
+      const handleMouseClick = (event: MouseEvent) => {
+        const { clientX, clientY } = event;
+  
+        // Check if the tool requires being in bounds
+        if (tool.inBound !== undefined && tool.inBound !== null && tool.inBound) {
+          const layerRect = layerRef.current?.getBoundingClientRect();
+  
+          // Check if the mouse is on a Layer component
+          if (layerRect && clientX >= layerRect.left && clientX <= layerRect.right && clientY >= layerRect.top && clientY <= layerRect.bottom) {
+            // Execute the tool function if it exists
+            tool.toolFunction && tool.toolFunction();
+          }
+        } else {
+          // Execute the tool function directly if it exists
+          tool.toolFunction && tool.toolFunction();
+        }
+      };
+  
+      // Add the event listener for mouse click
+      document.addEventListener('click', handleMouseClick);
+  
+      // Cleanup the event listener on component unmount
+      return () => {
+        document.removeEventListener('click', handleMouseClick);
+      };
+    }
+  };
+  
+
   useEffect(() => {
     document.addEventListener('mousedown', handleOutsideClick);
     document.addEventListener('keydown', handleKeyDown);
 
+    // Cleanup the event listeners on component unmount
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
       document.removeEventListener('keydown', handleKeyDown);
@@ -146,7 +185,13 @@ const ToolPanel: React.FC = () => {
           shortcut={tool.shortcut}
           active={activeTool === tool.name}
           isHovered={hoveredTool === tool.name}
-          onClick={(e) => handleToolClick(tool.name, e.shiftKey)}
+          onClick={(e) => {
+            handleToolClick(tool.name, e.shiftKey);
+            if (tool.toolFunction) {
+              tool.toolFunction(); // Call the tool function on click
+              useTool(tool); // Setup event listener for further mouse click events
+            }
+          }}
           onContextMenu={(e) => handleToolRightClick(e, tool.name)}
           onMouseEnter={() => setHoveredTool(tool.name)}
           onMouseLeave={() => setHoveredTool(null)}

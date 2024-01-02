@@ -1,3 +1,4 @@
+
 // pages/page.tsx
 "use client";
 import React, { useEffect, useState, useRef } from 'react';
@@ -7,19 +8,13 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LeftPanel, RightPanel } from './Panels/MainPanels';
 import createAnotherWindow from './Components/Windows/AnotherWindow'; // Import the createAnotherWindow function
+import { ConsoleBar,addActivity} from './Panels/ConsoleBar';
+import { UseCircleDraw } from './Components/Functions/ShapeTool';
 
-const ConsoleBar: React.FC<{ lastActivity: string | null }> = ({ lastActivity }) => {
-  return (
-    <div className="console-bar">
-      <span>Last Activity: {lastActivity || 'None'}</span>
-    </div>
-  );
-};
 
 const Home: React.FC = () => {
   const gridSize = 100; // Number of cells per row and column
   const [forceUpdateFlag, setForceUpdateFlag] = useState(false); // State variable to trigger force update
-  const [lastActivity, setLastActivity] = useState<string | null>(null);
   const layersStackRef = useRef([{ id: 1, name: 'Default Layer' }]); // Initialize with one default layer
 
   const handleContextMenu = (event: React.MouseEvent) => {
@@ -31,7 +26,7 @@ const Home: React.FC = () => {
     if (event.ctrlKey && event.key === 's') {
       const fileName = prompt('Enter file name:', 'state_backup');
       if (fileName) {
-        setLastActivity(`SAVED: ${fileName}.wise`);
+        addActivity(`SAVED: ${fileName}.wise`);
         setForceUpdateFlag(!forceUpdateFlag); // Toggle the flag to trigger a re-render
       }
     }
@@ -39,6 +34,7 @@ const Home: React.FC = () => {
     // Check if Ctrl + Shift + N is pressed
     if (event.ctrlKey && event.shiftKey && event.key === 'N') {
       createNewLayer();
+      console.log("Created New Layer");
     }
   
     // Check if Ctrl + Shift + ] is pressed
@@ -46,7 +42,6 @@ const Home: React.FC = () => {
       createAnotherWindow();
     }
   };
-  
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -74,7 +69,7 @@ const Home: React.FC = () => {
   
       console.log('New layer created:', newLayer);
       console.log('Updated layers stack:', layersStackRef.current);
-      setLastActivity('Added layer');
+      addActivity('Added layer');
     }
   };
 
@@ -103,7 +98,7 @@ const Home: React.FC = () => {
         </div>
 
         {/* Console Bar */}
-        <ConsoleBar lastActivity={lastActivity} />
+        <ConsoleBar />
       </div>
     </DndProvider>
   );
