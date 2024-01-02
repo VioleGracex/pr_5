@@ -141,9 +141,11 @@ const Menu: React.FC<MenuProps> = ({ label, children, index }) => {
         {label}
       </button>
       {activeChild === index && (
-        <div className="absolute  bg-black text-white-800 p-2 space-y-2 border border-gray-300">
-          {children}
-        </div>
+       <div className="absolute bg-black p-0 m-0">
+       <div className="w-full h-full bg-gray-400 text-black p-2 space-y-2">
+         {children}
+       </div>
+     </div>
       )}
     </div>
   );
@@ -196,7 +198,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ label, onClick, isToggle, isActive,
       setCloseSubmenuTimeout(
         setTimeout(() => {
           setIsSubmenuHovered(false);
-        }, 1000)
+        }, 5000)
       );
     }
   };
@@ -231,11 +233,15 @@ const MenuItem: React.FC<MenuItemProps> = ({ label, onClick, isToggle, isActive,
       </button>
       {isHovered && isNested && (
         <div
-          className="absolute w-44 left-full top-0 mt-0 ml-1 bg-black text-white-800 p-2 space-y-2 border border-gray-300"
+        className="bg-black p-0 m-0"
+      >
+        <div
+          className="absolute w-44 left-full top-0 mt-0 ml-1 bg-gray-400 text-white-800 p-2 space-y-2 border border-gray-300"
           onMouseEnter={handleSubmenuMouseEnter}
           onMouseLeave={handleSubmenuMouseLeave}
         >
           {children}
+        </div>
         </div>
       )}
     </div>
