@@ -9,68 +9,33 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LeftPanel, RightPanel } from './Panels/MainPanels';
 import createAnotherWindow from './Components/Windows/AnotherWindow'; // Import the createAnotherWindow function
 import { ConsoleBar,addActivity} from './Panels/ConsoleBar';
+import { handleShortcuts, Shortcut } from './Components/tools/shortcuts';
+import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcuts configuration
+
 
 
 const Home: React.FC = () => {
   const gridSize = 100; // Number of cells per row and column
   const [forceUpdateFlag, setForceUpdateFlag] = useState(false); // State variable to trigger force update
   const layersStackRef = useRef([{ id: 1, name: 'Default Layer' }]); // Initialize with one default layer
-
+  
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault(); // Prevent the default right-click behavior
   };
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    // Check if Ctrl + S is pressed
-    if (event.ctrlKey && event.key === 's') {
-      const fileName = prompt('Enter file name:', 'state_backup');
-      if (fileName) {
-        addActivity(`SAVED: ${fileName}.wise`);
-        setForceUpdateFlag(!forceUpdateFlag); // Toggle the flag to trigger a re-render
-      }
-    }
-  
-    // Check if Ctrl + Shift + N is pressed
-    if (event.ctrlKey && event.shiftKey && event.key === 'N') {
-      createNewLayer();
-      console.log("Created New Layer");
-    }
-  
-    // Check if Ctrl + Shift + ] is pressed
-    if (event.ctrlKey && event.shiftKey && event.code === 'BracketRight') {
-      createAnotherWindow();
-    }
-  };
-
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      handleShortcuts(event, shortcuts);
+    };
+
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [forceUpdateFlag]); // Include forceUpdateFlag as a dependency
+  }, [forceUpdateFlag, layersStackRef]); // Include additional dependencies if needed
 
-  const createNewLayer = () => {
-    console.log('Creating a new layer...');
-  
-    if (layersStackRef.current.length > 0) {
-      // Generate a new layer ID
-      const newLayerId = layersStackRef.current.length + 1;
-  
-      // Create a new layer object
-      const newLayer = { id: newLayerId, name: `Layer ${newLayerId}` };
-  
-      // Update the layers stack by adding the new layer
-      layersStackRef.current = [...layersStackRef.current, newLayer];
-  
-      // Force a component update to reflect the changes
-      setForceUpdateFlag(!forceUpdateFlag); // Toggle the flag to trigger a re-render
-  
-      console.log('New layer created:', newLayer);
-      console.log('Updated layers stack:', layersStackRef.current);
-      addActivity('Added layer');
-    }
-  };
+ 
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -104,3 +69,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
