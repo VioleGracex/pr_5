@@ -52,19 +52,30 @@ const ToolPanel: React.FC = () => {
   };
 
   const handleToolClick = (toolName: string, shiftKey: boolean = false) => {
-    const clickedTool = tools.find(tool => tool.name === toolName);
+    const clickedTool = tools.find((tool) => tool.name === toolName);
 
-    if (shiftKey && clickedTool) {
-      const matchingToolEx = toolsEx.find(tool => tool.group === clickedTool.group);
-      if (matchingToolEx) {
-        swapTools(clickedTool, matchingToolEx);
+    if (clickedTool) {
+      if (shiftKey) {
+        const matchingToolEx = toolsEx.find((tool) => tool.group === clickedTool.group);
+        if (matchingToolEx) {
+          swapTools(clickedTool, matchingToolEx);
+        }
+      } else {
+        
+        addActivity(`Selected tool: ${toolName}`);
+
+        if (!clickedTool.isToggle && clickedTool.toolFunction) {
+          // If it's not a toggle, call the tool function right away
+          clickedTool.toolFunction();
+        }
+        else
+        {
+          setActiveTool(clickedTool.isToggle ? (activeTool === toolName ? null : toolName) : null);
+        }
       }
-    } else {
-      setActiveTool(activeTool === toolName ? null : toolName);
-      addActivity(`Selected tool: ${toolName}`); // Now you can use addActivity here
-    }
 
-    setShowMenu(false);
+      setShowMenu(false);
+    }
   };
 
   const handleToolRightClick = (event: React.MouseEvent, toolName: string) => {
@@ -145,12 +156,12 @@ const ToolPanel: React.FC = () => {
           if (layerRect && clientX >= layerRect.left && clientX <= layerRect.right && clientY >= layerRect.top && clientY <= layerRect.bottom) {
             // Execute the tool function and add an activity
             tool.toolFunction && tool.toolFunction();
-            addActivity(`Used tool function: ${tool.toolFunction?.name || 'Unnamed Function'}`);
+            addActivity(`Used tool function: ${tool.toolFunction?.name + " " + tool.name || 'Unnamed Function'}`);
           }
         } else {
           // Execute the tool function directly and add an activity
           tool.toolFunction && tool.toolFunction();
-          addActivity(`Used tool function: ${tool.toolFunction?.name || 'Unnamed Function'}`);
+          addActivity(`Used tool function: ${tool.toolFunction?.name + " " + tool.name || 'Unnamed Function'}`);
         }
       };
   
