@@ -1,11 +1,11 @@
 //usePen.tsx
 import { addActivity } from "@/app/Panels/ConsoleBar";
-import { getActiveTool, setActiveTool } from "../ToolPanel";
+import { getGlobalActiveTool, setGlobalActiveTool } from "../ToolPanel";
 
 function usePen(): void {
   
-  setActiveTool("Pencil");
-  const activeTool = getActiveTool();
+  setGlobalActiveTool("Pencil");
+  const activeTool = getGlobalActiveTool();
   if (activeTool) {
     // If active tool is set, add activity based on the active tool
     addActivity(`Used ${activeTool} Pen `);

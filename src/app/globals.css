@@ -59,8 +59,10 @@ body {
   align-items: center;
   justify-content: center;
   transition: height 0.5s ease; /* Smooth transition for height change */
+  z-index: 999;
 }
 
 .console-bar.expanded {
   height: 200px; /* Set the desired expanded height */
+  z-index: 999;
 }

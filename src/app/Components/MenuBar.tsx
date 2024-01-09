@@ -13,16 +13,16 @@ const MenuBar: React.FC = () => {
 
   return (
     <div className="relative">
-      {/* Background Element */}
-      <div
-        className="fixed top-0 left-0 w-full h-16 bg-black-2000 opacity-100 z-10"
-      ></div>
-      {/* Draggable Area */}
-      <div
-        className="fixed top-0 left-0 w-full h-16 mb-4 bg-black opacity-0 z-10"
-        onMouseDown={handleMouseDown}
-      ></div>
-      <div className="text-white p-4 w-40 flex justify-between items-center relative z-50">
+        {/* Background Element */}
+        <div
+          className="fixed top-0 left-0 w-full h-16 bg-black-2000 opacity-100 z-10"
+        ></div>
+        {/* Draggable Area */}
+        <div
+          className="fixed top-0 left-0 w-full h-16 mb-4 bg-black opacity-0 z-10"
+          onMouseDown={handleMouseDown}
+        ></div>
+      <div className="text-white p-4 w-40   relative z-50">
         {/* Left Side: Logo */}
         <div className="flex items-center">
           <img src="/Logo.png" alt="Logo" className="h-12 w-auto mr-8" />
@@ -100,9 +100,10 @@ const MenuBar: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side: Menus and Buttons */}
-        <TitleButtons isFullscreen={isFullscreen} setIsFullscreen={setIsFullscreen} />
+        
       </div>
+      <div className='z-10'>{/* Right Side: Menus and Buttons */}
+        <TitleButtons isFullscreen={isFullscreen} setIsFullscreen={setIsFullscreen} /></div>
     </div>
   );
 };

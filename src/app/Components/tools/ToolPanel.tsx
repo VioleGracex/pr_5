@@ -5,19 +5,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import ToolIcon from './ToolIcon';
 import ContextMenu from './ContextMenu';
 import { addActivity } from '@/app/Panels/ConsoleBar';
-import Layer from '../Layer'; // Import your Layer component
 import { toolsMain, toolsExtra } from './toolConfig';
 
 let globalactiveTool: string | null = null;
 
-export const getActiveTool = (): string | null => globalactiveTool;
+export const getGlobalActiveTool = (): string | null => globalactiveTool;
 
-export const setActiveTool = (tool: string | null): void => {
+export const setGlobalActiveTool = (tool: string | null): void => {
   globalactiveTool = tool;
 };
 
 const ToolPanel: React.FC = () => {
-  const [activeTool, setActiveTool] = useState<string | null>(getActiveTool());
+  const [activeTool, setActiveTool] = useState<string | null>(getGlobalActiveTool());
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
   const [lastRightClickedTool, setLastRightClickedTool] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -78,7 +77,14 @@ const ToolPanel: React.FC = () => {
         }
         else
         {
-          setActiveTool(clickedTool.isToggle ? (activeTool === toolName ? null : toolName) : null);
+          /* setActiveTool(clickedTool.isToggle ? (activeTool === toolName ? null : toolName) : null); */
+          if (activeTool === toolName) {
+            setActiveTool(null);
+            addActivity(`Unselected tool: ${toolName}`);
+          } else {
+            setActiveTool(toolName);
+            addActivity(`Selected tool: ${toolName}`);
+          }
         }
       }
 

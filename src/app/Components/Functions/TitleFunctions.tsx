@@ -118,7 +118,7 @@ export const TitleButtons: React.FC<{ isFullscreen: boolean; setIsFullscreen: Re
   setIsFullscreen,
 }) => {
   return (
-    <div className="fixed space-x-6 mt-2 right-4 top-4 justify-end">
+    <div className="fixed space-x-6 mt-2 right-4 top-4 justify-end" style={{ zIndex: 10 }}>
       {/* Minimize Button */}
       <button onClick={handleMinimize} className="btn whitespace-nowrap cursor-pointer" title="Minimize">
         <FaWindowMinimize />

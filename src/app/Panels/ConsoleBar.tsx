@@ -32,7 +32,7 @@ export const ConsoleBar: React.FC = () => {
         </div>
       </div>
       {isExpanded && (
-        <div className="activity-stack" style={{ overflow: 'auto', maxHeight: '50px', marginRight: '5px' }}>
+        <div className="activity-stack" style={{ overflow: 'auto', maxHeight: '200px', marginRight: '5px' }}>
           {activityStack.map((activity, index) => (
             <div key={index}>
               {activity}

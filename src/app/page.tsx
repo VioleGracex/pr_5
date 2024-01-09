@@ -3,7 +3,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from 'react';
 import MenuBar from './Components/MenuBar';
-import Layer from './Components/Layer'; 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LeftPanel, RightPanel } from './Panels/MainPanels';
@@ -11,6 +10,9 @@ import createAnotherWindow from './Components/Windows/AnotherWindow'; // Import 
 import { ConsoleBar,addActivity} from './Panels/ConsoleBar';
 import { handleShortcuts, Shortcut } from './Components/tools/shortcuts';
 import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcuts configuration
+import { CanvasProvider } from './Panels/CanvasContext';
+import { Canvas } from './Panels/Canvas';
+import Layer from './Components/Layer'; 
 
 
 
@@ -51,18 +53,22 @@ const Home: React.FC = () => {
           {/* Center/Main Area with Layer */}
           <div className="flex-1 relative overflow-hidden rounded" onContextMenu={handleContextMenu}>
             {/* Add your main app content here */}
-            <h1 className="text-2xl font-bold mb-4"></h1>
+            <CanvasProvider><Canvas/></CanvasProvider>
+            
+            {/* <h1 className="text-2xl font-bold mb-4"></h1> */}
 
             {/* Layer */}
-            <Layer gridSize={gridSize} layers={layersStackRef.current} />
+           {/*  <Layer gridSize={gridSize} layers={layersStackRef.current} /> */}
           </div>
 
           {/* Right Side (Right Panel) */}
           <RightPanel numberOfLayers={layersStackRef.current.length} />
         </div>
-
+        <div className="flex-1 relative rounded">
+          <ConsoleBar />
+        </div>
         {/* Console Bar */}
-        <ConsoleBar />
+        
       </div>
     </DndProvider>
   );
