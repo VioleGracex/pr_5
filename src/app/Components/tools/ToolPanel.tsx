@@ -2,14 +2,22 @@
 // Uncomment the following line if "use client" is not a comment
 // "use client";
 import React, { useState, useEffect, useRef } from 'react';
-import { toolsMain, toolsExtra } from './toolConfig';
 import ToolIcon from './ToolIcon';
 import ContextMenu from './ContextMenu';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 import Layer from '../Layer'; // Import your Layer component
+import { toolsMain, toolsExtra } from './toolConfig';
+
+let globalactiveTool: string | null = null;
+
+export const getActiveTool = (): string | null => globalactiveTool;
+
+export const setActiveTool = (tool: string | null): void => {
+  globalactiveTool = tool;
+};
 
 const ToolPanel: React.FC = () => {
-  const [activeTool, setActiveTool] = useState<string | null>(null);
+  const [activeTool, setActiveTool] = useState<string | null>(getActiveTool());
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
   const [lastRightClickedTool, setLastRightClickedTool] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -156,12 +164,12 @@ const ToolPanel: React.FC = () => {
           if (layerRect && clientX >= layerRect.left && clientX <= layerRect.right && clientY >= layerRect.top && clientY <= layerRect.bottom) {
             // Execute the tool function and add an activity
             tool.toolFunction && tool.toolFunction();
-            addActivity(`Used tool function: ${tool.toolFunction?.name + " " + tool.name || 'Unnamed Function'}`);
+            //addActivity(`Used tool function: ${tool.toolFunction?.name + " " + tool.name || 'Unnamed Function'}`);
           }
         } else {
           // Execute the tool function directly and add an activity
           tool.toolFunction && tool.toolFunction();
-          addActivity(`Used tool function: ${tool.toolFunction?.name + " " + tool.name || 'Unnamed Function'}`);
+          //addActivity(`Used tool function: ${tool.toolFunction?.name + " " + tool.name || 'Unnamed Function'}`);
         }
       };
   
@@ -231,5 +239,10 @@ const ToolPanel: React.FC = () => {
     </div>
   );
 };
-
 export default ToolPanel;
+
+
+
+
+
+
