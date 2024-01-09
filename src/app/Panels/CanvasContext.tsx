@@ -43,6 +43,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
         // Set the initial z-index of the canvas to a lower value
         canvas.style.zIndex = "-100";
         contextRef.current = context;
+        
       }
     }
   };

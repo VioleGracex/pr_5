@@ -18,7 +18,7 @@ export const setGlobalActiveTool = (tool: string | null): void => {
 
 const ToolPanel: React.FC = () => {
   const [activeTool, setActiveTool] = useState<string | null>(getGlobalActiveTool());
-  const [hoveredTool, setHoveredTool] = useState<string | null>(null);
+  const [hoveredTool, setHoveredTool] = useState<string | null>(null); //Fix Set Hover Speed or accuracy !!!! FIX
   const [lastRightClickedTool, setLastRightClickedTool] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [contextMenuPosition, setContextMenuPosition] = useState<{ top: number; left: number } | null>(null);
