@@ -26,6 +26,7 @@ const ToolPanel: React.FC = () => {
 
   const [tools, setTools] = useState<typeof toolsMain>(toolsMain);
   const [toolsEx, setToolsEx] = useState<typeof toolsExtra>(toolsExtra);
+  const [brotherTools, setBrotherTools] = useState<typeof toolsExtra>([]);
 
 
 
@@ -58,7 +59,7 @@ const ToolPanel: React.FC = () => {
 
     console.log(`Swapping ${tool1.name} with ${tool2.name}`);
   };
-
+  
   const handleToolClick = (toolName: string, shiftKey: boolean = false) => {
     const clickedTool = tools.find((tool) => tool.name === toolName);
 
@@ -111,11 +112,11 @@ const ToolPanel: React.FC = () => {
       };
 
       setContextMenuPosition(menuPosition);
-
-      const brotherTools = toolsEx.filter(tool => tool.group === brotherGroup && tool.name !== toolName);
-
-      console.log(`Number of brother tools: ${brotherTools.length}`);
-
+      const updatedBrotherTools = toolsEx.filter(tool => tool.group === brotherGroup && tool.name !== toolName);
+      setBrotherTools(updatedBrotherTools);
+      addActivity(`brotherGroup ${brotherGroup}`);
+      addActivity(`Number of brother tools: ${brotherTools.length}`);
+      
       if (brotherTools.length > 0) {
         setShowMenu(true);
       } else {
@@ -203,7 +204,7 @@ const ToolPanel: React.FC = () => {
       ))}
       {showMenu && contextMenuPosition && ( //Context menu position is affected by scrolling up and down !!!! FIX
         <ContextMenu   
-          tools={toolsEx}
+          tools={brotherTools}
           onMenuItemClick={handleMenuToolClick}
           menuRef={menuRef}
           position={contextMenuPosition}
@@ -213,47 +214,3 @@ const ToolPanel: React.FC = () => {
   );
 };
 export default ToolPanel;
-
-
-
-
-
-  //const layerRef = useRef<HTMLDivElement>(null); // Add a ref for the Layer component make it canvas
-
-/*   const useTool = (tool: typeof toolsMain[number] | typeof toolsExtra[number]) => {
-    const isToolActive = activeTool === tool.name;
-  
-    if (isToolActive && tool.toolFunction) 
-    {
-      addActivity("has func tool");
-      const handleMouseClick = (event: MouseEvent) => {
-        const { clientX, clientY } = event;
-  
-        // Check if the tool requires being in bounds
-        if (tool.inBound !== undefined && tool.inBound !== null && tool.inBound) {
-          const layerRect = layerRef.current?.getBoundingClientRect();
-  
-          // Check if the mouse is on a Layer component
-          if (layerRect && clientX >= layerRect.left && clientX <= layerRect.right && clientY >= layerRect.top && clientY <= layerRect.bottom) {
-            // Execute the tool function and add an activity
-            tool.toolFunction && tool.toolFunction();
-            //addActivity(`Used tool function: ${tool.toolFunction?.name + " " + tool.name || 'Unnamed Function'}`);
-          }
-        } else {
-          // Execute the tool function directly and add an activity
-          tool.toolFunction && tool.toolFunction();
-          //addActivity(`Used tool function: ${tool.toolFunction?.name + " " + tool.name || 'Unnamed Function'}`);
-        }
-      };
-  
-      // Add the event listener for mouse click
-      document.addEventListener('click', handleMouseClick);
-  
-      // Cleanup the event listener on component unmount
-      return () => {
-        document.removeEventListener('click', handleMouseClick);
-      };
-    }
-  }; */
-  
-  // on hover on Canvas check which tool if it is inbound use it's function or set cursor or something

@@ -16,6 +16,7 @@ import {
   faCircle,
   faRectangleAd,
   faPalette,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare as farSquare } from '@fortawesome/free-regular-svg-icons'; // Import empty square icon
 import MarqueeToolImage from '../imgs/MarqueeTool.png';
@@ -47,12 +48,14 @@ const toolsMain: Tool[] = [
   { icon: faFillDrip, name: "Bucket Tool", shortcut: "G", group: "draw", toolFunction: () => console.log('Bucket Tool function'), inBound: false, isToggle: true },
   { icon: faRuler, name: "Show Rulers", shortcut: "R", group: "view", toolFunction: () => console.log('Show Rulers function'), inBound: false, isToggle: true},
   { icon: faPalette, name: "Color Selector", shortcut: "K", group: "draw", toolFunction: () => console.log('handleColorSelection'), inBound: false, isToggle: false},
+  { icon: faUser, name: "NPC Token", shortcut: "N", group: "objects", toolFunction: () => console.log('handleNPCTokenCreation'), inBound: false, isToggle: true }
 ];
 
 const toolsExtra: Tool[] = [
   { icon: faCircle, name: "Circle Tool", shortcut: "", group: "shapes", toolFunction: () => UseCircleDraw(true), inBound: false, isToggle: true },
   { icon: faRectangleAd, name: "Rectangle Tool", shortcut: "", group: "shapes", toolFunction: () => console.log('Rectangle Tool function'), inBound: true, isToggle: true },
-  // Add more shapes as needed
+  { icon: faUser, name: "Item Token", shortcut: "", group: "objects", toolFunction: () => console.log('handleItemTokenCreation'), inBound: false, isToggle: true }
+  // Add more tools as needed
 ];
 
 export { toolsMain, toolsExtra };
