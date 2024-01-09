@@ -1,5 +1,5 @@
 // toolConfig.ts
-import usePencil from './usePencil';
+import usePencil from './useTools/usePencil';
 import {
   faArrowsAlt,
   faCrop,
