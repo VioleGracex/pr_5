@@ -1,10 +1,10 @@
 // components/MenuBar.tsx
 "use client"; // This is a client component 👈🏽
 import React, { useState, useEffect, useRef } from 'react';
-import { appWindow } from '@tauri-apps/api/window';
-import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes, FaAngleRight, FaCheck } from 'react-icons/fa';
+import { FaAngleRight, FaCheck } from 'react-icons/fa';
 import {useDrag,handleToggleMaximize,TitleButtons} from './Functions/TitleFunctions'; // Import functions from TitleFunctions
 import './MenuBar.css'; // Import the CSS file
+import { addActivity } from '../Panels/ConsoleBar';
 
 const MenuBar: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -22,7 +22,7 @@ const MenuBar: React.FC = () => {
           className="fixed top-0 left-0 w-full h-16 mb-4 bg-black opacity-0 z-10"
           onMouseDown={handleMouseDown}
         ></div>
-      <div className="text-white p-4 w-40   relative z-50">
+      <div className="text-white p-4 w-40   relative z-50">  {/* convert these menu into MenuBarConfig  or just add onClick to each of them  ??*/}
         {/* Left Side: Logo */}
         <div className="flex items-center">
           <img src="/Logo.png" alt="Logo" className="h-12 w-auto mr-8" />
@@ -31,7 +31,7 @@ const MenuBar: React.FC = () => {
           <div className="flex ml-auto space-x-6 ">
             {/* File Menu */}
             <Menu label="File" index={0}>
-              <MenuItem label="New" />
+              <MenuItem label="New"  onClick={() => addActivity("Create New")}/> {/* example of on click */}
               <MenuItem label="Open" />
               {/* ... other file menu items ... */}
             </Menu>
@@ -216,8 +216,12 @@ const MenuItem: React.FC<MenuItemProps> = ({ label, onClick, isToggle, isActive,
       if (isToggle) {
         setIsActiveLocal(!isActiveLocal); // Toggle local active state
       }
+      if (onClick) {
+        onClick(); // Call the provided onClick function
+      }
     }
   };
+  
 
   return (
     <div className="relative" onMouseLeave={handleMouseLeave}>
