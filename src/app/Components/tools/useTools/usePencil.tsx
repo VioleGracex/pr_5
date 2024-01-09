@@ -4,7 +4,7 @@ import { getGlobalActiveTool, setGlobalActiveTool } from "../ToolPanel";
 
 function usePencil(): void {
   
-  setGlobalActiveTool("Pencil");
+  //setGlobalActiveTool("Pencil");
   const activeTool = getGlobalActiveTool();
   if (activeTool) {
     // If active tool is set, add activity based on the active tool

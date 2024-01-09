@@ -13,6 +13,7 @@ export const getGlobalActiveTool = (): string | null => globalactiveTool;
 
 export const setGlobalActiveTool = (tool: string | null): void => {
   globalactiveTool = tool;
+  addActivity(`Selected global tool: ${globalactiveTool}`);
 };
 
 const ToolPanel: React.FC = () => {
@@ -26,7 +27,7 @@ const ToolPanel: React.FC = () => {
   const [tools, setTools] = useState<typeof toolsMain>(toolsMain);
   const [toolsEx, setToolsEx] = useState<typeof toolsExtra>(toolsExtra);
 
-  const layerRef = useRef<HTMLDivElement>(null); // Add a ref for the Layer component
+
 
   const brotherGroup = hoveredTool ? tools.find(tool => tool.name === hoveredTool)?.group : '';
 
@@ -62,7 +63,8 @@ const ToolPanel: React.FC = () => {
     const clickedTool = tools.find((tool) => tool.name === toolName);
 
     if (clickedTool) {
-      if (shiftKey) {
+      if (shiftKey) // while swappin swap active tool too !!!! FIX
+      { 
         const matchingToolEx = toolsEx.find((tool) => tool.group === clickedTool.group);
         if (matchingToolEx) {
           swapTools(clickedTool, matchingToolEx);
@@ -71,18 +73,20 @@ const ToolPanel: React.FC = () => {
         
         addActivity(`Selected tool: ${toolName}`);
 
-        if (!clickedTool.isToggle && clickedTool.toolFunction) {
-          // If it's not a toggle, call the tool function right away
+        if (!clickedTool.isToggle && clickedTool.toolFunction)   // If it's not a toggle, call the tool function right away
+        {
+          addActivity(`used tool: ${toolName}`);
           clickedTool.toolFunction();
         }
-        else
+        else // else set the active global tool for canvas
         {
-          /* setActiveTool(clickedTool.isToggle ? (activeTool === toolName ? null : toolName) : null); */
           if (activeTool === toolName) {
             setActiveTool(null);
             addActivity(`Unselected tool: ${toolName}`);
+            setGlobalActiveTool(null);
           } else {
             setActiveTool(toolName);
+            setGlobalActiveTool(toolName);
             addActivity(`Selected tool: ${toolName}`);
           }
         }
@@ -141,7 +145,7 @@ const ToolPanel: React.FC = () => {
     if (document.hasFocus()) {
       const matchingTool = tools.find((tool) => tool.shortcut === event.key.toUpperCase());
   
-      if (event.shiftKey && matchingTool) {
+      if (event.shiftKey && matchingTool) { //swap active tool while swapping !!!! FIX
         const matchingToolEx = toolsEx.find((tool) => tool.group === matchingTool.group);
         if (matchingToolEx) {
           swapTools(matchingTool, matchingToolEx);
@@ -154,11 +158,74 @@ const ToolPanel: React.FC = () => {
       }
     }
   };  
+  
+  useEffect(() => {
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleKeyDown);
+    
+    // Call useTool to set up event listener for further mouse click events
+    if (activeTool) 
+    {
+      const clickedTool = tools.find(tool => tool.name === activeTool); // check if clicked inside canvas or check toggle
+      if (clickedTool && clickedTool.toolFunction) 
+      {
+        //clickedTool.toolFunction(); // run the tool function on click down if inside canvas ??!
+        //useTool(clickedTool);
+      }
+    }
+  
+    // Cleanup the event listeners on component unmount
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeTool, tools, addActivity]);
+  
 
-  const useTool = (tool: typeof toolsMain[number] | typeof toolsExtra[number]) => {
+  return (
+    <div className="w-5 ml-7 mr-7 flex flex-col items-center space-y-7 mt-20">
+      {tools.map((tool, index) => (
+        <ToolIcon
+          key={index}
+          icon={tool.icon}
+          Image={tool.Image}
+          name={tool.name}
+          shortcut={tool.shortcut}
+          active={activeTool === tool.name}
+          isHovered={hoveredTool === tool.name}
+          onClick={(e) => {
+            handleToolClick(tool.name, e.shiftKey);
+          }}
+          onContextMenu={(e) => handleToolRightClick(e, tool.name)}
+          onMouseEnter={() => setHoveredTool(tool.name)}
+          onMouseLeave={() => setHoveredTool(null)}
+        />
+      ))}
+      {showMenu && contextMenuPosition && ( //Context menu position is affected by scrolling up and down !!!! FIX
+        <ContextMenu   
+          tools={toolsEx}
+          onMenuItemClick={handleMenuToolClick}
+          menuRef={menuRef}
+          position={contextMenuPosition}
+        />
+      )}
+    </div>
+  );
+};
+export default ToolPanel;
+
+
+
+
+
+  //const layerRef = useRef<HTMLDivElement>(null); // Add a ref for the Layer component make it canvas
+
+/*   const useTool = (tool: typeof toolsMain[number] | typeof toolsExtra[number]) => {
     const isToolActive = activeTool === tool.name;
   
-    if (isToolActive && tool.toolFunction) {
+    if (isToolActive && tool.toolFunction) 
+    {
+      addActivity("has func tool");
       const handleMouseClick = (event: MouseEvent) => {
         const { clientX, clientY } = event;
   
@@ -187,68 +254,6 @@ const ToolPanel: React.FC = () => {
         document.removeEventListener('click', handleMouseClick);
       };
     }
-  };
+  }; */
   
-  
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleOutsideClick);
-    document.addEventListener('keydown', handleKeyDown);
-    
-    // Call useTool to set up event listener for further mouse click events
-    if (activeTool) {
-      const clickedTool = tools.find(tool => tool.name === activeTool);
-      if (clickedTool && clickedTool.toolFunction) {
-        useTool(clickedTool);
-      }
-    }
-  
-    // Cleanup the event listeners on component unmount
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [activeTool, tools, addActivity]);
-  
-
-  return (
-    <div className="w-5 ml-7 mr-7 flex flex-col items-center space-y-7 mt-20">
-      {tools.map((tool, index) => (
-        <ToolIcon
-          key={index}
-          icon={tool.icon}
-          Image={tool.Image}
-          name={tool.name}
-          shortcut={tool.shortcut}
-          active={activeTool === tool.name}
-          isHovered={hoveredTool === tool.name}
-          onClick={(e) => {
-            handleToolClick(tool.name, e.shiftKey);
-            if (tool.toolFunction) {
-              tool.toolFunction(); // Call the tool function on click
-              useTool(tool); // Setup event listener for further mouse click events
-            }
-          }}
-          onContextMenu={(e) => handleToolRightClick(e, tool.name)}
-          onMouseEnter={() => setHoveredTool(tool.name)}
-          onMouseLeave={() => setHoveredTool(null)}
-        />
-      ))}
-      {showMenu && contextMenuPosition && (
-        <ContextMenu
-          tools={toolsEx}
-          onMenuItemClick={handleMenuToolClick}
-          menuRef={menuRef}
-          position={contextMenuPosition}
-        />
-      )}
-    </div>
-  );
-};
-export default ToolPanel;
-
-
-
-
-
-
+  // on hover on Canvas check which tool if it is inbound use it's function or set cursor or something
