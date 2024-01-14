@@ -48,7 +48,7 @@ const toolsMain: Tool[] = [
   { icon: faSquare, name: "Square Tool", shortcut: "U", group: "shapes", toolFunction: () => console.log('Square Tool function'), inBound: true, isToggle: true },
   { icon: faFillDrip, name: "Bucket Tool", shortcut: "G", group: "draw", toolFunction: () => console.log('Bucket Tool function'), inBound: false, isToggle: true },
   { icon: faRuler, name: "Show Rulers", shortcut: "R", group: "view", toolFunction: () => console.log('Show Rulers function'), inBound: false, isToggle: true},
-  { icon: faPalette, name: "Color Selector", shortcut: "K", group: "draw", toolFunction: () => console.log('handleColorSelection'), inBound: false, isToggle: false},
+  { icon: faPalette, name: "Palette", shortcut: "K", group: "draw", toolFunction: () => console.log('handleColorSelection'), inBound: false, isToggle: false},
   
 ];
 

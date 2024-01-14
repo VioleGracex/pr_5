@@ -12,9 +12,7 @@ import { handleShortcuts, Shortcut } from './Components/tools/shortcuts';
 import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcuts configuration
 import { CanvasProvider } from './Panels/CanvasContext';
 import { Canvas } from './Panels/Canvas';
-import Layer from './Components/Layer'; 
-
-
+import ColorPickerModule from './Components/Windows/ColorPicker';
 
 const Home: React.FC = () => {
   const gridSize = 100; // Number of cells per row and column
@@ -37,7 +35,15 @@ const Home: React.FC = () => {
     };
   }, [forceUpdateFlag, layersStackRef]); // Include additional dependencies if needed
 
- 
+    const handleColorSelection = (color: string) => {
+      // Handle color selection
+      console.log(`Selected Color: ${color}`);
+    };
+  
+    const handleColorChangeComplete = (colorResult: any) => {
+      // Handle color change complete
+      console.log('Color Change Complete:', colorResult);
+    };
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -60,6 +66,10 @@ const Home: React.FC = () => {
             {/* Layer */}
            {/*  <Layer gridSize={gridSize} layers={layersStackRef.current} /> */}
           </div>
+
+          <div>
+          <ColorPickerModule onSelectColor={handleColorSelection} onChangeComplete={handleColorChangeComplete} />
+        </div>
 
           {/* Right Side (Right Panel) */}
           <RightPanel numberOfLayers={layersStackRef.current.length} />
