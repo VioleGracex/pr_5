@@ -1,3 +1,4 @@
+// CanvasContext.tsx
 import React, { createContext, useContext, useRef, useState, ReactNode } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
@@ -10,6 +11,7 @@ interface CanvasContextProps {
   finishDrawing: () => void;
   draw: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   clearCanvas: () => void;
+  paths: { x: number; y: number }[][];
 }
 
 const CanvasContext = createContext<CanvasContextProps | undefined>(undefined);
@@ -22,6 +24,8 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  const currentPath = useRef<{ x: number; y: number }[]>([]);
+  const [paths, setPaths] = useState<{ x: number; y: number }[][]>([]);
 
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
@@ -37,13 +41,10 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
         context.lineCap = "round";
         context.strokeStyle = "black";
         context.lineWidth = 5;
-         // Set the canvas background color to grey
         context.fillStyle = "grey";
         context.fillRect(0, 0, canvas.width, canvas.height);
-        // Set the initial z-index of the canvas to a lower value
         canvas.style.zIndex = "-100";
         contextRef.current = context;
-        
       }
     }
   };
@@ -52,12 +53,11 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
     addActivity("started drawing");
     const activeTool = getGlobalActiveTool();
     if (activeTool) {
-        // If active tool is set, add activity based on the active tool
-        addActivity(`Used ${activeTool} Pen `);
+      if (activeTool !== "Pencil") return;
+      addActivity(`Used ${activeTool} Pen `);
     } else {
-        // If active tool is not set, add a default activity
-        addActivity("Error Using Tool not found");
-        return;
+      addActivity("Error Using Tool not found");
+      return;
     }
     const { offsetX, offsetY } = nativeEvent;
     if (contextRef.current) {
@@ -69,16 +69,23 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
 
   const finishDrawing = () => {
     setIsDrawing(false);
+
+    if (contextRef.current) {
+      setPaths((prevPaths) => [...prevPaths, currentPath.current]);
+      currentPath.current = [];
+    }
   };
-  
 
   const draw = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing || !contextRef.current) {
       return;
     }
+
     const { offsetX, offsetY } = nativeEvent;
     contextRef.current.lineTo(offsetX, offsetY);
     contextRef.current.stroke();
+
+    currentPath.current.push({ x: offsetX, y: offsetY });
   };
 
   const clearCanvas = () => {
@@ -100,6 +107,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
     finishDrawing,
     clearCanvas,
     draw,
+    paths,
   };
 
   return (
