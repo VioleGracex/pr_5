@@ -1,5 +1,5 @@
 // CanvasContext.tsx
-import React, { createContext, useContext, useRef, useState, ReactNode, SetStateAction, Dispatch } from "react";
+import React, { createContext, useContext, useRef, useState, ReactNode, SetStateAction, Dispatch, useEffect } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
 
@@ -11,8 +11,7 @@ interface CanvasContextProps {
   finishDrawing: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   draw: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   clearCanvas: () => void;
-  paths: { x: number; y: number }[][];
-  currentPath: { x: number; y: number }[];
+  strokes: { path: { x: number; y: number }[]; color: string }[];
   strokeColor: string; // New property for stroke color
   setStrokeColor: Dispatch<SetStateAction<string>>; // New set function for stroke color
 }
@@ -23,18 +22,44 @@ interface CanvasProviderProps {
   children: ReactNode;
 }
 
+interface Stroke {
+  path: { x: number; y: number }[];
+  color: string;
+}
+
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
   const [isDrawing, setIsDrawing] = useState(false);
-  const [strokeColor, setStrokeColor] = useState("black"); // Default stroke color
+  const [strokeColor, setStrokeColor] = useState("black");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const currentPath = useRef<{ x: number; y: number }[]>([]);
-  const [paths, setPaths] = useState<{ x: number; y: number }[][]>([]);
+  const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [initialPoint, setInitialPoint] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.fillStyle = "white";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        strokes.forEach(({ path, color }) => {
+          context.strokeStyle = color;
+          context.beginPath();
+          path.forEach(point => {
+            context.lineTo(point.x, point.y);
+          });
+          context.stroke();
+        });
+      }
+    }
+  }, [strokes]);
 
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
-    if (canvas) {
+    if (canvas && !isCanvasPrepared) {
       canvas.width = window.innerWidth * 2;
       canvas.height = window.innerHeight * 2;
       canvas.style.width = `${window.innerWidth}px`;
@@ -44,10 +69,14 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
       if (context) {
         context.scale(2, 2);
         context.lineCap = "round";
-        context.strokeStyle = strokeColor; // Set stroke color
         context.lineWidth = 5;
-        context.fillStyle = "grey";
-        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (!isCanvasPrepared) {
+          context.fillStyle = "grey";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          setIsCanvasPrepared(true);
+        }
+
         canvas.style.zIndex = "-100";
         contextRef.current = context;
       }
@@ -64,16 +93,20 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
       addActivity("Error Using Tool not found");
       return;
     }
-
+  
     const { offsetX, offsetY } = nativeEvent;
     if (contextRef.current) {
+      contextRef.current.strokeStyle = strokeColor;
       contextRef.current.beginPath();
       contextRef.current.moveTo(offsetX, offsetY);
       setIsDrawing(true);
-
       setInitialPoint({ x: offsetX, y: offsetY });
+  
+      // Create a new path for the current stroke
+      currentPath.current = [{ x: offsetX, y: offsetY }];
     }
   };
+  
 
   const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(false);
@@ -84,8 +117,14 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
         Math.pow(offsetX - initialPoint.x, 2) + Math.pow(offsetY - initialPoint.y, 2)
       );
 
+      contextRef.current.lineTo(offsetX, offsetY);
+
+      const newStroke: Stroke = {
+        path: [...currentPath.current],
+        color: strokeColor,
+      };
+
       if (distance < 2) {
-        contextRef.current.beginPath();
         contextRef.current.arc(
           offsetX,
           offsetY,
@@ -94,13 +133,9 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
           Math.PI * 2
         );
         contextRef.current.fill();
-        setPaths((prevPaths) => [...prevPaths, currentPath.current]);
-        currentPath.current = [];
       } else {
-        contextRef.current.lineTo(offsetX, offsetY);
         contextRef.current.stroke();
-        setPaths((prevPaths) => [...prevPaths, currentPath.current]);
-        currentPath.current = [];
+        setStrokes((prevStrokes) => [...prevStrokes, newStroke]);
       }
     }
   };
@@ -124,6 +159,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
       if (context) {
         context.fillStyle = "white";
         context.fillRect(0, 0, canvas.width, canvas.height);
+        setStrokes([]); // Clear strokes when clearing the canvas
       }
     }
   };
@@ -136,10 +172,9 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
     finishDrawing,
     clearCanvas,
     draw,
-    paths,
-    currentPath: currentPath.current,
+    strokes,
     strokeColor,
-    setStrokeColor, // Set function for stroke color
+    setStrokeColor,
   };
 
   return (

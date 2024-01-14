@@ -59,17 +59,20 @@ const Home: React.FC = () => {
           {/* Center/Main Area with Layer */}
           <div className="flex-1 relative overflow-hidden rounded" onContextMenu={handleContextMenu}>
             {/* Add your main app content here */}
-            <CanvasProvider><Canvas/></CanvasProvider>
-            
+            <CanvasProvider><Canvas/>
+            <div>
+
+          <ColorPickerModule onSelectColor={handleColorSelection} onChangeComplete={handleColorChangeComplete} />
+          
+          </div>
+          </CanvasProvider>
             {/* <h1 className="text-2xl font-bold mb-4"></h1> */}
 
             {/* Layer */}
            {/*  <Layer gridSize={gridSize} layers={layersStackRef.current} /> */}
           </div>
 
-          <div>
-          <ColorPickerModule onSelectColor={handleColorSelection} onChangeComplete={handleColorChangeComplete} />
-        </div>
+          
 
           {/* Right Side (Right Panel) */}
           <RightPanel numberOfLayers={layersStackRef.current.length} />
