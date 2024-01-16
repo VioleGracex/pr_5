@@ -14,12 +14,15 @@ interface CanvasContextProps {
   strokes: { path: { x: number; y: number }[]; color: string }[];
   strokeColor: string; // New property for stroke color
   setStrokeColor: Dispatch<SetStateAction<string>>; // New set function for stroke color
+  canvasId: string; // Identifier for the canvas
 }
 
 const CanvasContext = createContext<CanvasContextProps | undefined>(undefined);
 
 interface CanvasProviderProps {
   children: ReactNode;
+  canvasId: string; // Identifier for the canvas
+  strokeColor: string; // New prop for stroke color
 }
 
 interface Stroke {
@@ -27,9 +30,9 @@ interface Stroke {
   color: string;
 }
 
-export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
+export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor }) => {
   const [isDrawing, setIsDrawing] = useState(false);
-  const [strokeColor, setStrokeColor] = useState("black");
+  const [currentColor, setCurrentColor] = useState("black"); // New state for the current color
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const currentPath = useRef<{ x: number; y: number }[]>([]);
@@ -93,7 +96,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
       addActivity("Error Using Tool not found");
       return;
     }
-  
+
     const { offsetX, offsetY } = nativeEvent;
     if (contextRef.current) {
       contextRef.current.strokeStyle = strokeColor;
@@ -101,12 +104,11 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
       contextRef.current.moveTo(offsetX, offsetY);
       setIsDrawing(true);
       setInitialPoint({ x: offsetX, y: offsetY });
-  
+
       // Create a new path for the current stroke
       currentPath.current = [{ x: offsetX, y: offsetY }];
     }
   };
-  
 
   const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(false);
@@ -174,7 +176,8 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
     draw,
     strokes,
     strokeColor,
-    setStrokeColor,
+    setStrokeColor: setCurrentColor,
+    canvasId,
   };
 
   return (
@@ -184,10 +187,10 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children }) => {
   );
 };
 
-export const useCanvas = () => {
+export const useCanvas = (canvasId: string) => {
   const context = useContext(CanvasContext);
-  if (!context) {
-    throw new Error("useCanvas must be used within a CanvasProvider");
+  if (!context ) {
+    throw new Error(`useCanvas must be used within a CanvasProvider with canvasId ${canvasId}`);
   }
   return context;
 };

@@ -1,17 +1,22 @@
-//usePalatte.tsx
+// usePalette.tsx
 import { addActivity } from "@/app/Panels/ConsoleBar";
 import { getGlobalActiveTool, setGlobalActiveTool } from "../ToolPanel";
+import { useState } from 'react';
 
-function usePalette(): void {
-  
-  const activeTool = getGlobalActiveTool();
-  if (activeTool) {
-    // If active tool is set, add activity based on the active tool
-    addActivity(`Used ${activeTool} Brush `);
-  } else {
-    // If active tool is not set, add a default activity
-    addActivity("Error Using Tool not found");
-  }
+let isPaletteVisibleState: boolean = false;
+
+function getIsPaletteVisible(): boolean {
+  return isPaletteVisibleState;
 }
 
-export default usePalette;
+function setIsPaletteVisible(value: boolean): void {
+  isPaletteVisibleState = value;
+}
+
+function usePalette(): boolean {
+  setIsPaletteVisible(!isPaletteVisibleState);  // Toggle the value
+  addActivity(`set palette to ${isPaletteVisibleState}`);
+  return getIsPaletteVisible();
+}
+
+export { usePalette, getIsPaletteVisible, setIsPaletteVisible };

@@ -4,10 +4,10 @@ import createAnotherWindow from "../Windows/AnotherWindow";
 import { addActivity } from '@/app/Panels/ConsoleBar';
 
 
-const createNewLayer = () => {
+/* const createNewCanvas = () => {
     console.log('Creating a new layer...');
     addActivity(`SAVED: new layer created`);
-}
+} */
 interface Shortcut {
   keys: string[];
   name: string;
@@ -26,11 +26,11 @@ const shortcuts: Shortcut[] = [
       }
     },
   },
-  {
+ /*  {
     keys: ['Ctrl', 'Shift', 'N'],
     name: 'Create New Layer',
-    action: createNewLayer,
-  },
+    action: createNewCanvas,
+  }, */
   {
     keys: ['Ctrl', 'Shift', ']'],
     name: 'Create Another Window',

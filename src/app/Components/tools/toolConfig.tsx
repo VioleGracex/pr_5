@@ -18,11 +18,13 @@ import {
   faPalette,
   faUser,
   faBuilding,
-  faSackXmark
+  faSackXmark,
+  faEraser
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare as farSquare } from '@fortawesome/free-regular-svg-icons'; // Import empty square icon
 import MarqueeToolImage from '../imgs/MarqueeTool.png';
 import { UseCircleDraw } from '../Functions/ShapeTool';
+import { usePalette } from './useTools/usePalette';
 
 
 interface Tool {
@@ -48,7 +50,7 @@ const toolsMain: Tool[] = [
   { icon: faSquare, name: "Square Tool", shortcut: "U", group: "shapes", toolFunction: () => console.log('Square Tool function'), inBound: true, isToggle: true },
   { icon: faFillDrip, name: "Bucket Tool", shortcut: "G", group: "draw", toolFunction: () => console.log('Bucket Tool function'), inBound: false, isToggle: true },
   { icon: faRuler, name: "Show Rulers", shortcut: "R", group: "view", toolFunction: () => console.log('Show Rulers function'), inBound: false, isToggle: true},
-  { icon: faPalette, name: "Palette", shortcut: "K", group: "draw", toolFunction: () => console.log('handleColorSelection'), inBound: false, isToggle: false},
+  { icon: faPalette, name: "Palette", shortcut: "K", group: "draw", toolFunction: () => usePalette(), inBound: false, isToggle: false},
   
 ];
 
@@ -58,6 +60,7 @@ const toolsExtra: Tool[] = [
   { icon: faSackXmark, name: "Item Token", shortcut: "", group: "objects", toolFunction: () => console.log('handleItemTokenCreation'), inBound: false, isToggle: true },
   { icon: faUser, name: "NPC Token", shortcut: "", group: "objects", toolFunction: () => console.log('handleNPCTokenCreation'), inBound: false, isToggle: true },
   { icon: faPaintBrush, name: "Brush", shortcut: "", group: "draw", toolFunction: () => console.log('Brush function'), inBound: false, isToggle: true },
+  {icon: faEraser, name: "Eraser", shortcut: "", group: "draw", toolFunction: () => console.log('Brush function'), inBound: false, isToggle: true },
   // Add more tools as needed
 ];
 
