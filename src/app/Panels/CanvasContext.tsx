@@ -1,9 +1,9 @@
-// CanvasContext.tsx
+// CanvasProvider.tsx
+
 import React, { createContext, useContext, useRef, useState, ReactNode, SetStateAction, Dispatch, useEffect } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
 import { NPCTokenProps } from "../Components/tools/Objects/NPCToken";
-import NPCToken from "../Components/tools/Objects/NPCToken";
 
 interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -14,18 +14,22 @@ interface CanvasContextProps {
   draw: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   clearCanvas: () => void;
   strokes: { path: { x: number; y: number }[]; color: string }[];
-  strokeColor: string; // New property for stroke color
-  setStrokeColor: Dispatch<SetStateAction<string>>; // New set function for stroke color
+  strokeColor: string;
+  setStrokeColor: Dispatch<SetStateAction<string>>;
   npcTokens: NPCTokenProps[];
-  canvasId: string; // Identifier for the canvas
+  canvasId: string;
+  selectedObject: NPCTokenProps | null;
+  setSelectedObject: Dispatch<SetStateAction<NPCTokenProps | null>>;
+  mousePosition: { x: number; y: number } | null;
+  setMousePosition: Dispatch<SetStateAction<{ x: number; y: number } | null>>;
 }
 
 const CanvasContext = createContext<CanvasContextProps | undefined>(undefined);
 
 interface CanvasProviderProps {
   children: ReactNode;
-  canvasId: string; // Identifier for the canvas
-  strokeColor: string; // New prop for stroke color
+  canvasId: string;
+  strokeColor: string;
 }
 
 interface Stroke {
@@ -35,7 +39,11 @@ interface Stroke {
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor }) => {
   const [isDrawing, setIsDrawing] = useState(false);
-  const [currentColor, setCurrentColor] = useState("black"); // New state for the current color
+  const [currentColor, setCurrentColor] = useState("black");
+  const [selectedObject, setSelectedObject] = useState<NPCTokenProps | null>(null);
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const currentPath = useRef<{ x: number; y: number }[]>([]);
@@ -64,26 +72,19 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         // Render NPC tokens along with strokes
         npcTokens.forEach(token => {
           const { x, y } = token;
-          context.fillStyle = "black"; // Adjust background color as needed
-          context.fillRect(0, 0, 50, 50); // Adjust size as needed
-          // Render NPC token content (you may use NPCToken component here if needed)
-          context.fillStyle = "blue";
-          context.fillText(token.name, 0 + 10, 0 + 30);
+          const isSelected = selectedObject === token;
+
+          context.fillStyle = isSelected ? "red" : "black";
+          if (x !== undefined && y !== undefined) {
+            context.fillRect(x - 25, y - 25, 50, 50);
+            // Render NPC token content (you may use NPCToken component here if needed)
+            context.fillStyle = "blue";
+            context.fillText(token.name, x - 15, y + 5);
+          }
         });
       }
     }
-  }, [strokes, npcTokens]);
-
-  useEffect(() => {
-    // Create the NPC tokens layer when npcTokens change
-    const tokensLayer = npcTokens.map((token, index) => (
-      <NPCToken key={index} {...token} />
-    ));
-  
-    // Comment out or remove the following line
-    // setNpcTokensLayer(tokensLayer);
-  }, [npcTokens]);
-  
+  }, [strokes, npcTokens, selectedObject, mousePosition]);
 
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
@@ -111,21 +112,23 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
 
-  const startDrawing = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const startDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const activeTool = getGlobalActiveTool();
     if (activeTool) {
       if (activeTool === "Pencil") {
-        addActivity(`Used ${activeTool} Pen `);
+        addActivity(`Used ${activeTool} Pen`);
         startPencilDrawing(event);
       } else if (activeTool === "NPC Token") {
         createNPCToken(event);
+      } else if (activeTool === "Move Tool") {
+        startDragging(event);
       }
     } else {
       addActivity("Error Using Tool not found");
     }
   };
 
-  const startPencilDrawing = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const startPencilDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
     if (contextRef.current) {
       contextRef.current.strokeStyle = strokeColor;
@@ -139,7 +142,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
 
-  const createNPCToken = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const createNPCToken = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
 
     // Create an NPC token
@@ -154,7 +157,64 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     };
 
     setNpcTokens((prevTokens) => [...prevTokens, npcToken]);
+    setSelectedObject(npcToken); // Select the created NPC token
     addActivity(`Created NPC ${offsetX}`);
+
+    // Update mouse position for rendering
+    setMousePosition({ x: offsetX, y: offsetY });
+  };
+
+  const startDragging = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
+    const selectedNpc = npcTokens.find((token) => selectedObject === token);
+    
+    // Check if the click is on an NPC token
+    const clickedOnNpcToken = npcTokens.find(
+      (token) =>
+        token.x !== undefined &&
+        token.y !== undefined &&
+        offsetX >= token.x - 25 &&
+        offsetX <= token.x + 25 &&
+        offsetY >= token.y - 25 &&
+        offsetY <= token.y + 25
+    );
+    
+
+    if (clickedOnNpcToken) {
+      // Make the clicked NPC token the active object
+      setSelectedObject(clickedOnNpcToken);
+    } else if (selectedNpc) {
+      // Start dragging if an NPC token is selected
+      setIsDragging(true);
+      if (selectedNpc.x !== undefined && selectedNpc.y !== undefined) {
+        setDragOffset({ x: offsetX - selectedNpc.x, y: offsetY - selectedNpc.y });
+      }
+    }
+  };
+
+  const stopDragging = () => {
+    setIsDragging(false);
+  };
+
+  const drag = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (isDragging) {
+      const { offsetX, offsetY } = event.nativeEvent;
+      const selectedNpc = npcTokens.find((token) => selectedObject === token);
+      if (selectedNpc && selectedNpc.x !== undefined && selectedNpc.y !== undefined) {
+        const newX = offsetX - dragOffset.x;
+        const newY = offsetY - dragOffset.y;
+
+        // Update NPC token position
+        setNpcTokens((prevTokens) =>
+          prevTokens.map((token) =>
+            token === selectedNpc ? { ...token, x: newX, y: newY } : token
+          )
+        );
+
+        // Update mouse position for rendering
+        setMousePosition({ x: newX, y: newY });
+      }
+    }
   };
 
   const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
@@ -208,10 +268,28 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       if (context) {
         context.fillStyle = "white";
         context.fillRect(0, 0, canvas.width, canvas.height);
-        setStrokes([]); // Clear strokes when clearing the canvas
+        setStrokes([]);
+        setSelectedObject(null);
+        setMousePosition(null); // Reset mouse position when clearing the canvas
       }
     }
   };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const handleMouseUp = () => stopDragging();
+    const handleMouseMove = (event: MouseEvent) => drag(event as any);
+
+    if (canvas) {
+      canvas.addEventListener("mouseup", handleMouseUp);
+      canvas.addEventListener("mousemove", handleMouseMove);
+
+      return () => {
+        canvas.removeEventListener("mouseup", handleMouseUp);
+        canvas.removeEventListener("mousemove", handleMouseMove);
+      };
+    }
+  }, [isDragging, npcTokens, selectedObject]);
 
   const contextValue: CanvasContextProps = {
     canvasRef,
@@ -226,6 +304,10 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     setStrokeColor: setCurrentColor,
     npcTokens,
     canvasId,
+    selectedObject,
+    setSelectedObject,
+    mousePosition,
+    setMousePosition,
   };
 
   return (
