@@ -1,4 +1,3 @@
-// NPCToken.tsx
 import React, { useState, useEffect } from 'react';
 import { faUser } from '@fortawesome/free-solid-svg-icons'; // Assuming you are using FontAwesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,7 +10,6 @@ export interface NPCTokenProps {
   x?: number; // x-coordinate, default to center of the parent object
   y?: number; // y-coordinate, default to center of the parent object
   image?: string; // image for token, default to faUser
-  moveable?: boolean; // Whether the token is moveable or not
 }
 
 const NPCToken: React.FC<NPCTokenProps> = ({
@@ -22,7 +20,6 @@ const NPCToken: React.FC<NPCTokenProps> = ({
   x = 0,
   y = 0,
   image = faUser.iconName,
-  moveable = true,
 }) => {
   const [position, setPosition] = useState({ x, y });
 
@@ -43,34 +40,8 @@ const NPCToken: React.FC<NPCTokenProps> = ({
     });
   }, [x, y]);
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    if (!moveable) {
-      e.preventDefault(); // Prevent dragging if not moveable
-    }
-  };
-
-  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
-    if (moveable) {
-      setPosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
-    }
-  };
-
-  const handleDragEnd = () => {
-    // Set the new x and y coordinates after dragging is complete
-    // You may want to store these coordinates in your state or perform any other actions
-    // This is just a basic example
-    console.log('New Coordinates:', position.x, position.y);
-  };
-
   return (
     <div
-      draggable={moveable}
-      onDragStart={handleDragStart}
-      onDrag={handleDrag}
-      onDragEnd={handleDragEnd}
       style={{
         position: 'absolute',
         left: `${position.x}px`,

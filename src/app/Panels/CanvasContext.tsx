@@ -8,7 +8,7 @@ interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   contextRef: React.RefObject<CanvasRenderingContext2D | null>;
   prepareCanvas: () => void;
-  startDrawing: (event: React.MouseEvent<HTMLCanvasElement>) => void;
+  startactivity: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   finishDrawing: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   draw: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   clearCanvas: () => void;
@@ -112,7 +112,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
 
-  const startDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
+  const startactivity = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const activeTool = getGlobalActiveTool();
     if (activeTool) {
       if (activeTool === "Pencil") {
@@ -122,11 +122,15 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         createNPCToken(event);
       } else if (activeTool === "Move Tool") {
         startDragging(event);
+      } else {
+        addActivity(`Selected ${activeTool}`);
+        // Handle other tools if needed
       }
     } else {
       addActivity("Error Using Tool not found");
     }
   };
+  
 
   const startPencilDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
@@ -165,116 +169,40 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   };
 
   const startDragging = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
-
-    // Check if the active tool is the "Move Tool"
-    const activeTool = getGlobalActiveTool();
-    if (activeTool === "Move Tool") {
-      const clickedOnNpcToken = npcTokens.find(
-        (token) =>
-          token.x !== undefined &&
-          token.y !== undefined &&
-          offsetX >= token.x - 25 &&
-          offsetX <= token.x + 25 &&
-          offsetY >= token.y - 25 &&
-          offsetY <= token.y + 25
-      );
-
-      if (clickedOnNpcToken) {
-        // Make the clicked NPC token the active object
-        setSelectedObject(clickedOnNpcToken);
-
-        // Calculate the offset for smoother dragging
-        if (clickedOnNpcToken.x !== undefined && clickedOnNpcToken.y !== undefined) {
-          setDragOffset({ x: offsetX - clickedOnNpcToken.x, y: offsetY - clickedOnNpcToken.y });
-          addActivity("DRAG");
-        }
-      } else {
-        // If no NPC token is clicked, start drawing a selection rectangle
-        setInitialPoint({ x: offsetX, y: offsetY });
-        setIsDrawing(true);
-      }
-    }
+    setIsDragging(true);
   };
-  
 
   const stopDragging = () => {
     setIsDragging(false);
-
-    if (isDrawing) {
-      // If drawing a selection rectangle, check for NPCs within the rectangle
-      const canvas = canvasRef.current;
-      if (!canvas) {
-        return;
-      }
-
-      const { x: initialX, y: initialY } = initialPoint;
-      const { x: finalX, y: finalY } = mousePosition || {};
-
-      if (initialX !== undefined && initialY !== undefined && finalX !== undefined && finalY !== undefined) {
-        const minX = Math.min(initialX, finalX);
-        const minY = Math.min(initialY, finalY);
-        const maxX = Math.max(initialX, finalX);
-        const maxY = Math.max(initialY, finalY);
-
-        const NPCsInSelection = npcTokens.filter(
-          (token) =>
-            token.x !== undefined &&
-            token.y !== undefined &&
-            token.x >= minX - 25 &&
-            token.x <= maxX + 25 &&
-            token.y >= minY - 25 &&
-            token.y <= maxY + 25
-        );
-
-        if (NPCsInSelection.length > 0) {
-          // Set the last NPC in the selection as the active object
-          setSelectedObject(NPCsInSelection[NPCsInSelection.length - 1]);
-        }
-      }
-
-      setIsDrawing(false);
-      setInitialPoint({ x: 0, y: 0 });
-      setMousePosition(null);
-    }
   };
   
 
   const drag = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    const { offsetX = 0, offsetY = 0 } = event.nativeEvent || {};
-
-    if (isDragging) {
-      const canvas = canvasRef.current;
-      if (!canvas) {
-        return;
-      }
-
-      const selectedNpc = npcTokens.find((token) => selectedObject === token);
-
-      if (selectedNpc && selectedNpc.x !== undefined && selectedNpc.y !== undefined) {
-        // Calculate the new position relative to the canvas
-        const newX = offsetX - dragOffset.x;
-        const newY = offsetY - dragOffset.y;
-
-        // Ensure the new position is within the canvas bounds
-        const maxX = canvas.width - 25;
-        const maxY = canvas.height - 25;
-
+    const { offsetX = 500, offsetY = 500 } = event.nativeEvent || {};
+  
+    if (isDragging && selectedObject) {
+      // Update the position of the NPC token based on mouse movement
+      const newX = offsetX - dragOffset.x;
+      const newY = offsetY - dragOffset.y;
+  
+      // Ensure the new position is within the canvas bounds
+      if (canvasRef.current) {
+        const maxX = canvasRef.current.width - 25;
+        const maxY = canvasRef.current.height - 25;
+  
         // Update NPC token position while keeping it within the canvas bounds
         setNpcTokens((prevTokens) =>
           prevTokens.map((token) =>
-            token === selectedNpc
+            token === selectedObject
               ? { ...token, x: Math.min(Math.max(newX, 25), maxX), y: Math.min(Math.max(newY, 25), maxY) }
               : token
           )
         );
-
-        // Update mouse position for rendering
-        setMousePosition({ x: newX, y: newY });
       }
-    } else if (isDrawing) {
-      // Update the mouse position for drawing the selection rectangle
-      setMousePosition({ x: offsetX, y: offsetY });
+  
+      // Log the updated position of the selected object using the callback
+      setMousePosition({ x: newX, y: newY });
+      addActivity(`x + y  ${newX} + ${newY}`);
     }
   };
 
@@ -340,24 +268,24 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     const canvas = canvasRef.current;
     const handleMouseUp = () => stopDragging();
     const handleMouseMove = (event: MouseEvent) => drag(event as any);
-
+  
     if (canvas) {
       canvas.addEventListener("mouseup", handleMouseUp);
       canvas.addEventListener("mousemove", handleMouseMove);
-
+  
       return () => {
         canvas.removeEventListener("mouseup", handleMouseUp);
         canvas.removeEventListener("mousemove", handleMouseMove);
       };
     }
-  }, [isDragging, npcTokens, selectedObject]);
-
+  }, [isDragging, drag, stopDragging]); // Make sure to include drag and stopDragging in the dependencies
+  
   // Update the context value to include isDragging
   const contextValue: CanvasContextProps = {
     canvasRef,
     contextRef,
     prepareCanvas,
-    startDrawing,
+    startactivity,
     finishDrawing,
     clearCanvas,
     draw,
