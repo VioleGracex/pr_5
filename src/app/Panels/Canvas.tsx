@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useCanvas } from "./CanvasContext";
 
 export function Canvas() {
-  const { canvasRef, prepareCanvas, startDrawing, finishDrawing, draw, strokes } = useCanvas();
+  const { canvasRef, prepareCanvas, startDrawing, finishDrawing, draw, strokes } = useCanvas("exampleCanvas");
 
   useEffect(() => {
     prepareCanvas();
