@@ -1,6 +1,6 @@
 // pages/page.tsx
 "use client";
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import MenuBar from './Components/MenuBar';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -13,6 +13,14 @@ import { CanvasProvider } from './Panels/CanvasContext';
 import { Canvas } from './Panels/Canvas';
 import ColorPickerModule from './Components/Windows/ColorPicker';
 import { getIsPaletteVisible,setIsPaletteVisible, } from './Components/tools/useTools/usePalette';
+
+const useForceUpdate = () => {
+  const [, setTick] = useState(0);
+  const update = useCallback(() => {
+    setTick((tick) => tick + 1);
+  }, []);
+  return update;
+};
 
 const Home: React.FC = () => {
   const gridSize = 100;
@@ -27,6 +35,27 @@ const Home: React.FC = () => {
   const [currentColor, setCurrentColor] = useState<string>("#000000");
   const [colorPickerKey, setColorPickerKey] = useState(0);
   const [isPaletteVisible, setIsPaletteVisible] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'k' || event.key === 'K') {
+        setIsPaletteVisible(true);
+        setColorPickerKey((prevKey) => prevKey + 1);
+        addActivity('KEY K pressed');
+        forceUpdate();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isPaletteVisible, colorPickerKey]); // Include dependencies if needed
+
+  
+  
+  const forceUpdate = useForceUpdate();
 
   useEffect(() => {
     // Update the key whenever the visibility changes

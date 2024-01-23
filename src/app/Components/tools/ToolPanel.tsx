@@ -154,8 +154,12 @@ const ToolPanel: React.FC = () => {
       } else {
         setShowMenu(false);
         if (matchingTool) {
-          setActiveTool(matchingTool.name);
+          if(matchingTool.isToggle)
+            setActiveTool(matchingTool.name);
+          else if(matchingTool.toolFunction)
+            matchingTool.toolFunction();
         }
+       
       }
     }
   };  
