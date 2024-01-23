@@ -3,7 +3,15 @@ import React, { useEffect } from "react";
 import { useCanvas } from "./CanvasContext";
 
 export function Canvas() {
-  const { canvasRef, prepareCanvas, startDrawing, finishDrawing, draw, strokes } = useCanvas("exampleCanvas");
+  const {
+    canvasRef,
+    prepareCanvas,
+    startDrawing,
+    finishDrawing,
+    draw,
+    strokes,
+    mousePosition, // Add mousePosition
+  } = useCanvas("exampleCanvas");
 
   useEffect(() => {
     prepareCanvas();
@@ -28,8 +36,16 @@ export function Canvas() {
           context.stroke();
         }
       });
+
+      // Draw a placeholder for the current drawing path
+      if (mousePosition) {
+        context.strokeStyle = "red"; // Change color or styling as needed
+        context.beginPath();
+        context.arc(mousePosition.x, mousePosition.y, 5, 0, 2 * Math.PI);
+        context.stroke();
+      }
     }
-  }, [strokes, canvasRef]);
+  }, [strokes, mousePosition, canvasRef]);
 
   return (
     <canvas

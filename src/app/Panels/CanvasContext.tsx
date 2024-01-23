@@ -1,5 +1,4 @@
-// CanvasProvider.tsx
-
+// CanvasContext.tsx
 import React, { createContext, useContext, useRef, useState, ReactNode, SetStateAction, Dispatch, useEffect } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
@@ -22,6 +21,7 @@ interface CanvasContextProps {
   setSelectedObject: Dispatch<SetStateAction<NPCTokenProps | null>>;
   mousePosition: { x: number; y: number } | null;
   setMousePosition: Dispatch<SetStateAction<{ x: number; y: number } | null>>;
+  isDragging: boolean; // New property for dragging state
 }
 
 const CanvasContext = createContext<CanvasContextProps | undefined>(undefined);
@@ -166,54 +166,115 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
   const startDragging = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
-    const selectedNpc = npcTokens.find((token) => selectedObject === token);
-    
-    // Check if the click is on an NPC token
-    const clickedOnNpcToken = npcTokens.find(
-      (token) =>
-        token.x !== undefined &&
-        token.y !== undefined &&
-        offsetX >= token.x - 25 &&
-        offsetX <= token.x + 25 &&
-        offsetY >= token.y - 25 &&
-        offsetY <= token.y + 25
-    );
-    
 
-    if (clickedOnNpcToken) {
-      // Make the clicked NPC token the active object
-      setSelectedObject(clickedOnNpcToken);
-    } else if (selectedNpc) {
-      // Start dragging if an NPC token is selected
-      setIsDragging(true);
-      if (selectedNpc.x !== undefined && selectedNpc.y !== undefined) {
-        setDragOffset({ x: offsetX - selectedNpc.x, y: offsetY - selectedNpc.y });
+    // Check if the active tool is the "Move Tool"
+    const activeTool = getGlobalActiveTool();
+    if (activeTool === "Move Tool") {
+      const clickedOnNpcToken = npcTokens.find(
+        (token) =>
+          token.x !== undefined &&
+          token.y !== undefined &&
+          offsetX >= token.x - 25 &&
+          offsetX <= token.x + 25 &&
+          offsetY >= token.y - 25 &&
+          offsetY <= token.y + 25
+      );
+
+      if (clickedOnNpcToken) {
+        // Make the clicked NPC token the active object
+        setSelectedObject(clickedOnNpcToken);
+
+        // Calculate the offset for smoother dragging
+        if (clickedOnNpcToken.x !== undefined && clickedOnNpcToken.y !== undefined) {
+          setDragOffset({ x: offsetX - clickedOnNpcToken.x, y: offsetY - clickedOnNpcToken.y });
+          addActivity("DRAG");
+        }
+      } else {
+        // If no NPC token is clicked, start drawing a selection rectangle
+        setInitialPoint({ x: offsetX, y: offsetY });
+        setIsDrawing(true);
       }
     }
   };
+  
 
   const stopDragging = () => {
     setIsDragging(false);
+
+    if (isDrawing) {
+      // If drawing a selection rectangle, check for NPCs within the rectangle
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        return;
+      }
+
+      const { x: initialX, y: initialY } = initialPoint;
+      const { x: finalX, y: finalY } = mousePosition || {};
+
+      if (initialX !== undefined && initialY !== undefined && finalX !== undefined && finalY !== undefined) {
+        const minX = Math.min(initialX, finalX);
+        const minY = Math.min(initialY, finalY);
+        const maxX = Math.max(initialX, finalX);
+        const maxY = Math.max(initialY, finalY);
+
+        const NPCsInSelection = npcTokens.filter(
+          (token) =>
+            token.x !== undefined &&
+            token.y !== undefined &&
+            token.x >= minX - 25 &&
+            token.x <= maxX + 25 &&
+            token.y >= minY - 25 &&
+            token.y <= maxY + 25
+        );
+
+        if (NPCsInSelection.length > 0) {
+          // Set the last NPC in the selection as the active object
+          setSelectedObject(NPCsInSelection[NPCsInSelection.length - 1]);
+        }
+      }
+
+      setIsDrawing(false);
+      setInitialPoint({ x: 0, y: 0 });
+      setMousePosition(null);
+    }
   };
+  
 
   const drag = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    const { offsetX = 0, offsetY = 0 } = event.nativeEvent || {};
+
     if (isDragging) {
-      const { offsetX, offsetY } = event.nativeEvent;
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        return;
+      }
+
       const selectedNpc = npcTokens.find((token) => selectedObject === token);
+
       if (selectedNpc && selectedNpc.x !== undefined && selectedNpc.y !== undefined) {
+        // Calculate the new position relative to the canvas
         const newX = offsetX - dragOffset.x;
         const newY = offsetY - dragOffset.y;
 
-        // Update NPC token position
+        // Ensure the new position is within the canvas bounds
+        const maxX = canvas.width - 25;
+        const maxY = canvas.height - 25;
+
+        // Update NPC token position while keeping it within the canvas bounds
         setNpcTokens((prevTokens) =>
           prevTokens.map((token) =>
-            token === selectedNpc ? { ...token, x: newX, y: newY } : token
+            token === selectedNpc
+              ? { ...token, x: Math.min(Math.max(newX, 25), maxX), y: Math.min(Math.max(newY, 25), maxY) }
+              : token
           )
         );
 
         // Update mouse position for rendering
         setMousePosition({ x: newX, y: newY });
       }
+    } else if (isDrawing) {
+      // Update the mouse position for drawing the selection rectangle
+      setMousePosition({ x: offsetX, y: offsetY });
     }
   };
 
@@ -291,6 +352,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   }, [isDragging, npcTokens, selectedObject]);
 
+  // Update the context value to include isDragging
   const contextValue: CanvasContextProps = {
     canvasRef,
     contextRef,
@@ -308,6 +370,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     setSelectedObject,
     mousePosition,
     setMousePosition,
+    isDragging, // Include isDragging in the context value
   };
 
   return (
