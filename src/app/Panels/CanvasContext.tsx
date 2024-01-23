@@ -169,21 +169,61 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   };
 
   const startDragging = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    setIsDragging(true);
-  };
+   
+    const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
 
+  // Check if the active tool is the "Move Tool"
+  const activeTool = getGlobalActiveTool();
+  if (activeTool === "Move Tool") {
+    const clickedOnNpcToken = npcTokens.find(
+      (token) =>
+        token.x !== undefined &&
+        token.y !== undefined &&
+        offsetX >= token.x - 25 &&
+        offsetX <= token.x + 25 &&
+        offsetY >= token.y - 25 &&
+        offsetY <= token.y + 25
+    );
+    setIsDragging(true);
+    if (clickedOnNpcToken && !isDragging) {
+      // Make the clicked NPC token the active object
+      setSelectedObject(clickedOnNpcToken);
+
+      
+      // Calculate the offset for smoother dragging
+      if (clickedOnNpcToken.x !== undefined && clickedOnNpcToken.y !== undefined) {
+        setDragOffset({ x: offsetX - clickedOnNpcToken.x, y: offsetY - clickedOnNpcToken.y });
+      }
+    }
+    else 
+    {
+      setIsDragging(true);
+    } 
+  }
+  };
   const stopDragging = () => {
     setIsDragging(false);
   };
   
 
   const drag = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    const { offsetX = 500, offsetY = 500 } = event.nativeEvent || {};
+    const { clientX, clientY } = event;
+  
+    // Ensure there is a valid clientX and clientY
+    if (clientX === undefined || clientY === undefined) {
+      addActivity(`returned`);
+      return;
+    }
+  
+    const { offsetX, offsetY } = event.nativeEvent || {};
   
     if (isDragging && selectedObject) {
-      // Update the position of the NPC token based on mouse movement
-      const newX = offsetX - dragOffset.x;
-      const newY = offsetY - dragOffset.y;
+      // Set the position of the selected object to follow the mouse cursor
+      setSelectedObject({
+        ...selectedObject,
+        x: clientX - dragOffset.x,
+        y: clientY - dragOffset.y,
+      });
   
       // Ensure the new position is within the canvas bounds
       if (canvasRef.current) {
@@ -194,17 +234,25 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         setNpcTokens((prevTokens) =>
           prevTokens.map((token) =>
             token === selectedObject
-              ? { ...token, x: Math.min(Math.max(newX, 25), maxX), y: Math.min(Math.max(newY, 25), maxY) }
+              ? {
+                  ...token,
+                  x: Math.min(Math.max(clientX - dragOffset.x, 25), maxX),
+                  y: Math.min(Math.max(clientY - dragOffset.y, 25), maxY),
+                }
               : token
           )
         );
-      }
   
-      // Log the updated position of the selected object using the callback
-      setMousePosition({ x: newX, y: newY });
-      addActivity(`x + y  ${newX} + ${newY}`);
+        // Log the updated position of the selected object using the callback
+        setMousePosition({ x: clientX - dragOffset.x, y: clientY - dragOffset.y });
+        addActivity(`x + y  ${clientX - dragOffset.x} + ${clientY - dragOffset.y}`);
+      }
     }
   };
+  
+  
+  
+  
 
   const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(false);
