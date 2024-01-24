@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useRef, useState, ReactNode, SetStateAction, Dispatch, useEffect } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
-import defaultImage from "../Components/imgs/NPCAvatar.png";
+import NPCToken from "../Components/tools/Objects/NPCToken";
 
 interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -15,26 +15,15 @@ interface CanvasContextProps {
   strokes: { path: { x: number; y: number }[]; color: string }[];
   strokeColor: string;
   setStrokeColor: Dispatch<SetStateAction<string>>;
-  npcTokens: NPCTokenProps[];
+  npcTokens: React.ReactNode[];
   canvasId: string;
-  selectedObject: NPCTokenProps | null;
-  setSelectedObject: Dispatch<SetStateAction<NPCTokenProps | null>>;
+  selectedObject:  typeof NPCToken | null;
+  setSelectedObject: Dispatch<SetStateAction< typeof NPCToken | null>>;
   mousePosition: { x: number; y: number } | null;
   setMousePosition: Dispatch<SetStateAction<{ x: number; y: number } | null>>;
 }
 
 const CanvasContext = createContext<CanvasContextProps | undefined>(undefined);
-
-
-interface NPCTokenProps {
-  name: string;
-  job: string;
-  race: string;
-  description: string;
-  x?: number;
-  y?: number;
-  image?: any; // Adjust the type to accept a string (for image paths)
-}
 
 interface CanvasProviderProps {
   children: ReactNode;
@@ -50,7 +39,7 @@ interface Stroke {
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState("black");
-  const [selectedObject, setSelectedObject] = useState<NPCTokenProps | null>(null);
+  const [selectedObject, setSelectedObject] = useState< typeof NPCToken | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -58,7 +47,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [initialPoint, setInitialPoint] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
-  const [npcTokens, setNpcTokens] = useState<NPCTokenProps[]>([]);
+  const [npcTokens, setNpcTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -76,45 +65,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           });
           context.stroke();
         });
-
-        // Render NPC tokens along with strokes
-        npcTokens.forEach((token) => {
-          const { x, y, image } = token;
-          const isSelected = selectedObject === token;
-        
-          context.fillStyle = isSelected ? "red" : "black";
-          if (x !== undefined && y !== undefined) {
-            context.fillRect(x - 25, y - 25, 50, 50);
-        
-            // Use an HTML img element
-            const imgElement = document.createElement("img");
-            imgElement.src = image !== undefined ? image : defaultImage;
-        
-            // Set attributes to identify the token
-            imgElement.setAttribute("data-token-x", x.toString());
-            imgElement.setAttribute("data-token-y", y.toString());
-            imgElement.setAttribute("data-token-name", token.name); // Adjust based on your token properties
-        
-            // Append the img element to the body or any other container
-            document.body.appendChild(imgElement);
-        
-            // Position the img element
-            imgElement.style.position = "absolute";
-            imgElement.style.left = `${x + 54}px`;
-            imgElement.style.top = `${y + 56}px`;
-            imgElement.style.width = "50px";
-            imgElement.style.height = "50px";
-        
-            // Check if contextRef.current is not null before accessing it
-            if (contextRef.current) {
-              // Handle click events on both rectangles and images
-              imgElement.addEventListener("click", () => setSelectedObject(token));
-              contextRef.current.canvas.addEventListener("click", () => setSelectedObject(token));
-            }
-          }
-        })
-        
-        
       }
     }
   }, [strokes, npcTokens, selectedObject, mousePosition]);
@@ -163,7 +113,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       addActivity("Error Using Tool not found");
     }
   };
-  
 
   const startPencilDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
@@ -182,26 +131,53 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const createNPCToken = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
 
-    // Create an NPC token
-    const npcToken: NPCTokenProps = {
-      name: "NPC",
-      job: "Worker",
-      race: "Human",
-      description: "This is an NPC token",
-      x: offsetX,
-      y: offsetY,
-      image: defaultImage,
-      // Add other properties as needed
-    };
+    // Create a new NPC token with default values
+    const newToken = (
+      <NPCToken
+        key={npcTokens.length} // Use a unique key for each token
+        x={offsetX}
+        y={offsetY}
+      />
+    );
 
-    setNpcTokens((prevTokens) => [...prevTokens, npcToken]);
-    setSelectedObject(npcToken); // Select the created NPC token
-    addActivity(`Created NPC ${offsetX}`);
+    // Update the state to include the new NPC token
+    setNpcTokens((prevTokens) => [...prevTokens, newToken]);
 
-    // Update mouse position for rendering
-    setMousePosition({ x: offsetX, y: offsetY });
+    // Log the activity (optional)
+    addActivity(`Created NPC at coordinates ${offsetX}, ${offsetY}`);
   };
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.fillStyle = "white";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Render NPC tokens
+        npcTokens.forEach((token) => {
+          if (React.isValidElement(token)) {
+            const { x = 0, y = 0 } = token.props;
+            // Adjust rendering coordinates as needed
+            // context.drawImage(defaultImage, x, y, 50, 50);
+          }
+        });
+        
+        
+
+        // Render strokes
+        strokes.forEach(({ path, color }) => {
+          context.strokeStyle = color;
+          context.beginPath();
+          path.forEach((point) => {
+            context.lineTo(point.x, point.y);
+          });
+          context.stroke();
+        });
+      }
+    }
+  }, [strokes, npcTokens, selectedObject, mousePosition]);
 
   const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(false);
@@ -261,7 +237,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
 
-  
   // Update the context value to include isDragging
   const contextValue: CanvasContextProps = {
     canvasRef,
@@ -285,6 +260,8 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   return (
     <CanvasContext.Provider value={contextValue}>
       {children}
+      {/* Render NPC tokens as children */}
+      {npcTokens}
     </CanvasContext.Provider>
   );
 };

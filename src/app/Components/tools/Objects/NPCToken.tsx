@@ -1,23 +1,18 @@
+// NPCToken.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import defaultImage from '../../imgs/NPCAvatar.png';
+import { getGlobalActiveTool } from '../ToolPanel';
 import { StaticImageData } from 'next/image';
 
 interface NPCTokenProps {
   name?: string;
-  job?: string;
-  race?: string;
-  description?: string;
   x?: number;
   y?: number;
   src?: string | StaticImageData;
-  // image?: string; // Assuming image is a string representing the image path
 }
 
 const NPCToken: React.FC<NPCTokenProps> = ({
   name = 'npc',
-  job = '',
-  race = '',
-  description = '',
   x = 500,
   y = 500,
   src = defaultImage,
@@ -29,8 +24,8 @@ const NPCToken: React.FC<NPCTokenProps> = ({
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       if (isDragging && tokenRef.current) {
-        const offsetX = event.clientX - tokenRef.current.offsetWidth / 2;
-        const offsetY = event.clientY - tokenRef.current.offsetHeight / 2;
+        const offsetX = event.clientX - tokenRef.current.offsetWidth - 45;
+        const offsetY = event.clientY - tokenRef.current.offsetHeight - 40;
         setPosition({ x: offsetX, y: offsetY });
       }
     };
@@ -52,8 +47,15 @@ const NPCToken: React.FC<NPCTokenProps> = ({
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.preventDefault();
-    setIsDragging(true);
+    
+    // Check if the active tool is 'Move Tool' before enabling dragging
+    const activeTool = getGlobalActiveTool();
+    if (activeTool === 'Move Tool') {
+      setIsDragging(true);
+    }
   };
+
+  const activeTool = getGlobalActiveTool();
 
   return (
     <div
@@ -62,16 +64,19 @@ const NPCToken: React.FC<NPCTokenProps> = ({
         position: 'absolute',
         left: position.x,
         top: position.y,
-        cursor: isDragging ? 'grabbing' : 'grab',
+        cursor: activeTool === 'Move Tool' ? (isDragging ? 'grabbing' : 'grab') : 'auto',
       }}
       onMouseDown={handleMouseDown}
     >
+      {/* Render the token image */}
       {src !== undefined ? (
         <img src={typeof src === 'string' ? src : src.src} alt={name} style={{ width: '70px', height: '60px' }} />
       ) : (
         <img src={defaultImage.src} alt={name} style={{ width: '70px', height: '60px' }} />
       )}
-      <p style={{ color: 'black',margin: 0, textAlign: 'center' }}>{name}</p>
+
+      {/* Render the token name */}
+      <p style={{ color: 'black', margin: 0, textAlign: 'center' }}>{name}</p>
     </div>
   );
 };
