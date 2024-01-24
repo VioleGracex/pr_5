@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useRef, useState, ReactNode, SetStateAction, Dispatch, useEffect } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
-import { NPCTokenProps } from "../Components/tools/Objects/NPCToken";
+import defaultImage from "../Components/imgs/NPCAvatar.png";
 
 interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -21,10 +21,20 @@ interface CanvasContextProps {
   setSelectedObject: Dispatch<SetStateAction<NPCTokenProps | null>>;
   mousePosition: { x: number; y: number } | null;
   setMousePosition: Dispatch<SetStateAction<{ x: number; y: number } | null>>;
-  isDragging: boolean; // New property for dragging state
 }
 
 const CanvasContext = createContext<CanvasContextProps | undefined>(undefined);
+
+
+interface NPCTokenProps {
+  name: string;
+  job: string;
+  race: string;
+  description: string;
+  x?: number;
+  y?: number;
+  image?: any; // Adjust the type to accept a string (for image paths)
+}
 
 interface CanvasProviderProps {
   children: ReactNode;
@@ -42,8 +52,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [currentColor, setCurrentColor] = useState("black");
   const [selectedObject, setSelectedObject] = useState<NPCTokenProps | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number } | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const currentPath = useRef<{ x: number; y: number }[]>([]);
@@ -70,18 +78,43 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         });
 
         // Render NPC tokens along with strokes
-        npcTokens.forEach(token => {
-          const { x, y } = token;
+        npcTokens.forEach((token) => {
+          const { x, y, image } = token;
           const isSelected = selectedObject === token;
-
+        
           context.fillStyle = isSelected ? "red" : "black";
           if (x !== undefined && y !== undefined) {
             context.fillRect(x - 25, y - 25, 50, 50);
-            // Render NPC token content (you may use NPCToken component here if needed)
-            context.fillStyle = "blue";
-            context.fillText(token.name, x - 15, y + 5);
+        
+            // Use an HTML img element
+            const imgElement = document.createElement("img");
+            imgElement.src = image !== undefined ? image : defaultImage;
+        
+            // Set attributes to identify the token
+            imgElement.setAttribute("data-token-x", x.toString());
+            imgElement.setAttribute("data-token-y", y.toString());
+            imgElement.setAttribute("data-token-name", token.name); // Adjust based on your token properties
+        
+            // Append the img element to the body or any other container
+            document.body.appendChild(imgElement);
+        
+            // Position the img element
+            imgElement.style.position = "absolute";
+            imgElement.style.left = `${x + 54}px`;
+            imgElement.style.top = `${y + 56}px`;
+            imgElement.style.width = "50px";
+            imgElement.style.height = "50px";
+        
+            // Check if contextRef.current is not null before accessing it
+            if (contextRef.current) {
+              // Handle click events on both rectangles and images
+              imgElement.addEventListener("click", () => setSelectedObject(token));
+              contextRef.current.canvas.addEventListener("click", () => setSelectedObject(token));
+            }
           }
-        });
+        })
+        
+        
       }
     }
   }, [strokes, npcTokens, selectedObject, mousePosition]);
@@ -121,7 +154,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       } else if (activeTool === "NPC Token") {
         createNPCToken(event);
       } else if (activeTool === "Move Tool") {
-        startDragging(event);
+
       } else {
         addActivity(`Selected ${activeTool}`);
         // Handle other tools if needed
@@ -157,6 +190,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       description: "This is an NPC token",
       x: offsetX,
       y: offsetY,
+      image: defaultImage,
       // Add other properties as needed
     };
 
@@ -168,91 +202,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     setMousePosition({ x: offsetX, y: offsetY });
   };
 
-  const startDragging = (event: React.MouseEvent<HTMLCanvasElement>) => {
-   
-    const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
-
-  // Check if the active tool is the "Move Tool"
-  const activeTool = getGlobalActiveTool();
-  if (activeTool === "Move Tool") {
-    const clickedOnNpcToken = npcTokens.find(
-      (token) =>
-        token.x !== undefined &&
-        token.y !== undefined &&
-        offsetX >= token.x - 25 &&
-        offsetX <= token.x + 25 &&
-        offsetY >= token.y - 25 &&
-        offsetY <= token.y + 25
-    );
-    setIsDragging(true);
-    if (clickedOnNpcToken && !isDragging) {
-      // Make the clicked NPC token the active object
-      setSelectedObject(clickedOnNpcToken);
-
-      
-      // Calculate the offset for smoother dragging
-      if (clickedOnNpcToken.x !== undefined && clickedOnNpcToken.y !== undefined) {
-        setDragOffset({ x: offsetX - clickedOnNpcToken.x, y: offsetY - clickedOnNpcToken.y });
-      }
-    }
-    else 
-    {
-      setIsDragging(true);
-    } 
-  }
-  };
-  const stopDragging = () => {
-    setIsDragging(false);
-  };
-  
-
-  const drag = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    const { clientX, clientY } = event;
-  
-    // Ensure there is a valid clientX and clientY
-    if (clientX === undefined || clientY === undefined) {
-      addActivity(`returned`);
-      return;
-    }
-  
-    const { offsetX, offsetY } = event.nativeEvent || {};
-  
-    if (isDragging && selectedObject) {
-      // Set the position of the selected object to follow the mouse cursor
-      setSelectedObject({
-        ...selectedObject,
-        x: clientX - dragOffset.x,
-        y: clientY - dragOffset.y,
-      });
-  
-      // Ensure the new position is within the canvas bounds
-      if (canvasRef.current) {
-        const maxX = canvasRef.current.width - 25;
-        const maxY = canvasRef.current.height - 25;
-  
-        // Update NPC token position while keeping it within the canvas bounds
-        setNpcTokens((prevTokens) =>
-          prevTokens.map((token) =>
-            token === selectedObject
-              ? {
-                  ...token,
-                  x: Math.min(Math.max(clientX - dragOffset.x, 25), maxX),
-                  y: Math.min(Math.max(clientY - dragOffset.y, 25), maxY),
-                }
-              : token
-          )
-        );
-  
-        // Log the updated position of the selected object using the callback
-        setMousePosition({ x: clientX - dragOffset.x, y: clientY - dragOffset.y });
-        addActivity(`x + y  ${clientX - dragOffset.x} + ${clientY - dragOffset.y}`);
-      }
-    }
-  };
-  
-  
-  
-  
 
   const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(false);
@@ -312,21 +261,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const handleMouseUp = () => stopDragging();
-    const handleMouseMove = (event: MouseEvent) => drag(event as any);
-  
-    if (canvas) {
-      canvas.addEventListener("mouseup", handleMouseUp);
-      canvas.addEventListener("mousemove", handleMouseMove);
-  
-      return () => {
-        canvas.removeEventListener("mouseup", handleMouseUp);
-        canvas.removeEventListener("mousemove", handleMouseMove);
-      };
-    }
-  }, [isDragging, drag, stopDragging]); // Make sure to include drag and stopDragging in the dependencies
   
   // Update the context value to include isDragging
   const contextValue: CanvasContextProps = {
@@ -346,7 +280,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     setSelectedObject,
     mousePosition,
     setMousePosition,
-    isDragging, // Include isDragging in the context value
   };
 
   return (

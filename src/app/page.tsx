@@ -13,6 +13,7 @@ import { CanvasProvider } from './Panels/CanvasContext';
 import { Canvas } from './Panels/Canvas';
 import ColorPickerModule from './Components/Windows/ColorPicker';
 import { getIsPaletteVisible,setIsPaletteVisible, } from './Components/tools/useTools/usePalette';
+import NPCToken from './Components/tools/Objects/NPCToken';
 
 const useForceUpdate = () => {
   const [, setTick] = useState(0);
@@ -115,6 +116,11 @@ const Home: React.FC = () => {
     <DndProvider backend={HTML5Backend}>
       <div className="flex flex-col h-screen bg-Menu-panel rounded" onContextMenu={handleContextMenu}>
         <MenuBar />
+        <div style={{ zIndex: 1000 }}>
+  <NPCToken />
+</div>
+
+
 
         <div className="flex flex-1">
           <LeftPanel />
