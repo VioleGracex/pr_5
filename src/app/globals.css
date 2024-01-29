@@ -49,6 +49,12 @@ body {
   user-select: none;
 }
 
+.bg-editor-panel {
+  background-color: #272424; /* Use your desired color code for the right panel */
+  border: 1px solid #555; /* Use a lighter color code for the border */
+  user-select: none;
+}
+
 /* Add this to your CSS or use a styling solution like Tailwind CSS */
 
 .console-bar {

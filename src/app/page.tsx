@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import MenuBar from './Components/MenuBar';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { LeftPanel, RightPanel } from './Panels/MainPanels';
+import { LeftPanel, RightPanel,NpcEditorPanel } from './Panels/MainPanels';
 import createAnotherWindow from './Components/Windows/AnotherWindow'; // Import the createAnotherWindow function
 import { ConsoleBar, addActivity } from './Panels/ConsoleBar';
 import { handleShortcuts, Shortcut } from './Components/tools/shortcuts';
@@ -118,6 +118,7 @@ const Home: React.FC = () => {
         
         <div className="flex flex-1">
           <LeftPanel />
+          <NpcEditorPanel/>
           <div className="flex-1 relative overflow-hidden rounded" onContextMenu={handleContextMenu}>
             {canvasList.map((canvasId, index) => (
               <React.Fragment key={canvasId}>
