@@ -11,7 +11,6 @@ import { handleShortcuts, Shortcut } from './Components/tools/shortcuts';
 import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcuts configuration
 import { CanvasProvider } from './Panels/CanvasContext';
 import { Canvas } from './Panels/Canvas';
-import ColorPickerModule from './Components/Windows/ColorPicker';
 import { getIsPaletteVisible, setIsPaletteVisible } from './Components/tools/useTools/usePalette';
 
 const Home: React.FC = () => {
@@ -135,7 +134,7 @@ const Home: React.FC = () => {
           onSelectColor={handleColorSelection}
           onChangeComplete={handleColorChangeComplete} />} {/* Render palette panel based on visibility state */}
           <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-            <ColorPickerModule
+            <PalettePanel
               selectedColor={currentColor}
               onSelectColor={handleColorSelection}
               onChangeComplete={handleColorChangeComplete}
