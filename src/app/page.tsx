@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import MenuBar from './Components/MenuBar';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { LeftPanel, RightPanel,NpcEditorPanel } from './Panels/MainPanels';
+import { LeftPanel, RightPanel, NpcEditorPanel, PalettePanel } from './Panels/MainPanels'; // Import PalettePanel
 import createAnotherWindow from './Components/Windows/AnotherWindow'; // Import the createAnotherWindow function
 import { ConsoleBar, addActivity } from './Panels/ConsoleBar';
 import { handleShortcuts, Shortcut } from './Components/tools/shortcuts';
@@ -12,19 +12,10 @@ import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcu
 import { CanvasProvider } from './Panels/CanvasContext';
 import { Canvas } from './Panels/Canvas';
 import ColorPickerModule from './Components/Windows/ColorPicker';
-import { getIsPaletteVisible,setIsPaletteVisible, } from './Components/tools/useTools/usePalette';
-
-const useForceUpdate = () => {
-  const [, setTick] = useState(0);
-  const update = useCallback(() => {
-    setTick((tick) => tick + 1);
-  }, []);
-  return update;
-};
+import { getIsPaletteVisible, setIsPaletteVisible } from './Components/tools/useTools/usePalette';
 
 const Home: React.FC = () => {
   const gridSize = 100;
-  const [forceUpdateFlag, setForceUpdateFlag] = useState(false);
   const layersStackRef = useRef([{ id: 1, name: 'Default Layer' }]);
   const [canvasList, setCanvasList] = useState<string[]>(['Canvas0']); // List of canvas IDs
   const [isCanvasHidden, setIsCanvasHidden] = useState<{ [canvasId: string]: boolean }>(
@@ -33,16 +24,21 @@ const Home: React.FC = () => {
 
   // Lift state for color picker
   const [currentColor, setCurrentColor] = useState<string>("#000000");
-  const [colorPickerKey, setColorPickerKey] = useState(0);
-  const [isPaletteVisible, setIsPaletteVisible] = useState(false);
+
+  // Dictionary to track visibility of panels
+  const [panelVisibility, setPanelVisibility] = useState<{ [panelName: string]: boolean }>({
+    leftPanel: true,
+    rightPanel: false,
+    npcEditorPanel: true,
+    buildingEditorPanel: true,
+    palettePanel: true,
+  });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'k' || event.key === 'K') {
         setIsPaletteVisible(true);
-        setColorPickerKey((prevKey) => prevKey + 1);
         addActivity('KEY K pressed');
-        forceUpdate();
       }
     };
 
@@ -51,20 +47,13 @@ const Home: React.FC = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isPaletteVisible, colorPickerKey]); // Include dependencies if needed
-
-  
-  
-  const forceUpdate = useForceUpdate();
+  }, []); // Include dependencies if needed
 
   useEffect(() => {
     // Update the key whenever the visibility changes
-    setColorPickerKey((prevKey) => prevKey + 1);
     addActivity("KEY");
   }, [getIsPaletteVisible()]);
 
-    //const { setStrokeColor } = useCanvas();
-     //setStrokeColor(newColor.hex); // Set stroke color for canvas
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
   };
@@ -79,7 +68,7 @@ const Home: React.FC = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [forceUpdateFlag, layersStackRef]);
+  }, [layersStackRef]);
 
   const handleColorSelection = (color: string) => {
     setCurrentColor(color);
@@ -89,7 +78,6 @@ const Home: React.FC = () => {
     console.log('Color Change Complete:', colorResult);
   };
 
-  
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.shiftKey && event.key === 'N') {
@@ -111,14 +99,23 @@ const Home: React.FC = () => {
     addActivity(`create new canvas ${newCanvasId}`);
   };
 
+  // Function to toggle the visibility of a panel
+  const togglePanelVisibility = (panelName: string) => {
+    setPanelVisibility((prevState) => ({
+      ...prevState,
+      [panelName]: !prevState[panelName],
+    }));
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex flex-col h-screen bg-Menu-panel rounded" onContextMenu={handleContextMenu}>
         <MenuBar />
         
         <div className="flex flex-1">
-          <LeftPanel />
-          <NpcEditorPanel/>
+          {panelVisibility.leftPanel && <LeftPanel />}
+          {panelVisibility.rightPanel && <RightPanel numberOfLayers={layersStackRef.current.length}/>}
+          {panelVisibility.npcEditorPanel && <NpcEditorPanel />}
           <div className="flex-1 relative overflow-hidden rounded" onContextMenu={handleContextMenu}>
             {canvasList.map((canvasId, index) => (
               <React.Fragment key={canvasId}>
@@ -132,15 +129,17 @@ const Home: React.FC = () => {
               </React.Fragment>
             ))}
           </div>
-          {/* <RightPanel numberOfLayers={layersStackRef.current.length} /> */}
+          {/* {panelVisibility.buildingEditorPanel && <BuildingEditorPanel />} */}
+          {panelVisibility.palettePanel && <PalettePanel 
+          selectedColor={currentColor}
+          onSelectColor={handleColorSelection}
+          onChangeComplete={handleColorChangeComplete} />} {/* Render palette panel based on visibility state */}
           <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-              <ColorPickerModule
-                key={colorPickerKey}
-                selectedColor={currentColor}
-                onSelectColor={handleColorSelection}
-                onChangeComplete={handleColorChangeComplete}
-              />
-            
+            <ColorPickerModule
+              selectedColor={currentColor}
+              onSelectColor={handleColorSelection}
+              onChangeComplete={handleColorChangeComplete}
+            />
           </div>
         </div>
         <div className="rounded">
@@ -152,3 +151,8 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------------ */
+

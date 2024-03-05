@@ -1,13 +1,16 @@
 // Panels/MainPanels.tsx
-"use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ToolPanel from '../Components/tools/ToolPanel';
 import { useDrag } from 'react-dnd';
 import { ItemTypes } from '../Components/Constants';
 import { justDrag } from '../Components/Functions/TitleFunctions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBriefcase, faDice } from '@fortawesome/free-solid-svg-icons';
+import { ChromePicker, ColorResult } from 'react-color';
+import { addActivity } from '@/app/Panels/ConsoleBar';
+import { setIsPaletteVisible, getIsPaletteVisible } from '../Components/tools/useTools/usePalette';
 
+// Global variable to track the visibility of the NPC editor window
 export const LeftPanel: React.FC = () => {
   const { handleMouseDown } = justDrag();
   const [{ isDragging }, drag] = useDrag({
@@ -93,7 +96,7 @@ export const NpcEditorPanel: React.FC = () => {
   };
 
   return (
-    <div className="w-1/7 bg-editor-panel rounded z-10 relative">
+    <div className={`w-1/7 bg-editor-panel rounded z-10 relative`}>
       {/* NPC Editor Title */}
       <p className="text-lg font-semibold mt-4 ml-4 mb-4">NPC Editor</p>
   
@@ -166,3 +169,48 @@ export const NpcEditorPanel: React.FC = () => {
     </div>
   );  
 };
+
+
+interface PalettePanel {
+  selectedColor: string;
+  onSelectColor: (color: string) => void;
+  onChangeComplete: (color: ColorResult) => void;
+}
+
+export const PalettePanel: React.FC<PalettePanel> = ({ selectedColor, onSelectColor, onChangeComplete }) => {
+  const [color, setColor] = useState<ColorResult>({
+    hex: selectedColor,
+    rgb: { r: 0, g: 0, b: 0, a: 1 },
+    hsl: { h: 0, s: 0, l: 0, a: 1 },
+  });
+
+  const handleChange = (newColor: ColorResult) => {
+    setColor(newColor);
+    onSelectColor(newColor.hex);
+    addActivity(`changed color to ${newColor.hex}`);
+  };
+
+  const handleChangeCompleteLocal = (newColor: ColorResult) => {
+    onChangeComplete(newColor);
+  };
+
+  const handleOK = () => {
+    setIsPaletteVisible(false);
+    // addActivity("CLICKED OK");
+  };
+
+  useEffect(() => {
+    
+  }, [getIsPaletteVisible()]);
+
+  // Render the ColorPickerModule only if the palette is visible
+  return getIsPaletteVisible() ? (
+    <div style={{ position: 'relative' }}>
+      <ChromePicker color={color.rgb} onChange={handleChange} onChangeComplete={handleChangeCompleteLocal} />
+      <div style={{ position: 'absolute', bottom: '-40px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
+        <button style={{ marginRight: '15px', backgroundColor: 'white', color: 'black', border: '0.5px solid gray', padding: '5px 10px' }} onClick={handleOK}>OK</button>
+      </div>
+    </div>
+  ) : null;
+};
+

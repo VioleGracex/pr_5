@@ -1,4 +1,3 @@
-// NPCToken.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import defaultImage from '../../imgs/NPCAvatar.png';
 import { getGlobalActiveTool } from '../ToolPanel';
@@ -13,25 +12,28 @@ interface NPCTokenProps {
 
 const NPCToken: React.FC<NPCTokenProps> = ({
   name = 'npc',
-  x = 500,
-  y = 500,
+  x = 0,
+  y = 0,
   src = defaultImage,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x, y });
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
   const tokenRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       if (isDragging && tokenRef.current) {
-        const offsetX = event.clientX - tokenRef.current.offsetWidth - 45;
-        const offsetY = event.clientY - tokenRef.current.offsetHeight - 40;
-        setPosition({ x: offsetX, y: offsetY });
+        const updatedX = event.clientX - tokenRef.current.offsetWidth - offsetX;
+        const updatedY = event.clientY - tokenRef.current.offsetHeight - offsetY;
+        setPosition({ x: updatedX, y: updatedY });
       }
     };
 
     const handleMouseUp = () => {
       setIsDragging(false);
+      /* setIsNPCEditorVisible(true); */
     };
 
     if (isDragging) {
@@ -43,7 +45,7 @@ const NPCToken: React.FC<NPCTokenProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, offsetX, offsetY]);
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.preventDefault();
@@ -55,7 +57,24 @@ const NPCToken: React.FC<NPCTokenProps> = ({
     }
   };
 
+  const handleWindowOpen = () => {
+    // Calculate offset when the window is opened
+    const windowOffsetX = 380; // Adjust this value based on your requirements
+    const windowOffsetY = 50; // Adjust this value based on your requirements
+    setOffsetX(windowOffsetX);
+    setOffsetY(windowOffsetY);
+  };
+
   const activeTool = getGlobalActiveTool();
+
+  useEffect(() => {
+    // Event listener to detect window opening
+    window.addEventListener('openWindow', handleWindowOpen);
+
+    return () => {
+      window.removeEventListener('openWindow', handleWindowOpen);
+    };
+  }, []);
 
   return (
     <div
