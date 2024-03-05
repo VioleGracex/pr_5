@@ -28,30 +28,19 @@ const Home: React.FC = () => {
   const [panelVisibility, setPanelVisibility] = useState<{ [panelName: string]: boolean }>({
     leftPanel: true,
     rightPanel: false,
-    npcEditorPanel: true,
+    npcEditorPanel: false,
     buildingEditorPanel: true,
     palettePanel: true,
   });
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'k' || event.key === 'K') {
-        setIsPaletteVisible(true);
-        addActivity('KEY K pressed');
-      }
+    // Function to toggle the visibility of a panel
+    const togglePanelVisibility = (panelName: string) => {
+      setPanelVisibility((prevState) => ({
+        ...prevState,
+        [panelName]: !prevState[panelName],
+      }));
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []); // Include dependencies if needed
-
-  useEffect(() => {
-    // Update the key whenever the visibility changes
-    addActivity("KEY");
-  }, [getIsPaletteVisible()]);
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -98,13 +87,7 @@ const Home: React.FC = () => {
     addActivity(`create new canvas ${newCanvasId}`);
   };
 
-  // Function to toggle the visibility of a panel
-  const togglePanelVisibility = (panelName: string) => {
-    setPanelVisibility((prevState) => ({
-      ...prevState,
-      [panelName]: !prevState[panelName],
-    }));
-  };
+
 
   return (
     <DndProvider backend={HTML5Backend}>
