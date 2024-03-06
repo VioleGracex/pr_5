@@ -67,11 +67,11 @@ const Home: React.FC = () => {
           <div id="npcEditorPanelWrapper" style={{ display: 'block' }}>
             <NpcEditorPanel />
           </div>
-          <div >
+          <div className="flex-1 relative overflow-hidden rounded">
             {canvasList.map((canvasId, index) => (
               <React.Fragment key={canvasId}>
                 {!isCanvasHidden[canvasId] && (
-                  <div >
+                  <div style={{ position: 'absolute', zIndex: 1 }}>
                     {/* Set z-index to 1 to keep canvas above background */}
                     <CanvasProvider canvasId={canvasId} strokeColor={currentColor}>
                       <Canvas />
@@ -91,7 +91,7 @@ const Home: React.FC = () => {
             />
           </div>
         </div>
-        <div className="rounded">
+        <div className="rounded" >
           <ConsoleBar />
         </div>
       </div>

@@ -22,7 +22,7 @@ export const LeftPanel: React.FC = () => {
   });
 
   return (
-    <div className={`w-1/7 bg-left-panel rounded z-10 relative ${isDragging ? 'opacity-50' : ''}`}>
+    <div className={`w-1/7 h-full bg-left-panel rounded z-10 relative ${isDragging ? 'opacity-50' : ''}`}>
       {/* Draggable area at the top of the left panel */}
       <div ref={drag} className="absolute top-0 left-0 w-full h-5 bg-#232323"></div>
       {/* Tool Panel */}
@@ -101,7 +101,7 @@ export const NpcEditorPanel: React.FC = () => {
   };
 
   return (
-    <div className={`w-1/7 bg-editor-panel rounded z-10 relative`}>
+    <div className={`w-1/7 h-full bg-editor-panel rounded z-10 relative`}>
       {/* NPC Editor Title */}
       <div className="flex justify-between items-center mt-4 ml-4 mb-4">
         <p className="text-lg font-semibold">NPC Editor</p>
