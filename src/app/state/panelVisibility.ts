@@ -3,7 +3,6 @@ let leftPanelVisible = true;
 let rightPanelVisible = false;
 let npcEditorPanelVisible = false;
 let buildingEditorPanelVisible = true;
-let palettePanelVisible = true;
 
 export function togglePanelVisibility(panelName: string): void {
   switch (panelName) {
@@ -19,9 +18,6 @@ export function togglePanelVisibility(panelName: string): void {
     case 'buildingEditorPanel':
       buildingEditorPanelVisible = !buildingEditorPanelVisible;
       break;
-    case 'palettePanel':
-      palettePanelVisible = !palettePanelVisible;
-      break;
     default:
       break;
   }
@@ -32,5 +28,12 @@ export {
   rightPanelVisible,
   npcEditorPanelVisible,
   buildingEditorPanelVisible,
-  palettePanelVisible,
+};
+
+
+export const togglePalettePanelVisibility = (isVisible: boolean) => {
+  const paletteDiv = document.getElementById('palette');
+  if (paletteDiv) {
+    paletteDiv.style.display = isVisible ? 'block' : 'none';
+  }
 };

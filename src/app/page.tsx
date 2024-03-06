@@ -4,13 +4,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import MenuBar from './Components/MenuBar';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { LeftPanel, RightPanel, NpcEditorPanel, PalettePanel } from './Panels/MainPanels'; // Import PalettePanel
+import { LeftPanel, RightPanel, NpcEditorPanel, PalettePanel } from './Panels/MainPanels'; // Import other panels
 import { ConsoleBar, addActivity } from './Panels/ConsoleBar';
 import { handleShortcuts } from './Components/tools/shortcuts';
 import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcuts configuration
 import { CanvasProvider } from './Panels/CanvasContext';
 import { Canvas } from './Panels/Canvas';
 import { setIsPaletteVisibleState, getIsPaletteVisibleState } from './Components/tools/useTools/usePalette';
+import { leftPanelVisible, rightPanelVisible, npcEditorPanelVisible, togglePanelVisibility,togglePalettePanelVisibility } from './state/panelVisibility';
 
 const Home: React.FC = () => {
   const gridSize = 100;
@@ -20,26 +21,16 @@ const Home: React.FC = () => {
     canvasList.reduce((acc, canvasId) => ({ ...acc, [canvasId]: false }), {})
   );
 
-  // states for visiblity of panels
+  // States for visibility of panels
   const [currentColor, setCurrentColor] = useState<string>("#000000");
-  const [paletteVisible, setPaletteVisible] = useState<boolean>(false);
-  const [leftPanelVisible, setLeftPanelVisible] = useState<boolean>(true);
-  const [rightPanelVisible, setRightPanelVisible] = useState<boolean>(false);
   const [npcEditorPanelVisible, setNpcEditorPanelVisible] = useState<boolean>(false);
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       handleShortcuts(event, shortcuts);
       // Toggle palette panel visibility when "k" key is pressed
-      if (event.key === 'k') {
-        setPaletteVisible((prevState) => !prevState);
-      }
-      else if (event.ctrlKey && event.shiftKey && event.key === 'N') {
+      if (event.ctrlKey && event.shiftKey && event.key === 'N') {
         createNewCanvas();
       }
-      /* if (event.key === '') {
-        setLeftPanelVisible((prevState) => !prevState);
-      } */
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -64,25 +55,6 @@ const Home: React.FC = () => {
     addActivity(`create new canvas ${newCanvasId}`);
   };
 
-  const togglePaletteVisibility = () => {
-    setPaletteVisible((prevState) => !prevState);
-  };
-
-  // Function to toggle left panel visibility
-  const toggleLeftPanelVisibility = () => {
-    setLeftPanelVisible((prevState) => !prevState);
-  };
-
-  // Function to toggle right panel visibility
-  const toggleRightPanelVisibility = () => {
-    setRightPanelVisible((prevState) => !prevState);
-  };
-
-  // Function to toggle NPC editor panel visibility
-  const toggleNpcEditorPanelVisibility = () => {
-    setNpcEditorPanelVisible((prevState) => !prevState);
-  };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex flex-col h-screen bg-Menu-panel rounded">
@@ -105,15 +77,14 @@ const Home: React.FC = () => {
               </React.Fragment>
             ))}
           </div>
-          {getIsPaletteVisibleState() === "true" ? ( // Render the palette panel if getIsPaletteVisibleState() returns "true"
-            <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-              <PalettePanel
-                selectedColor={currentColor}
-                onSelectColor={handleColorSelection}
-                onChangeComplete={handleColorChangeComplete}
-              />
-            </div>
-          ) : null}
+          <div id="palette" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'none'}}>
+            {/* Render palette panel content here */}
+            <PalettePanel
+              selectedColor={currentColor}
+              onSelectColor={handleColorSelection}
+              onChangeComplete={handleColorChangeComplete}
+            />
+          </div>
         </div>
         <div className="rounded">
           <ConsoleBar />

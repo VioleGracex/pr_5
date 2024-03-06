@@ -25,6 +25,9 @@ import { faSquare as farSquare } from '@fortawesome/free-regular-svg-icons'; // 
 import MarqueeToolImage from '../imgs/MarqueeTool.png';
 import { UseCircleDraw } from '../Functions/ShapeTool';
 import { usePalette } from './useTools/usePalette';
+import {
+  togglePalettePanelVisibility,
+} from '../../state/panelVisibility';
 
 
 interface Tool {
