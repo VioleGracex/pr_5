@@ -10,8 +10,6 @@ import { handleShortcuts } from './Components/tools/shortcuts';
 import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcuts configuration
 import { CanvasProvider } from './Panels/CanvasContext';
 import { Canvas } from './Panels/Canvas';
-import { setIsPaletteVisibleState, getIsPaletteVisibleState } from './Components/tools/useTools/usePalette';
-import { leftPanelVisible, rightPanelVisible, npcEditorPanelVisible, togglePanelVisibility,togglePalettePanelVisibility } from './state/panelVisibility';
 
 const Home: React.FC = () => {
   const gridSize = 100;
@@ -23,7 +21,6 @@ const Home: React.FC = () => {
 
   // States for visibility of panels
   const [currentColor, setCurrentColor] = useState<string>("#000000");
-  const [npcEditorPanelVisible, setNpcEditorPanelVisible] = useState<boolean>(false);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       handleShortcuts(event, shortcuts);
@@ -61,9 +58,15 @@ const Home: React.FC = () => {
         <MenuBar />
         
         <div className="flex flex-1">
-          {leftPanelVisible && <LeftPanel />}
-          {rightPanelVisible && <RightPanel numberOfLayers={layersStackRef.current.length} />}
-          {npcEditorPanelVisible && <NpcEditorPanel />}
+          <div id="leftPanelWrapper">
+            <LeftPanel />
+          </div>
+          <div id="rightPanelWrapper">
+            <RightPanel numberOfLayers={layersStackRef.current.length} />
+          </div>
+          <div id="npcEditorPanelWrapper">
+            <NpcEditorPanel />
+          </div>
           <div className="flex-1 relative overflow-hidden rounded">
             {canvasList.map((canvasId, index) => (
               <React.Fragment key={canvasId}>
@@ -77,7 +80,7 @@ const Home: React.FC = () => {
               </React.Fragment>
             ))}
           </div>
-          <div id="palette" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'none'}}>
+          <div id="palettePanelWrapper" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'none'}}>
             {/* Render palette panel content here */}
             <PalettePanel
               selectedColor={currentColor}

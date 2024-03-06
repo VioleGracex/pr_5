@@ -8,7 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBriefcase, faDice } from '@fortawesome/free-solid-svg-icons';
 import { ChromePicker, ColorResult } from 'react-color';
 import { addActivity } from '@/app/Panels/ConsoleBar';
-import { setIsPaletteVisibleState, getIsPaletteVisibleState, usePalette } from '../Components/tools/useTools/usePalette';
+import { togglePanelVisibility } from '../state/panelVisibility';
+/* import { setIsPaletteVisibleState, getIsPaletteVisibleState, usePalette } from '../Components/tools/useTools/usePalette'; */
 
 // Global variable to track the visibility of the NPC editor window
 export const LeftPanel: React.FC = () => {
@@ -195,7 +196,7 @@ export const PalettePanel: React.FC<PalettePanel> = ({ selectedColor, onSelectCo
   };
 
   const handleOK = () => {
-    usePalette();
+    togglePanelVisibility('palettePanelWrapper');
     // addActivity("CLICKED OK");
   };
 

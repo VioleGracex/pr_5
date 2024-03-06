@@ -1,4 +1,4 @@
-// usePalette.tsx
+/* // usePalette.tsx
 import { addActivity } from "@/app/Panels/ConsoleBar";
 import { getGlobalActiveTool, setGlobalActiveTool } from "../ToolPanel";
 import {
@@ -25,3 +25,4 @@ function usePalette(): void {
 }
 
 export { usePalette, isPaletteVisibleState, setIsPaletteVisible };
+ */

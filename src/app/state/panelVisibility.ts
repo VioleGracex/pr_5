@@ -1,39 +1,23 @@
 // panelVisibility.ts
-let leftPanelVisible = true;
-let rightPanelVisible = false;
-let npcEditorPanelVisible = false;
-let buildingEditorPanelVisible = true;
-
-export function togglePanelVisibility(panelName: string): void {
-  switch (panelName) {
-    case 'leftPanel':
-      leftPanelVisible = !leftPanelVisible;
-      break;
-    case 'rightPanel':
-      rightPanelVisible = !rightPanelVisible;
-      break;
-    case 'npcEditorPanel':
-      npcEditorPanelVisible = !npcEditorPanelVisible;
-      break;
-    case 'buildingEditorPanel':
-      buildingEditorPanelVisible = !buildingEditorPanelVisible;
-      break;
-    default:
-      break;
-  }
+interface PanelVisibility {
+  [key: string]: boolean;
 }
 
-export {
-  leftPanelVisible,
-  rightPanelVisible,
-  npcEditorPanelVisible,
-  buildingEditorPanelVisible,
+let panelVisibility: PanelVisibility = {
+  leftPanelWrapper: true,
+  rightPanelWrapper: false,
+  npcEditorPanelWrapper: false,
+  buildingEditorPanelWrapper: true,
+  palettePanelWrapper : false,
 };
 
-
-export const togglePalettePanelVisibility = (isVisible: boolean) => {
-  const paletteDiv = document.getElementById('palette');
-  if (paletteDiv) {
-    paletteDiv.style.display = isVisible ? 'block' : 'none';
+export const togglePanelVisibility = (panelName: string) => {
+  if (panelVisibility.hasOwnProperty(panelName)) {
+    const isVisible = panelVisibility[panelName];
+    panelVisibility[panelName] = !isVisible; // Toggle visibility status
+    const panelDiv = document.getElementById(panelName);
+    if (panelDiv) {
+      panelDiv.style.display = !isVisible ? 'block' : 'none'; // Toggle display
+    }
   }
 };
