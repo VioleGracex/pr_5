@@ -72,3 +72,17 @@ body {
   height: 200px; /* Set the desired expanded height */
   z-index: 999;
 }
+
+/* Add this CSS to your stylesheet */
+.canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+
+.panel-wrapper {
+  position: fixed; /* Position panels fixed to prevent affecting canvas */
+  z-index: 2; /* Ensure panels are above canvas */
+  /* Additional styling for panel wrappers */
+}

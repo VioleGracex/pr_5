@@ -26,8 +26,8 @@ const NPCToken: React.FC<NPCTokenProps> = ({
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       if (isDragging && tokenRef.current) {
-        const updatedX = event.clientX - tokenRef.current.offsetWidth - offsetX;
-        const updatedY = event.clientY - tokenRef.current.offsetHeight - offsetY;
+        const updatedX = event.clientX - tokenRef.current.offsetWidth;// - offsetX;
+        const updatedY = event.clientY - tokenRef.current.offsetHeight;// - offsetY;
         setPosition({ x: updatedX, y: updatedY });
       }
     };

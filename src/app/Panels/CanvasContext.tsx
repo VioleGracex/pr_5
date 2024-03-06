@@ -128,9 +128,11 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
 
-  const createNPCToken = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
-
+  const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+    //const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
+    const offsetX = nativeEvent.clientX;
+    const offsetY = nativeEvent.clientY;
+    //check for panels from all sides to fix offset
     // Create a new NPC token with default values
     const newToken = (
       <NPCToken
