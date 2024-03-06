@@ -26,8 +26,8 @@ const NPCToken: React.FC<NPCTokenProps> = ({
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       if (isDragging && tokenRef.current) {
-        const updatedX = event.clientX - tokenRef.current.offsetWidth;// - offsetX;
-        const updatedY = event.clientY - tokenRef.current.offsetHeight;// - offsetY;
+        const updatedX = event.clientX - tokenRef.current.offsetWidth + 30;
+        const updatedY = event.clientY - tokenRef.current.offsetHeight + 40;
         setPosition({ x: updatedX, y: updatedY });
       }
     };
@@ -61,7 +61,7 @@ const NPCToken: React.FC<NPCTokenProps> = ({
 
   const handleWindowOpen = () => {
     // Calculate offset when the window is opened
-    const windowOffsetX = 380; // Adjust this value based on your requirements
+    const windowOffsetX = 3000; // Adjust this value based on your requirements
     const windowOffsetY = 50; // Adjust this value based on your requirements
     setOffsetX(windowOffsetX);
     setOffsetY(windowOffsetY);

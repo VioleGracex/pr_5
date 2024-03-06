@@ -159,6 +159,25 @@ const ToolPanel: React.FC = () => {
           else if(matchingTool.toolFunction)
             matchingTool.toolFunction();
         }
+        if(matchingTool?.isToggle)
+        {
+            if(matchingTool.toolFunction)
+            {
+              matchingTool.toolFunction();
+            }
+              
+          
+            var newGlobalActiveTool = getGlobalActiveTool();
+            if (activeTool === newGlobalActiveTool) {
+              setActiveTool(null);
+              addActivity(`Unselected tool: ${newGlobalActiveTool}`);
+              setGlobalActiveTool(null);
+            } else {
+              setActiveTool(newGlobalActiveTool);
+              addActivity(`Selected tool: ${newGlobalActiveTool}`);
+            }
+        }
+        
        
       }
     }

@@ -11,7 +11,7 @@ const ContextMenu: React.FC<{
   position: { top: number; left: number } | null; // New position prop
 }> = ({ tools, onMenuItemClick, menuRef, position }) => {
   return (
-    <div
+    <div 
       ref={menuRef}
       className="absolute p-2 bg-gray-700 rounded"
       style={{ top: position?.top, left: position?.left,backgroundColor: "#3b3a3a" }}

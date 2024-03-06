@@ -98,12 +98,12 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const startactivity = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const activeTool = getGlobalActiveTool();
     if (activeTool) {
-      if (activeTool === "Pencil") {
+      if (activeTool === 'Pencil') {
         addActivity(`Used ${activeTool} Pen`);
         startPencilDrawing(event);
-      } else if (activeTool === "NPC Token") {
+      } else if (activeTool === 'NPC Token') {
         createNPCToken(event);
-      } else if (activeTool === "Move Tool") {
+      } else if (activeTool === 'Move Tool') {
 
       } else {
         addActivity(`Selected ${activeTool}`);
@@ -130,8 +130,8 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
   const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     //const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
-    const offsetX = nativeEvent.clientX;
-    const offsetY = nativeEvent.clientY;
+    const offsetX = nativeEvent.clientX-30;
+    const offsetY = nativeEvent.clientY-20;
     //check for panels from all sides to fix offset
     // Create a new NPC token with default values
     const newToken = (

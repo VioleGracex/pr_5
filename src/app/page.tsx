@@ -57,8 +57,8 @@ const Home: React.FC = () => {
       <div className="flex flex-col h-screen bg-Menu-panel rounded relative">
         <MenuBar />
         
-        <div className="flex flex-1">
-          <div id="leftPanelWrapper" style={{ display: 'block' }}>
+        <div className="flex flex-1" >
+          <div id="leftPanelWrapper" style={{ display: 'block', zIndex : 999 }}>
             <LeftPanel />
           </div>
           <div id="rightPanelWrapper" style={{ display: 'none' }}>
@@ -67,11 +67,11 @@ const Home: React.FC = () => {
           <div id="npcEditorPanelWrapper" style={{ display: 'block' }}>
             <NpcEditorPanel />
           </div>
-          <div className="flex-1 relative overflow-hidden rounded">
+          <div>
             {canvasList.map((canvasId, index) => (
               <React.Fragment key={canvasId}>
                 {!isCanvasHidden[canvasId] && (
-                  <div style={{ position: 'absolute', zIndex: 1 }}>
+                  <div>
                     {/* Set z-index to 1 to keep canvas above background */}
                     <CanvasProvider canvasId={canvasId} strokeColor={currentColor}>
                       <Canvas />

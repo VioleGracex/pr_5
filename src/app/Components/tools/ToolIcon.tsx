@@ -1,4 +1,3 @@
-// ToolIcon.tsx
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
@@ -40,6 +39,7 @@ const ToolIcon: React.FC<{
       {isHovered && (
         <div
           className={`opacity-100 bg-gray-800 text-white text-sm p-2 rounded-md absolute left-full ml-2 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 whitespace-nowrap`}
+          style={{ zIndex: 9999 }} // Adjust z-index to ensure the menu appears above all
         >
           <span className="mr-1">{name}</span>
           <span className="text-xs font-light">({shortcut})</span>
