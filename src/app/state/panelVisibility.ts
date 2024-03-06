@@ -21,3 +21,14 @@ export const togglePanelVisibility = (panelName: string) => {
     }
   }
 };
+
+export const setPanelVisibility = (panelName: string, isVisible: boolean) => {
+  if (panelVisibility.hasOwnProperty(panelName)) {
+    panelVisibility[panelName] = isVisible; // Set visibility status
+    const panelDiv = document.getElementById(panelName);
+    if (panelDiv) {
+      panelDiv.style.display = isVisible ? 'block' : 'none'; // Set display
+    }
+  }
+};
+

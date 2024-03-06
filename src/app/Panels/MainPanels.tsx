@@ -5,10 +5,10 @@ import { useDrag } from 'react-dnd';
 import { ItemTypes } from '../Components/Constants';
 import { justDrag } from '../Components/Functions/TitleFunctions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faBriefcase, faDice } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faBriefcase, faDice, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ChromePicker, ColorResult } from 'react-color';
 import { addActivity } from '@/app/Panels/ConsoleBar';
-import { togglePanelVisibility } from '../state/panelVisibility';
+import { togglePanelVisibility , setPanelVisibility } from '../state/panelVisibility';
 /* import { setIsPaletteVisibleState, getIsPaletteVisibleState, usePalette } from '../Components/tools/useTools/usePalette'; */
 
 // Global variable to track the visibility of the NPC editor window
@@ -96,10 +96,19 @@ export const NpcEditorPanel: React.FC = () => {
     setRace(randomRace);
   };
 
+  const handleClosePanel = () => {
+    setPanelVisibility('npcEditorPanelWrapper', false);
+  };
+
   return (
     <div className={`w-1/7 bg-editor-panel rounded z-10 relative`}>
       {/* NPC Editor Title */}
-      <p className="text-lg font-semibold mt-4 ml-4 mb-4">NPC Editor</p>
+      <div className="flex justify-between items-center mt-4 ml-4 mb-4">
+        <p className="text-lg font-semibold">NPC Editor</p>
+        <button className="  hover:bg-gray-1000 text-gray-200 px-2 py-1 mr-4 mb-3" onClick={handleClosePanel}>
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+      </div>
   
       {/* Input Box for NPC Name */}
       <div className="flex items-center border border-gray-300 rounded p-3 mb-4 mx-4">

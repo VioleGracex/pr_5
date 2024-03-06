@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import defaultImage from '../../imgs/NPCAvatar.png';
 import { getGlobalActiveTool } from '../ToolPanel';
 import { StaticImageData } from 'next/image';
+import { setPanelVisibility } from '@/app/state/panelVisibility';
 
 interface NPCTokenProps {
   name?: string;
@@ -33,6 +34,7 @@ const NPCToken: React.FC<NPCTokenProps> = ({
 
     const handleMouseUp = () => {
       setIsDragging(false);
+      setPanelVisibility('npcEditorPanelWrapper',true);
       /* setIsNPCEditorVisible(true); */
     };
 

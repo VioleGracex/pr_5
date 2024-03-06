@@ -58,13 +58,13 @@ const Home: React.FC = () => {
         <MenuBar />
         
         <div className="flex flex-1">
-          <div id="leftPanelWrapper">
+          <div id="leftPanelWrapper" style={{display: 'block'}}>
             <LeftPanel />
           </div>
-          <div id="rightPanelWrapper">
+          <div id="rightPanelWrapper" style={{display: 'none'}}>
             <RightPanel numberOfLayers={layersStackRef.current.length} />
           </div>
-          <div id="npcEditorPanelWrapper">
+          <div id="npcEditorPanelWrapper" style={{display: 'block'}} >
             <NpcEditorPanel />
           </div>
           <div className="flex-1 relative overflow-hidden rounded">
