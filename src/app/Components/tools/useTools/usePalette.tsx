@@ -2,21 +2,38 @@
 import { addActivity } from "@/app/Panels/ConsoleBar";
 import { getGlobalActiveTool, setGlobalActiveTool } from "../ToolPanel";
 import { useState } from 'react';
+import Home from "@/app/page";
 
-let isPaletteVisibleState: boolean = false;
+let isPaletteVisibleState: string = "false";
 
-function getIsPaletteVisible(): boolean {
+export const getIsPaletteVisibleState = (): string | "false" => isPaletteVisibleState;
+
+export const setIsPaletteVisibleState = (b: string): void => {
+  isPaletteVisibleState = b;
+  addActivity(`Selected global tool: ${isPaletteVisibleState}`);
+};
+//let isPaletteVisibleState: boolean = false;
+
+/* function getIsPaletteVisible(): boolean {
   return isPaletteVisibleState;
+} */
+
+function setIsPaletteVisible(value: string): void {
+  isPaletteVisibleState = "true";
 }
 
-function setIsPaletteVisible(value: boolean): void {
-  isPaletteVisibleState = value;
-}
-
-function usePalette(): boolean {
-  setIsPaletteVisible(!isPaletteVisibleState);  // Toggle the value
+function usePalette(): string {
+  if(isPaletteVisibleState == "true" )
+  {
+    setIsPaletteVisibleState("false");
+  }
+  else
+  {
+    setIsPaletteVisibleState("true");
+  }
+    // Toggle the value
   addActivity(`set palette to ${isPaletteVisibleState}`);
-  return getIsPaletteVisible();
+  return getIsPaletteVisibleState();
 }
 
-export { usePalette, getIsPaletteVisible, setIsPaletteVisible };
+export { usePalette, isPaletteVisibleState, setIsPaletteVisible };

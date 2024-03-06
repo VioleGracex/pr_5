@@ -10,13 +10,7 @@ import { handleShortcuts } from './Components/tools/shortcuts';
 import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcuts configuration
 import { CanvasProvider } from './Panels/CanvasContext';
 import { Canvas } from './Panels/Canvas';
-import {
-  leftPanelVisible,
-  rightPanelVisible,
-  npcEditorPanelVisible,
-  palettePanelVisible,
-  togglePanelVisibility,
-} from './types/panelVisibility';
+import { setIsPaletteVisibleState, getIsPaletteVisibleState } from './Components/tools/useTools/usePalette';
 
 const Home: React.FC = () => {
   const gridSize = 100;
@@ -26,18 +20,26 @@ const Home: React.FC = () => {
     canvasList.reduce((acc, canvasId) => ({ ...acc, [canvasId]: false }), {})
   );
 
-  // Lift state for color picker
+  // states for visiblity of panels
   const [currentColor, setCurrentColor] = useState<string>("#000000");
   const [paletteVisible, setPaletteVisible] = useState<boolean>(false);
+  const [leftPanelVisible, setLeftPanelVisible] = useState<boolean>(true);
+  const [rightPanelVisible, setRightPanelVisible] = useState<boolean>(false);
+  const [npcEditorPanelVisible, setNpcEditorPanelVisible] = useState<boolean>(false);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       handleShortcuts(event, shortcuts);
       // Toggle palette panel visibility when "k" key is pressed
       if (event.key === 'k') {
-        togglePanelVisibility('palettePanel');
         setPaletteVisible((prevState) => !prevState);
       }
+      else if (event.ctrlKey && event.shiftKey && event.key === 'N') {
+        createNewCanvas();
+      }
+      /* if (event.key === '') {
+        setLeftPanelVisible((prevState) => !prevState);
+      } */
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -62,6 +64,25 @@ const Home: React.FC = () => {
     addActivity(`create new canvas ${newCanvasId}`);
   };
 
+  const togglePaletteVisibility = () => {
+    setPaletteVisible((prevState) => !prevState);
+  };
+
+  // Function to toggle left panel visibility
+  const toggleLeftPanelVisibility = () => {
+    setLeftPanelVisible((prevState) => !prevState);
+  };
+
+  // Function to toggle right panel visibility
+  const toggleRightPanelVisibility = () => {
+    setRightPanelVisible((prevState) => !prevState);
+  };
+
+  // Function to toggle NPC editor panel visibility
+  const toggleNpcEditorPanelVisibility = () => {
+    setNpcEditorPanelVisible((prevState) => !prevState);
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex flex-col h-screen bg-Menu-panel rounded">
@@ -84,7 +105,7 @@ const Home: React.FC = () => {
               </React.Fragment>
             ))}
           </div>
-          {paletteVisible && ( // Render the palette panel if palettePanel is true
+          {getIsPaletteVisibleState() === "true" ? ( // Render the palette panel if getIsPaletteVisibleState() returns "true"
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
               <PalettePanel
                 selectedColor={currentColor}
@@ -92,7 +113,7 @@ const Home: React.FC = () => {
                 onChangeComplete={handleColorChangeComplete}
               />
             </div>
-          )}
+          ) : null}
         </div>
         <div className="rounded">
           <ConsoleBar />

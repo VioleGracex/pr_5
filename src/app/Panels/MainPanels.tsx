@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBriefcase, faDice } from '@fortawesome/free-solid-svg-icons';
 import { ChromePicker, ColorResult } from 'react-color';
 import { addActivity } from '@/app/Panels/ConsoleBar';
-import { setIsPaletteVisible, getIsPaletteVisible } from '../Components/tools/useTools/usePalette';
+import { setIsPaletteVisibleState, getIsPaletteVisibleState } from '../Components/tools/useTools/usePalette';
 
 // Global variable to track the visibility of the NPC editor window
 export const LeftPanel: React.FC = () => {
@@ -195,22 +195,18 @@ export const PalettePanel: React.FC<PalettePanel> = ({ selectedColor, onSelectCo
   };
 
   const handleOK = () => {
-    setIsPaletteVisible(false);
+    setIsPaletteVisibleState("false");
     // addActivity("CLICKED OK");
   };
 
-  useEffect(() => {
-    
-  }, [getIsPaletteVisible()]);
-
   // Render the ColorPickerModule only if the palette is visible
-  return getIsPaletteVisible() ? (
+  return  (
     <div style={{ position: 'relative' }}>
       <ChromePicker color={color.rgb} onChange={handleChange} onChangeComplete={handleChangeCompleteLocal} />
       <div style={{ position: 'absolute', bottom: '-40px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
         <button style={{ marginRight: '15px', backgroundColor: 'white', color: 'black', border: '0.5px solid gray', padding: '5px 10px' }} onClick={handleOK}>OK</button>
       </div>
     </div>
-  ) : null;
+  ) ;
 };
 
