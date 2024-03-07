@@ -37,6 +37,11 @@ const Home: React.FC = () => {
     };
   }, []); // No dependencies, so it only runs once on component mount
 
+  useEffect(() => {
+    const handleContextMenu = (event: MouseEvent) => event.preventDefault();
+    document.addEventListener('contextmenu', handleContextMenu);
+    return () => document.removeEventListener('contextmenu', handleContextMenu);
+  }, []);
   const handleColorSelection = (color: string) => {
     setCurrentColor(color);
   };
@@ -54,48 +59,51 @@ const Home: React.FC = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex flex-col h-screen bg-Menu-panel rounded relative">
-        <MenuBar />
-        
-        <div className="flex flex-1" >
-          <div id="leftPanelWrapper" style={{ display: 'block', zIndex : 999 }}>
-            <LeftPanel />
-          </div>
-          <div id="rightPanelWrapper" style={{ display: 'none' }}>
-            <RightPanel numberOfLayers={layersStackRef.current.length} />
-          </div>
-          <div id="npcEditorPanelWrapper" style={{ display: 'block' }}>
-            <NpcEditorPanel />
-          </div>
-          <div>
-            {canvasList.map((canvasId, index) => (
-              <React.Fragment key={canvasId}>
-                {!isCanvasHidden[canvasId] && (
-                  <div>
-                    {/* Set z-index to 1 to keep canvas above background */}
-                    <CanvasProvider canvasId={canvasId} strokeColor={currentColor}>
-                      <Canvas />
-                    </CanvasProvider>
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-          <div id="palettePanelWrapper" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'none', zIndex: 2 }}>
-            {/* Set z-index to 2 to ensure palette panel is above canvas */}
-            {/* Render palette panel content here */}
-            <PalettePanel
-              selectedColor={currentColor}
-              onSelectColor={handleColorSelection}
-              onChangeComplete={handleColorChangeComplete}
-            />
-          </div>
-        </div>
-        <div className="rounded" >
-          <ConsoleBar />
-        </div>
+  <div className="flex flex-col h-screen bg-Menu-panel rounded relative">
+    <div id="MenuBar" style={{ display: 'block', zIndex: 1000 }}>
+      <MenuBar />
+    </div>
+      
+    <div className="flex flex-1" >
+      <div id="leftPanelWrapper" style={{ display: 'block', zIndex: 999 }}>
+        <LeftPanel />
       </div>
-    </DndProvider>
+      <div id="rightPanelWrapper" style={{ display: 'none' }}>
+        <RightPanel numberOfLayers={layersStackRef.current.length} />
+      </div>
+      <div id="npcEditorPanelWrapper" style={{ zIndex: 998 }}>
+        <NpcEditorPanel />
+      </div>
+      <div style={{ overflow: 'hidden', maxHeight: '99vh' }}>
+        {canvasList.map((canvasId, index) => (
+          <React.Fragment key={canvasId}>
+            {!isCanvasHidden[canvasId] && (
+              <div id="tezu" style={{ zIndex: index + 1, position: 'absolute', top: 0, left: 0 }}>
+                {/* Set z-index to index + 1 to ensure each canvas is placed above the others */}
+                <CanvasProvider canvasId={canvasId} strokeColor={currentColor}>
+                  <Canvas />
+                </CanvasProvider>
+              </div>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+      <div id="palettePanelWrapper" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'none', zIndex: 1002 }}>
+        {/* Set z-index to 1002 to ensure palette panel is above canvas and NPC panel */}
+        {/* Render palette panel content here */}
+        <PalettePanel
+          selectedColor={currentColor}
+          onSelectColor={handleColorSelection}
+          onChangeComplete={handleColorChangeComplete}
+        />
+      </div>
+    </div>
+    <div className="rounded" style={{ zIndex: 1001 }}>
+      {/* Set z-index to 1001 to ensure console bar is above canvas and NPC panel */}
+      <ConsoleBar />
+    </div>
+  </div>
+</DndProvider>
   );
   
 };

@@ -3,6 +3,7 @@ import defaultImage from '../../imgs/NPCAvatar.png';
 import { getGlobalActiveTool } from '../ToolPanel';
 import { StaticImageData } from 'next/image';
 import { setPanelVisibility } from '@/app/state/panelVisibility';
+import { setActiveElement } from '@/app/state/ActiveElement';
 
 interface NPCTokenProps {
   name?: string;
@@ -34,7 +35,6 @@ const NPCToken: React.FC<NPCTokenProps> = ({
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      setPanelVisibility('npcEditorPanelWrapper',true);
       /* setIsNPCEditorVisible(true); */
     };
 
@@ -56,6 +56,11 @@ const NPCToken: React.FC<NPCTokenProps> = ({
     const activeTool = getGlobalActiveTool();
     if (activeTool === 'Move Tool') {
       setIsDragging(true);
+    }
+    else if(activeTool === 'Cursor Tool')
+    {
+      setActiveElement(tokenRef.current);
+      setPanelVisibility('npcEditorPanelWrapper',true);
     }
   };
 
@@ -79,7 +84,8 @@ const NPCToken: React.FC<NPCTokenProps> = ({
   }, []);
 
   return (
-    <div
+    <div className='NpcToken'
+      id={'NpcToken'} // Set id attribute
       ref={tokenRef}
       style={{
         position: 'absolute',

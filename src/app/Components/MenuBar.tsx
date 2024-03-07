@@ -15,14 +15,17 @@ const MenuBar: React.FC = () => {
     <div className="relative">
         {/* Background Element */}
         <div
-          className="fixed top-0 left-0 w-full h-16 bg-black-2000 opacity-100 z-10"
+          className=" bg-Menu-panel fixed top-0 left-0 w-full h-24  bg-gray-800 opacity-100 z-10 "
+        ></div>
+        <div
+          className=" bg-Menu-panel fixed top-0 left-0 w-full h-24 rounded bg-gray-800 opacity-100 z-10 "
         ></div>
         {/* Draggable Area */}
         <div
           className="fixed top-0 left-0 w-full h-16 mb-4 bg-black opacity-0 z-10"
           onMouseDown={handleMouseDown}
         ></div>
-      <div className="text-white p-4 w-40   relative z-50">  {/* convert these menu into MenuBarConfig  or just add onClick to each of them  ??*/}
+      <div className="text-white p-4 w-40 mt-2  relative z-50">  {/* convert these menu into MenuBarConfig  or just add onClick to each of them  ??*/}
         {/* Left Side: Logo */}
         <div className="flex items-center">
           <img src="/Logo.png" alt="Logo" className="h-12 w-auto mr-8" />

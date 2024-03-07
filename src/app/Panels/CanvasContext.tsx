@@ -3,6 +3,7 @@ import React, { createContext, useContext, useRef, useState, ReactNode, SetState
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
 import NPCToken from "../Components/tools/Objects/NPCToken";
+import { setActiveElement } from "../state/ActiveElement";
 
 interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -48,6 +49,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [initialPoint, setInitialPoint] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
   const [npcTokens, setNpcTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
+  const [scaleFactor, setScaleFactor] = useState(1); // Track the current scale factor
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -76,46 +78,79 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       canvas.height = window.innerHeight * 2;
       canvas.style.width = `${window.innerWidth}px`;
       canvas.style.height = `${window.innerHeight}px`;
-
+  
       const context = canvas.getContext("2d");
       if (context) {
         context.scale(2, 2);
         context.lineCap = "round";
         context.lineWidth = 5;
-
-        if (!isCanvasPrepared) {
-          context.fillStyle = "grey";
-          context.fillRect(0, 0, canvas.width, canvas.height);
-          setIsCanvasPrepared(true);
+  
+        // Draw white background
+        context.fillStyle = "white";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+  
+        // Draw grid
+        const gridSize = 50; // Adjust grid size as needed
+        context.strokeStyle = "#ccc"; // Set grid color
+        for (let x = gridSize; x < canvas.width; x += gridSize) {
+          for (let y = gridSize; y < canvas.height; y += gridSize) {
+            context.beginPath();
+            context.moveTo(x, 0);
+            context.lineTo(x, canvas.height);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(0, y);
+            context.lineTo(canvas.width, y);
+            context.stroke();
+          }
         }
-
+  
+        setIsCanvasPrepared(true);
         canvas.style.zIndex = "-100";
         contextRef.current = context;
       }
     }
   };
+  
 
   const startactivity = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const activeTool = getGlobalActiveTool();
     if (activeTool) {
-      if (activeTool === 'Pencil') {
-        addActivity(`Used ${activeTool} Pen`);
-        startPencilDrawing(event);
-      } else if (activeTool === 'NPC Token') {
-        createNPCToken(event);
-      } else if (activeTool === 'Move Tool') {
-
-      } else {
-        addActivity(`Selected ${activeTool}`);
-        // Handle other tools if needed
+      switch (activeTool) {
+        case 'Pencil':
+          addActivity(`Used ${activeTool} Pen`);
+          startPencilDrawing(event);
+          break;
+        case 'NPC Token':
+          createNPCToken(event);
+          break;
+        case 'Move Tool':
+          // Implement move tool functionality
+          break;
+        case 'Zoom Tool':
+          if (event.button === 0) {
+            // Left click for zoom in
+            zoomIn();
+          } else if (event.button === 2) {
+            // Right click for zoom out
+            zoomOut();
+          }
+          break;
+        case 'Cursor Tool':
+            setActiveElement(null);
+            break;  
+        default:
+          addActivity(`Selected ${activeTool}`);
+          // Handle other tools if needed
+          break;
       }
     } else {
       addActivity("Error Using Tool not found");
     }
-  };
+  };  
 
-  const startPencilDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
+  const startPencilDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+    const { offsetX = 0, offsetY = 0 } = nativeEvent;
     if (contextRef.current) {
       contextRef.current.strokeStyle = strokeColor;
       contextRef.current.beginPath();
@@ -161,13 +196,13 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         npcTokens.forEach((token) => {
           if (React.isValidElement(token)) {
             const { x = 0, y = 0 } = token.props;
-            // Adjust rendering coordinates as needed
-            // context.drawImage(defaultImage, x, y, 50, 50);
+            const scaledX = x * scaleFactor;
+            const scaledY = y * scaleFactor;
+            // Draw NPC token at scaled coordinates
+            // context.drawImage(defaultImage, scaledX, scaledY, 50, 50);
           }
         });
         
-        
-
         // Render strokes
         strokes.forEach(({ path, color }) => {
           context.strokeStyle = color;
@@ -181,49 +216,58 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   }, [strokes, npcTokens, selectedObject, mousePosition]);
 
-  const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    setIsDrawing(false);
+  // Inside the draw function
+const draw = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+  if (!isDrawing || !contextRef.current) {
+    return;
+  }
 
-    if (contextRef.current) {
-      const { offsetX = 0, offsetY = 0 } = nativeEvent;
-      const distance = Math.sqrt(
-        Math.pow(offsetX - initialPoint.x, 2) + Math.pow(offsetY - initialPoint.y, 2)
+  const { offsetX = 0, offsetY = 0 } = nativeEvent;
+  const scaledOffsetX = offsetX / scaleFactor;
+  const scaledOffsetY = offsetY / scaleFactor;
+  
+  contextRef.current.lineTo(scaledOffsetX, scaledOffsetY);
+  contextRef.current.stroke();
+
+  currentPath.current.push({ x: scaledOffsetX, y: scaledOffsetY });
+};
+
+// Inside the finishDrawing function
+const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+  setIsDrawing(false);
+
+  if (contextRef.current) {
+    const offsetX = nativeEvent.clientX;
+    const offsetY = nativeEvent.clientY;
+    const distance = Math.sqrt(
+      Math.pow(offsetX - initialPoint.x, 2) + Math.pow(offsetY - initialPoint.y, 2)
+    );
+
+    const scaledOffsetX = offsetX / scaleFactor;
+    const scaledOffsetY = offsetY / scaleFactor;
+
+    contextRef.current.lineTo(scaledOffsetX, scaledOffsetY);
+
+    const newStroke: Stroke = {
+      path: [...currentPath.current],
+      color: strokeColor,
+    };
+
+    if (distance < 2) {
+      contextRef.current.arc(
+        scaledOffsetX,
+        scaledOffsetY,
+        contextRef.current.lineWidth / 2,
+        0,
+        Math.PI * 2
       );
-
-      contextRef.current.lineTo(offsetX, offsetY);
-
-      const newStroke: Stroke = {
-        path: [...currentPath.current],
-        color: strokeColor,
-      };
-
-      if (distance < 2) {
-        contextRef.current.arc(
-          offsetX,
-          offsetY,
-          contextRef.current.lineWidth / 2,
-          0,
-          Math.PI * 2
-        );
-        contextRef.current.fill();
-      } else {
-        contextRef.current.stroke();
-        setStrokes((prevStrokes) => [...prevStrokes, newStroke]);
-      }
+      contextRef.current.fill();
+    } else {
+      contextRef.current.stroke();
+      setStrokes((prevStrokes) => [...prevStrokes, newStroke]);
     }
-  };
-
-  const draw = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !contextRef.current) {
-      return;
-    }
-
-    const { offsetX = 0, offsetY = 0 } = nativeEvent;
-    contextRef.current.lineTo(offsetX, offsetY);
-    contextRef.current.stroke();
-
-    currentPath.current.push({ x: offsetX, y: offsetY });
-  };
+  }
+};
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -237,6 +281,14 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         setMousePosition(null); // Reset mouse position when clearing the canvas
       }
     }
+  };
+
+  const zoomIn = () => {
+    setScaleFactor(scaleFactor * 1.1); // Increase scale factor by 10%
+  };
+
+  const zoomOut = () => {
+    setScaleFactor(scaleFactor / 1.1); // Decrease scale factor by 10%
   };
 
   // Update the context value to include isDragging

@@ -207,7 +207,7 @@ const ToolPanel: React.FC = () => {
   
 
   return (
-    <div className="w-5 ml-7 mr-7 flex flex-col items-center space-y-7 mt-20">
+    <div className="w-5 ml-7 mr-7 flex flex-col items-center space-y-7 mt-14">
       {tools.map((tool, index) => (
         <ToolIcon
           key={index}

@@ -22,12 +22,14 @@ export const LeftPanel: React.FC = () => {
   });
 
   return (
-    <div className={`w-1/7 h-full bg-left-panel rounded z-10 relative ${isDragging ? 'opacity-50' : ''}`}>
-      {/* Draggable area at the top of the left panel */}
-      <div ref={drag} className="absolute top-0 left-0 w-full h-5 bg-#232323"></div>
-      {/* Tool Panel */}
-      <ToolPanel />
-      {/* Add any additional content or functionality for the left panel */}
+    <div className={`w-1/7 h-full bg-left-panel `}>
+      <div className={`w-1/7 h-full bg-left-panel rounded z-10 relative ${isDragging ? 'opacity-50' : ''}`}>
+        {/* Draggable area at the top of the left panel */}
+        <div ref={drag} className="absolute top-0 left-0 w-full h-5 bg-#232323"></div>
+        {/* Tool Panel */}
+        <ToolPanel />
+        {/* Add any additional content or functionality for the left panel */}
+      </div>
     </div>
   );
 };
