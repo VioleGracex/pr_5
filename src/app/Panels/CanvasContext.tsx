@@ -163,12 +163,14 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     const canvasRect = canvas.getBoundingClientRect();
   
     // Calculate the offset of the mouse event relative to the canvas
-    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
-    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
+    /* const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
+    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY; */
+    const offsetX = nativeEvent.clientX - window.scrollX;
+    const offsetY = nativeEvent.clientY - window.scrollY;
   
     // Adjust the offset based on the scale factor
-    const scaledOffsetX = (offsetX / scaleFactor) - (30 * (scaleFactor));
-    const scaledOffsetY = (offsetY / scaleFactor) - (20 * (scaleFactor));
+    const scaledOffsetX = (offsetX / scaleFactor) - 30;
+    const scaledOffsetY = (offsetY / scaleFactor) - 20;
   
     // Create a new NPC token with adjusted coordinates
     const newToken = (

@@ -42,20 +42,22 @@ const handleMouseDown = (event: MouseEvent) => {
     }
   };
   
-
 // Function to zoom in
 const zoomIn = () => {
-  zoomScaleFactor *= 1.1;
-  setZoomScaleFactor(zoomScaleFactor); // Increase scale factor by 10%
+  zoomScaleFactor += 0.1;
+  zoomScaleFactor = Math.round(zoomScaleFactor * 10) / 10; // Round to the first decimal point
+  setZoomScaleFactor(zoomScaleFactor); // Update scale factor
   setZoomScale('zoom', zoomScaleFactor); // Update scale of element with ID 'zoom'
 };
 
 // Function to zoom out
 const zoomOut = () => {
-  zoomScaleFactor /= 1.1;
-  setZoomScaleFactor(zoomScaleFactor); // Decrease scale factor by 10%
+  zoomScaleFactor -= 0.1;
+  zoomScaleFactor = Math.round(zoomScaleFactor * 10) / 10; // Round to the first decimal point
+  setZoomScaleFactor(zoomScaleFactor); // Update scale factor
   setZoomScale('zoom', zoomScaleFactor); // Update scale of element with ID 'zoom'
 };
+
 
 // Add event listener for mouse down events
 document.addEventListener('mousedown', handleMouseDown);
