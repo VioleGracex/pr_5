@@ -1,3 +1,4 @@
+// state/ActiveElement.ts
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
 import { addActivity } from "../Panels/ConsoleBar";
 

@@ -10,6 +10,7 @@ import { handleShortcuts } from './Components/tools/shortcuts';
 import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcuts configuration
 import { CanvasProvider } from './Panels/CanvasContext';
 import { Canvas } from './Panels/Canvas';
+import { getZoomScaleFactor } from './Components/tools/useTools/useZoom';
 
 const Home: React.FC = () => {
   const gridSize = 100;
@@ -71,22 +72,24 @@ const Home: React.FC = () => {
       <div id="rightPanelWrapper" style={{ display: 'none' }}>
         <RightPanel numberOfLayers={layersStackRef.current.length} />
       </div>
-      <div id="npcEditorPanelWrapper" style={{ zIndex: 998 }}>
+      <div id="npcEditorPanelWrapper" style={{display: 'none', zIndex: 998 }}>
         <NpcEditorPanel />
       </div>
-      <div style={{ overflow: 'hidden', maxHeight: '99vh' }}>
+      <div style={{ transform: `scale(${getZoomScaleFactor()})`  }}>
+      <div style={{ overflow: 'hidden', maxHeight: '99vh'  }}>
         {canvasList.map((canvasId, index) => (
           <React.Fragment key={canvasId}>
             {!isCanvasHidden[canvasId] && (
               <div id="tezu" style={{ zIndex: index + 1, position: 'absolute', top: 0, left: 0 }}>
                 {/* Set z-index to index + 1 to ensure each canvas is placed above the others */}
-                <CanvasProvider canvasId={canvasId} strokeColor={currentColor}>
+                <CanvasProvider canvasId={canvasId} strokeColor={currentColor} scaleFactor={getZoomScaleFactor()} >
                   <Canvas />
                 </CanvasProvider>
               </div>
             )}
           </React.Fragment>
         ))}
+      </div>
       </div>
       <div id="palettePanelWrapper" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'none', zIndex: 1002 }}>
         {/* Set z-index to 1002 to ensure palette panel is above canvas and NPC panel */}

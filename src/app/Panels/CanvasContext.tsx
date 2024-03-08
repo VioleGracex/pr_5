@@ -22,6 +22,7 @@ interface CanvasContextProps {
   setSelectedObject: Dispatch<SetStateAction< typeof NPCToken | null>>;
   mousePosition: { x: number; y: number } | null;
   setMousePosition: Dispatch<SetStateAction<{ x: number; y: number } | null>>;
+
 }
 
 const CanvasContext = createContext<CanvasContextProps | undefined>(undefined);
@@ -30,6 +31,7 @@ interface CanvasProviderProps {
   children: ReactNode;
   canvasId: string;
   strokeColor: string;
+  scaleFactor: number;
 }
 
 interface Stroke {

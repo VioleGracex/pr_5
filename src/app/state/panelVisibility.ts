@@ -7,7 +7,7 @@ let panelVisibility: PanelVisibility = {
   leftPanelWrapper: true,
   rightPanelWrapper: false,
   npcEditorPanelWrapper: false,
-  buildingEditorPanelWrapper: true,
+  buildingEditorPanelWrapper: false,
   palettePanelWrapper : false,
 };
 
