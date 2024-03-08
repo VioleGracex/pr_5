@@ -32,31 +32,44 @@ const drawBorder = (element: HTMLElement) => {
 
     // Create points for each corner and middle of each side
     const points = [
-      { top: '0', left: '0' },
-      { top: '0', right: '0' },
-      { bottom: '0', left: '0' },
-      { bottom: '0', right: '0' },
-      { top: '50%', left: '0', transform: 'translateY(-50%)' },
-      { top: '0', left: '50%', transform: 'translateX(-50%)' },
-      { bottom: '50%', left: '0', transform: 'translateY(50%)' },
-      { bottom: '0', left: '50%', transform: 'translateX(-50%)' }
+      { top: '-2px', left: '-2px' }, // Top-left corner
+      { top: '-2px', right: '-8px' }, // Top-right corner
+      { bottom: '-6px', left: '-3px' }, // Bottom-left corner
+      { bottom: '-6px', right: '-8px' }, // Bottom-right corner
+      { top: '50%', left: '-2px', transform: 'translateY(-50%)' }, // Left middle
+      { top: '-2px', left: '50%', transform: 'translateX(-50%)' }, // Top middle
+      { bottom: '-10px', left: '50%', transform: 'translateX(-50%)' }, // Bottom middle
+      { top: '50%', right: '-10px', transform: 'translateY(-50%)' }, // Right middle
     ];
 
-    // Draw points around the border
-    points.forEach(point => {
-      const pointElement = document.createElement('div');
-      pointElement.style.position = 'absolute';
-      pointElement.style.width = '4px'; // Adjust point size as needed
-      pointElement.style.height = '4px'; // Adjust point size as needed
-      pointElement.style.backgroundColor = 'black'; // Adjust point color as needed
-      pointElement.style.borderRadius = '50%'; // Make points circular
-      pointElement.style.top = point.top || '0'; // Use default value if top is undefined
-      pointElement.style.left = point.left || '0'; // Use default value if left is undefined
-      pointElement.style.right = point.right || '0'; // Use default value if right is undefined
-      pointElement.style.bottom = point.bottom || '0'; // Use default value if bottom is undefined
-      pointElement.style.transform = point.transform || ''; // Use default value if transform is undefined
-      activeBorderContainer?.appendChild(pointElement);
-    });
+
+// Draw points around the border
+points.forEach(point => {
+  const pointElement = document.createElement('div');
+  pointElement.style.position = 'absolute';
+  pointElement.style.width = '8px'; // Adjust point size as needed
+  pointElement.style.height = '8px'; // Adjust point size as needed
+  pointElement.style.backgroundColor = 'black'; // Adjust point color as needed
+  pointElement.style.borderRadius = '50%'; // Make points circular
+
+    // Adjust point coordinates relative to the border container
+    if (point.top !== undefined) {
+      pointElement.style.top = point.top;
+    }
+    if (point.left !== undefined) {
+      pointElement.style.left = point.left;
+    }
+    if (point.bottom !== undefined) {
+      pointElement.style.bottom = point.bottom;
+    }
+    if (point.right !== undefined) {
+      pointElement.style.right = point.right;
+    }
+
+    pointElement.style.transform = point.transform || ''; // Use default value if transform is undefined
+    pointElement.style.transform += ' translate(-50%, -50%)'; // Center the points
+    activeBorderContainer?.appendChild(pointElement);
+  });
   }
 };
 
