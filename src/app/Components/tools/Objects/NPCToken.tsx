@@ -1,9 +1,11 @@
+// Objects/NPCToken.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import defaultImage from '../../imgs/NPCAvatar.png';
 import { getGlobalActiveTool } from '../ToolPanel';
 import { StaticImageData } from 'next/image';
 import { setPanelVisibility } from '@/app/state/panelVisibility';
 import { setActiveElement } from '@/app/state/ActiveElement';
+import { getZoomScaleFactor } from '../useTools/useZoom';
 
 interface NPCTokenProps {
   name?: string;
@@ -27,15 +29,17 @@ const NPCToken: React.FC<NPCTokenProps> = ({
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       if (isDragging && tokenRef.current) {
-        const updatedX = event.clientX - tokenRef.current.offsetWidth + 30;
-        const updatedY = event.clientY - tokenRef.current.offsetHeight + 40;
+        const scaleFactor = getZoomScaleFactor();
+        const canvasOffsetX = offsetX / scaleFactor;
+        const canvasOffsetY = offsetY / scaleFactor;
+        const updatedX = (event.clientX - canvasOffsetX - tokenRef.current.offsetWidth / 2) / scaleFactor;
+        const updatedY = ((event.clientY - canvasOffsetY - tokenRef.current.offsetHeight / 2) / scaleFactor);
         setPosition({ x: updatedX, y: updatedY });
       }
     };
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      /* setIsNPCEditorVisible(true); */
     };
 
     if (isDragging) {
@@ -52,32 +56,32 @@ const NPCToken: React.FC<NPCTokenProps> = ({
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.preventDefault();
     
-    // Check if the active tool is 'Move Tool' before enabling dragging
     const activeTool = getGlobalActiveTool();
-    if (activeTool === 'Move Tool') {
+    if (activeTool === 'Move Tool' && tokenRef.current) {
+      const scaleFactor = getZoomScaleFactor();
+      const canvasOffsetX = offsetX / scaleFactor;
+      const canvasOffsetY = offsetY / scaleFactor;
+      const updatedX = (event.clientX - canvasOffsetX - tokenRef.current.offsetWidth / 2) / scaleFactor;
+      const updatedY = ((event.clientY - canvasOffsetY - tokenRef.current.offsetHeight / 2) / scaleFactor);
+      setPosition({ x: updatedX, y: updatedY });
       setIsDragging(true);
     }
-    else if(activeTool === 'Cursor Tool')
-    {
+    else if(activeTool === 'Cursor Tool') {
       setActiveElement(tokenRef.current);
-      setPanelVisibility('npcEditorPanelWrapper',true);
+      setPanelVisibility('npcEditorPanelWrapper', true);
     }
   };
+  
 
   const handleWindowOpen = () => {
-    // Calculate offset when the window is opened
     const windowOffsetX = 3000; // Adjust this value based on your requirements
     const windowOffsetY = 50; // Adjust this value based on your requirements
     setOffsetX(windowOffsetX);
     setOffsetY(windowOffsetY);
   };
 
-  const activeTool = getGlobalActiveTool();
-
   useEffect(() => {
-    // Event listener to detect window opening
     window.addEventListener('openWindow', handleWindowOpen);
-
     return () => {
       window.removeEventListener('openWindow', handleWindowOpen);
     };
@@ -85,24 +89,21 @@ const NPCToken: React.FC<NPCTokenProps> = ({
 
   return (
     <div className='NpcToken'
-      id={'NpcToken'} // Set id attribute
+      id={'NpcToken'} 
       ref={tokenRef}
       style={{
         position: 'absolute',
         left: position.x,
         top: position.y,
-        cursor: activeTool === 'Move Tool' ? (isDragging ? 'grabbing' : 'grab') : 'auto',
+        cursor: getGlobalActiveTool() === 'Move Tool' ? (isDragging ? 'grabbing' : 'grab') : 'auto',
       }}
       onMouseDown={handleMouseDown}
     >
-      {/* Render the token image */}
       {src !== undefined ? (
         <img src={typeof src === 'string' ? src : src.src} alt={name} style={{ width: '70px', height: '60px' }} />
       ) : (
         <img src={defaultImage.src} alt={name} style={{ width: '70px', height: '60px' }} />
       )}
-
-      {/* Render the token name */}
       <p style={{ color: 'black', margin: 0, textAlign: 'center' }}>{name}</p>
     </div>
   );

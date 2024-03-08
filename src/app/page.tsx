@@ -75,12 +75,12 @@ const Home: React.FC = () => {
       <div id="npcEditorPanelWrapper" style={{display: 'none', zIndex: 998 }}>
         <NpcEditorPanel />
       </div>
-      <div style={{ transform: `scale(${getZoomScaleFactor()})`  }}>
+      <div id="zoom" style={{ position: 'absolute', transform: `scale(${getZoomScaleFactor()})`, left: '50%', top: '50%', transformOrigin: 'center center'  }}>
       <div style={{ overflow: 'hidden', maxHeight: '99vh'  }}>
         {canvasList.map((canvasId, index) => (
           <React.Fragment key={canvasId}>
             {!isCanvasHidden[canvasId] && (
-              <div id="tezu" style={{ zIndex: index + 1, position: 'absolute', top: 0, left: 0 }}>
+              <div id = 'canvas' style={{ zIndex: index + 1, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
                 {/* Set z-index to index + 1 to ensure each canvas is placed above the others */}
                 <CanvasProvider canvasId={canvasId} strokeColor={currentColor} scaleFactor={getZoomScaleFactor()} >
                   <Canvas />

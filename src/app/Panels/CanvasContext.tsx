@@ -39,7 +39,7 @@ interface Stroke {
   color: string;
 }
 
-export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor }) => {
+export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState("black");
   const [selectedObject, setSelectedObject] = useState< typeof NPCToken | null>(null);
@@ -51,8 +51,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [initialPoint, setInitialPoint] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
   const [npcTokens, setNpcTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
-  const [scaleFactor, setScaleFactor] = useState(1); // Track the current scale factor
-
+  
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -129,15 +128,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         case 'Move Tool':
           // Implement move tool functionality
           break;
-        case 'Zoom Tool':
-          if (event.button === 0) {
-            // Left click for zoom in
-            zoomIn();
-          } else if (event.button === 2) {
-            // Right click for zoom out
-            zoomOut();
-          }
-          break;
         case 'Cursor Tool':
             setActiveElement(null);
             break;  
@@ -166,25 +156,37 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   };
 
   const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    //const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
-    const offsetX = nativeEvent.clientX-30;
-    const offsetY = nativeEvent.clientY-20;
-    //check for panels from all sides to fix offset
-    // Create a new NPC token with default values
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+  
+    // Get the bounding rectangle of the canvas
+    const canvasRect = canvas.getBoundingClientRect();
+  
+    // Calculate the offset of the mouse event relative to the canvas
+    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
+    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
+  
+    // Adjust the offset based on the scale factor
+    const scaledOffsetX = (offsetX / scaleFactor) - (30 * (scaleFactor));
+    const scaledOffsetY = (offsetY / scaleFactor) - (20 * (scaleFactor));
+  
+    // Create a new NPC token with adjusted coordinates
     const newToken = (
       <NPCToken
         key={npcTokens.length} // Use a unique key for each token
-        x={offsetX}
-        y={offsetY}
+        x={scaledOffsetX}
+        y={scaledOffsetY}
       />
     );
-
+  
     // Update the state to include the new NPC token
     setNpcTokens((prevTokens) => [...prevTokens, newToken]);
-
+  
     // Log the activity (optional)
-    addActivity(`Created NPC at coordinates ${offsetX}, ${offsetY}`);
+    addActivity(`Created NPC at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
   };
+  
+  
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -276,21 +278,27 @@ const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => 
     if (canvas) {
       const context = canvas.getContext("2d");
       if (context) {
-        context.fillStyle = "white";
+        //context.fillStyle = "white";
         context.fillRect(0, 0, canvas.width, canvas.height);
+        const gridSize = 50; // Adjust grid size as needed
+        context.strokeStyle = "#ccc"; // Set grid color
+        for (let x = gridSize; x < canvas.width; x += gridSize) {
+          for (let y = gridSize; y < canvas.height; y += gridSize) {
+            context.beginPath();
+            context.moveTo(x, 0);
+            context.lineTo(x, canvas.height);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(0, y);
+            context.lineTo(canvas.width, y);
+            context.stroke();
+          }
+        }
         setStrokes([]);
         setSelectedObject(null);
         setMousePosition(null); // Reset mouse position when clearing the canvas
       }
     }
-  };
-
-  const zoomIn = () => {
-    setScaleFactor(scaleFactor * 1.1); // Increase scale factor by 10%
-  };
-
-  const zoomOut = () => {
-    setScaleFactor(scaleFactor / 1.1); // Decrease scale factor by 10%
   };
 
   // Update the context value to include isDragging
@@ -315,8 +323,10 @@ const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => 
 
   return (
     <CanvasContext.Provider value={contextValue}>
+     {/* <div style={{position: 'absolute'}}> {children}
+      {/* Render NPC tokens as children }
+      {npcTokens}</div> */}
       {children}
-      {/* Render NPC tokens as children */}
       {npcTokens}
     </CanvasContext.Provider>
   );
