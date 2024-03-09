@@ -9,6 +9,9 @@ import { faUser, faBriefcase, faDice, faTimes } from '@fortawesome/free-solid-sv
 import { ChromePicker, ColorResult } from 'react-color';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 import { togglePanelVisibility , setPanelVisibility } from '../state/panelVisibility';
+import { getActiveElement } from '../state/ActiveElement';
+import NPCTokenProps from '../Components/tools/Objects/NPCToken';
+import NPCToken from '../Components/tools/Objects/NPCToken';
 /* import { setIsPaletteVisibleState, getIsPaletteVisibleState, usePalette } from '../Components/tools/useTools/usePalette'; */
 
 // Global variable to track the visibility of the NPC editor window
@@ -22,7 +25,7 @@ export const LeftPanel: React.FC = () => {
   });
 
   return (
-    <div className={`w-1/7 h-full bg-left-panel `}>
+    <div className={`w-1/7 h-full `}>
       <div className={`w-1/7 h-full bg-left-panel rounded z-10 relative ${isDragging ? 'opacity-50' : ''}`}>
         {/* Draggable area at the top of the left panel */}
         <div ref={drag} className="absolute top-0 left-0 w-full h-5 bg-#232323"></div>
@@ -86,10 +89,9 @@ export const NpcEditorPanel: React.FC = () => {
   const [race, setRace] = useState('');
   const [description, setDescription] = useState('');
 
-  const races = ['human', 'elf', 'orc', 'dwarf']; // Add more races as needed
+  const races = ['human', 'elf', 'orc', 'dwarf'];
 
   const handleDiceRoll = () => {
-    // Implement dice rolling logic here
     alert('Dice rolled!');
   };
 
@@ -102,6 +104,34 @@ export const NpcEditorPanel: React.FC = () => {
     setPanelVisibility('npcEditorPanelWrapper', false);
   };
 
+  const handleInputChange = (propertyName: string, value: string) => {
+    const activeElement = getActiveElement()?.getElementsByClassName('NpcToken')[0] as HTMLElement;
+    // Check if the active element has the class 'NpcToken'
+    if (activeElement) {
+        // Assuming NPCToken is a class or interface that defines the properties setName, setJob, setRace, and setDescription
+        const npcToken = activeElement as unknown as NPCToken;
+        switch (propertyName) {
+            case 'name':
+                npcToken.setName(value);
+                break;
+            case 'job':
+                npcToken.setJob(value);
+                break;
+            case 'race':
+                npcToken.setRace(value);
+                break;
+            case 'description':
+                npcToken.setDescription(value);
+                break;
+            default:
+                break;
+        }
+    }
+};
+
+
+
+  
   return (
     <div className={`w-1/7 h-full bg-editor-panel rounded z-10 relative`}>
       {/* NPC Editor Title */}
@@ -119,7 +149,10 @@ export const NpcEditorPanel: React.FC = () => {
           type="text"
           placeholder="Name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value);
+            handleInputChange('name', e.target.value);
+          }}
           className="flex-grow outline-none text-black"
         />
         <button className="ml-3 rounded hover:bg-gray-600" onClick={handleDiceRoll}>
@@ -134,7 +167,10 @@ export const NpcEditorPanel: React.FC = () => {
           type="text"
           placeholder="Job"
           value={job}
-          onChange={(e) => setJob(e.target.value)}
+          onChange={(e) => {
+            setJob(e.target.value);
+            handleInputChange('job', e.target.value);
+          }}
           className="flex-grow outline-none text-black"
         />
         <button className=" ml-3 rounded hover:bg-gray-600" onClick={handleDiceRoll}>
@@ -146,7 +182,10 @@ export const NpcEditorPanel: React.FC = () => {
       <div className="flex items-center border border-gray-300 rounded p-3 mb-4 mx-4">
         <select
           value={race}
-          onChange={(e) => setRace(e.target.value)}
+          onChange={(e) => {
+            setRace(e.target.value);
+            handleInputChange('race', e.target.value);
+          }}
           className="flex-grow outline-none text-black"
         >
           <option value="" disabled>
@@ -167,7 +206,10 @@ export const NpcEditorPanel: React.FC = () => {
       <textarea
         placeholder="Description"
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={(e) => {
+          setDescription(e.target.value);
+          handleInputChange('description', e.target.value);
+        }}
         className="border border-gray-300 rounded p-3 mb-3 mx-4 h-96 outline-none resize-none text-black bg-272424  "
       ></textarea>
   

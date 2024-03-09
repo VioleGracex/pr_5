@@ -1,83 +1,85 @@
-// Objects/NPCToken.tsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { Component } from 'react';
 import defaultImage from '../../imgs/NPCAvatar.png';
 import { getGlobalActiveTool } from '../ToolPanel';
 import { StaticImageData } from 'next/image';
 import { setPanelVisibility } from '@/app/state/panelVisibility';
 import { setActiveElement } from '@/app/state/ActiveElement';
 import { getZoomScaleFactor } from '../useTools/useZoom';
+import { addActivity } from '@/app/Panels/ConsoleBar';
 
 interface NPCTokenProps {
   name?: string;
+  race?: string;
+  job?: string;
+  description?: string;
   x?: number;
   y?: number;
   src?: string | StaticImageData;
 }
 
-const NPCToken: React.FC<NPCTokenProps> = ({
-  name = 'npc',
-  x = 0,
-  y = 0,
-  src = defaultImage,
-}) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState<{ x: number; y: number }>({ x, y });
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
-  const tokenRef = useRef<HTMLDivElement>(null);
+class NPCToken extends Component<NPCTokenProps> {
+  state = {
+    isDragging: false,
+    position: { x: this.props.x || 0, y: this.props.y || 0 },
+    offsetX: 0,
+    offsetY: 0,
+  };
 
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      if (isDragging && tokenRef.current) {
-        const scaleFactor = getZoomScaleFactor();
-        const canvasOffsetX = offsetX / scaleFactor;
-        const canvasOffsetY = offsetY / scaleFactor;
-        const updatedX = (event.clientX - canvasOffsetX - tokenRef.current.offsetWidth / 2) / scaleFactor;
-        const updatedY = ((event.clientY - canvasOffsetY - tokenRef.current.offsetHeight / 2) / scaleFactor);
-        setPosition({ x: updatedX, y: updatedY });
-      }
-    };
+  tokenRef = React.createRef<HTMLDivElement>();
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
+  setName = (value: string) => {
+    // Implement the logic to set the name state here
+    this.setState({ name: value });
+  };
 
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
+  setJob = (value: string) => {
+    // Implement the logic to set the job state here
+    this.setState({ job: value });
+  };
 
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, offsetX, offsetY]);
+  setRace = (value: string) => {
+    // Implement the logic to set the race state here
+    this.setState({ race: value });
+  };
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  setDescription = (value: string) => {
+    // Implement the logic to set the description state here
+    this.setState({ description: value });
+  };
+
+  handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.preventDefault();
-    
+    const { isDragging } = this.state;
+    const { current } = this.tokenRef;
+
+    if (!current) return;
+
     const activeTool = getGlobalActiveTool();
-    if (activeTool === 'Move Tool' && tokenRef.current) {
-      const scaleFactor = getZoomScaleFactor();
-      const canvasOffsetX = offsetX / scaleFactor;
-      const canvasOffsetY = offsetY / scaleFactor;
-      const updatedX = (event.clientX - canvasOffsetX - tokenRef.current.offsetWidth / 2) / scaleFactor;
-      const updatedY = ((event.clientY - canvasOffsetY - tokenRef.current.offsetHeight / 2) / scaleFactor);
-      setPosition({ x: updatedX, y: updatedY });
-      setIsDragging(true);
-    }
-    else if(activeTool === 'Cursor Tool') {
-      setActiveElement(tokenRef.current);
+    if (activeTool === 'Move Tool') {
+       // set is dragging true
+       this.setState({ isDragging: true });
+    } else if (activeTool === 'Cursor Tool') {
+      setActiveElement(current);
       setPanelVisibility('npcEditorPanelWrapper', true);
     }
   };
-  
 
-  const handleWindowOpen = () => {
-    const windowOffsetX = 3000; // Adjust this value based on your requirements
-    const windowOffsetY = 50; // Adjust this value based on your requirements
-    setOffsetX(windowOffsetX);
-    setOffsetY(windowOffsetY);
+  handleMouseMove = (event: MouseEvent) => {
+    const { isDragging, position, offsetX, offsetY } = this.state;
+    addActivity("isDragging" + isDragging);
+    if (isDragging && this.tokenRef.current) {
+      addActivity("isdrag");
+      const scaleFactor = getZoomScaleFactor();
+      const canvasOffsetX = offsetX / scaleFactor;
+      const canvasOffsetY = offsetY / scaleFactor;
+      const updatedX = (event.clientX - canvasOffsetX - this.tokenRef.current.offsetWidth / 2) / scaleFactor;
+      const updatedY = (event.clientY - canvasOffsetY - this.tokenRef.current.offsetHeight / 2) / scaleFactor;
+      this.setState({ position: { x: updatedX, y: updatedY } });
+    }
+  };
+
+  handleMouseUp = () => {
+    this.setState({ isDragging: false });
   };
 
   useEffect(() => {
@@ -108,5 +110,6 @@ const NPCToken: React.FC<NPCTokenProps> = ({
     </div>
   );
 };
+}
 
 export default NPCToken;

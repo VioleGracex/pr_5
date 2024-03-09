@@ -91,10 +91,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 1080,
         "resizable": true,
-        "title": "pr_5",
-        "width": 800,
+        "title": "CityWise",
+        "width": 1920,
         "decorations": false
       }
     ]
