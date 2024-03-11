@@ -26,6 +26,7 @@ interface NPCTokenState {
   race: string;
   description: string;
   src: string; // Change src type to string for file paths
+  index: number; // Add index property to the state
 }
 
 class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
@@ -39,6 +40,7 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
     race: this.props.race || '',
     description: this.props.description || '',
     src: this.props.src || defaultImage.src,
+    index: 0, // Initialize index property
   };
 
   tokenRef = React.createRef<HTMLDivElement>();
@@ -64,6 +66,11 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
     this.setState({ src: value });
   };
 
+  setIndex = (value: number) => {
+    this.setState({ index: value });
+  };
+
+  
   getName = () => {
     return this.state.name || '';
   };
@@ -82,6 +89,10 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
 
   getSrc = () => {
     return this.state.src || defaultImage.src;
+  };
+
+  getIndex = () => {
+    return this.state.index;
   };
 
   handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

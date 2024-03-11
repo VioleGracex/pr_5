@@ -3,7 +3,7 @@ import React, { createContext, useContext, useRef, useState, ReactNode, SetState
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
 import NPCToken from "../Components/tools/Objects/NPCToken";
-import { setActiveElement, setActiveNpcToken } from "../state/ActiveElement";
+import { getActiveNpcToken, setActiveElement, setActiveNpcToken } from "../state/ActiveElement";
 
 interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -22,7 +22,7 @@ interface CanvasContextProps {
   setSelectedObject: Dispatch<SetStateAction< typeof NPCToken | null>>;
   mousePosition: { x: number; y: number } | null;
   setMousePosition: Dispatch<SetStateAction<{ x: number; y: number } | null>>;
-
+  deleteNPCToken: (index: number) => void; // Define deleteNPCToken function
 }
 
 const CanvasContext = createContext<CanvasContextProps | undefined>(undefined);
@@ -113,7 +113,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
   
-
+  
   const startactivity = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const activeTool = getGlobalActiveTool();
     if (activeTool) {
@@ -304,6 +304,11 @@ const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => 
     }
   };
 
+  const deleteNPCToken = (index: number) => {
+    setNpcTokens((prevTokens) => prevTokens.filter((_, i) => i !== index));
+    // Optionally, you can add additional cleanup logic here if needed
+  };
+
   // Update the context value to include isDragging
   const contextValue: CanvasContextProps = {
     canvasRef,
@@ -322,6 +327,7 @@ const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => 
     setSelectedObject,
     mousePosition,
     setMousePosition,
+    deleteNPCToken,
   };
 
   return (
