@@ -1,6 +1,7 @@
 // state/ActiveElement.ts
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
 import { addActivity } from "../Panels/ConsoleBar";
+import NPCToken from "../Components/tools/Objects/NPCToken";
 
 let activeElement: HTMLElement | null = null;
 let activeBorderContainer: HTMLDivElement | null = null;
@@ -113,3 +114,92 @@ export const getActiveElement = () => {
 // Add event listener for mouse down events
 document.addEventListener('mousedown', handleMouseDown); */
 
+
+// Example usage:
+let activeNpcToken: NPCToken | null = null;
+let activeRedBorderContainer: HTMLDivElement | null = null;
+
+export const setActiveNpcToken = (element: NPCToken | null) => {
+  if (activeNpcToken !== element) {
+    activeNpcToken = element;
+    if (activeRedBorderContainer) {
+      activeRedBorderContainer.remove(); // Remove existing border container if changing active element
+      activeRedBorderContainer = null;
+    }
+    if (activeNpcToken) {
+      createRedBorder(activeNpcToken.tokenRef.current);
+    }
+  }
+};
+
+export const getActiveNpcToken = () => {
+  return activeNpcToken;
+};
+
+const createRedBorder = (element: HTMLElement | null) => {
+  if (!element) return; // Exit if element is null
+
+  // Remove existing border container if any
+  if (activeRedBorderContainer) {
+    activeRedBorderContainer.remove();
+    activeRedBorderContainer = null;
+  }
+
+  // Create a new border container
+  activeRedBorderContainer = document.createElement('div');
+  activeRedBorderContainer.style.position = 'absolute';
+  activeRedBorderContainer.style.top = '0';
+  activeRedBorderContainer.style.left = '0';
+  activeRedBorderContainer.style.width = '100%';
+  activeRedBorderContainer.style.height = '100%';
+  element.appendChild(activeRedBorderContainer);
+
+  // Create a red border
+  const borderWidth = '2px';
+  const borderColor = 'red';
+  const borderStyle = `solid ${borderWidth} ${borderColor}`;
+  activeRedBorderContainer.style.border = borderStyle;
+  activeRedBorderContainer.style.pointerEvents = 'none';
+
+  // Create points for each corner and middle of each side
+  const points = [
+    { top: '-2px', left: '-2px' }, // Top-left corner
+    { top: '-2px', right: '-8px' }, // Top-right corner
+    { bottom: '-6px', left: '-3px' }, // Bottom-left corner
+    { bottom: '-6px', right: '-8px' }, // Bottom-right corner
+    { top: '50%', left: '-2px', transform: 'translateY(-50%)' }, // Left middle
+    { top: '-2px', left: '50%', transform: 'translateX(-50%)' }, // Top middle
+    { bottom: '-10px', left: '50%', transform: 'translateX(-50%)' }, // Bottom middle
+    { top: '50%', right: '-10px', transform: 'translateY(-50%)' }, // Right middle
+  ];
+
+  // Draw points around the border
+  points.forEach(point => {
+    const pointElement = document.createElement('div');
+    pointElement.style.position = 'absolute';
+    pointElement.style.width = '8px';
+    pointElement.style.height = '8px';
+    pointElement.style.backgroundColor = 'black';
+    pointElement.style.borderRadius = '50%';
+
+    // Adjust point coordinates relative to the border container
+    if (point.top !== undefined) {
+      pointElement.style.top = point.top;
+    }
+    if (point.left !== undefined) {
+      pointElement.style.left = point.left;
+    }
+    if (point.bottom !== undefined) {
+      pointElement.style.bottom = point.bottom;
+    }
+    if (point.right !== undefined) {
+      pointElement.style.right = point.right;
+    }
+
+    pointElement.style.transform = point.transform || '';
+    pointElement.style.transform += ' translate(-50%, -50%)';
+    activeRedBorderContainer?.appendChild(pointElement);
+  });
+};
+
+export default createRedBorder;

@@ -3,7 +3,7 @@ import React, { createContext, useContext, useRef, useState, ReactNode, SetState
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
 import NPCToken from "../Components/tools/Objects/NPCToken";
-import { setActiveElement } from "../state/ActiveElement";
+import { setActiveElement, setActiveNpcToken } from "../state/ActiveElement";
 
 interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -130,6 +130,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           break;
         case 'Cursor Tool':
             setActiveElement(null);
+            setActiveNpcToken(null);
             break;  
         default:
           addActivity(`Selected ${activeTool}`);

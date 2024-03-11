@@ -1,4 +1,3 @@
-// toolConfig.ts
 import usePencil from './useTools/usePencil';
 import {
   faArrowsAlt,
@@ -70,5 +69,3 @@ const toolsExtra: Tool[] = [
 ];
 
 export { toolsMain, toolsExtra };
-
-

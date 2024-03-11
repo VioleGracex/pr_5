@@ -6,6 +6,7 @@ import ToolIcon from './ToolIcon';
 import ContextMenu from './ContextMenu';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 import { toolsMain, toolsExtra } from './toolConfig';
+import { getIsWriting } from '@/app/state/isWriting';
 
 let globalactiveTool: string | null = null;
 
@@ -143,6 +144,9 @@ const ToolPanel: React.FC = () => {
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    addActivity("is writing" + getIsWriting());
+    if(getIsWriting())
+      return;
     if (document.hasFocus()) {
       const matchingTool = tools.find((tool) => tool.shortcut === event.key.toUpperCase());
   

@@ -9,9 +9,10 @@ import { faUser, faBriefcase, faDice, faTimes } from '@fortawesome/free-solid-sv
 import { ChromePicker, ColorResult } from 'react-color';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 import { togglePanelVisibility , setPanelVisibility } from '../state/panelVisibility';
-import { getActiveElement } from '../state/ActiveElement';
+import {getActiveNpcToken } from '../state/ActiveElement';
 import NPCTokenProps from '../Components/tools/Objects/NPCToken';
 import NPCToken from '../Components/tools/Objects/NPCToken';
+import { setIsWriting } from '../state/isWriting';
 /* import { setIsPaletteVisibleState, getIsPaletteVisibleState, usePalette } from '../Components/tools/useTools/usePalette'; */
 
 // Global variable to track the visibility of the NPC editor window
@@ -105,23 +106,23 @@ export const NpcEditorPanel: React.FC = () => {
   };
 
   const handleInputChange = (propertyName: string, value: string) => {
-    const activeElement = getActiveElement()?.getElementsByClassName('NpcToken')[0] as HTMLElement;
-    // Check if the active element has the class 'NpcToken'
-    if (activeElement) {
-        // Assuming NPCToken is a class or interface that defines the properties setName, setJob, setRace, and setDescription
-        const npcToken = activeElement as unknown as NPCToken;
+    setIsWriting(true);
+    const activeNpcToken = getActiveNpcToken();
+    
+    if (activeNpcToken) {
         switch (propertyName) {
             case 'name':
-                npcToken.setName(value);
+              activeNpcToken.setName(value);
+                addActivity('called set name');
                 break;
             case 'job':
-                npcToken.setJob(value);
+              activeNpcToken.setJob(value);
                 break;
             case 'race':
-                npcToken.setRace(value);
+              activeNpcToken.setRace(value);
                 break;
             case 'description':
-                npcToken.setDescription(value);
+              activeNpcToken.setDescription(value);
                 break;
             default:
                 break;
@@ -129,20 +130,19 @@ export const NpcEditorPanel: React.FC = () => {
     }
 };
 
-
-
+  const handleInputBlur = () => {
+    setIsWriting(false);
+  };
   
   return (
     <div className={`w-1/7 h-full bg-editor-panel rounded z-10 relative`}>
-      {/* NPC Editor Title */}
       <div className="flex justify-between items-center mt-4 ml-4 mb-4">
         <p className="text-lg font-semibold">NPC Editor</p>
-        <button className="  hover:bg-gray-1000 text-gray-200 px-2 py-1 mr-4 mb-3" onClick={handleClosePanel}>
+        <button className="hover:bg-gray-1000 text-gray-200 px-2 py-1 mr-4 mb-3" onClick={handleClosePanel}>
           <FontAwesomeIcon icon={faTimes} />
         </button>
       </div>
-  
-      {/* Input Box for NPC Name */}
+
       <div className="flex items-center border border-gray-300 rounded p-3 mb-4 mx-4">
         <FontAwesomeIcon icon={faUser} className="mr-2" />
         <input
@@ -153,14 +153,14 @@ export const NpcEditorPanel: React.FC = () => {
             setName(e.target.value);
             handleInputChange('name', e.target.value);
           }}
+          onBlur={handleInputBlur}
           className="flex-grow outline-none text-black"
         />
         <button className="ml-3 rounded hover:bg-gray-600" onClick={handleDiceRoll}>
           <FontAwesomeIcon icon={faDice} />
         </button>
       </div>
-  
-      {/* Input Box for NPC Job */}
+
       <div className="flex items-center border border-gray-300 rounded p-3 mb-4 mx-4">
         <FontAwesomeIcon icon={faBriefcase} className="mr-2" />
         <input
@@ -171,14 +171,14 @@ export const NpcEditorPanel: React.FC = () => {
             setJob(e.target.value);
             handleInputChange('job', e.target.value);
           }}
+          onBlur={handleInputBlur}
           className="flex-grow outline-none text-black"
         />
-        <button className=" ml-3 rounded hover:bg-gray-600" onClick={handleDiceRoll}>
+        <button className="ml-3 rounded hover:bg-gray-600" onClick={handleDiceRoll}>
           <FontAwesomeIcon icon={faDice} />
         </button>
       </div>
-  
-      {/* Dropdown for NPC Race */}
+
       <div className="flex items-center border border-gray-300 rounded p-3 mb-4 mx-4">
         <select
           value={race}
@@ -186,6 +186,7 @@ export const NpcEditorPanel: React.FC = () => {
             setRace(e.target.value);
             handleInputChange('race', e.target.value);
           }}
+          onBlur={handleInputBlur}
           className="flex-grow outline-none text-black"
         >
           <option value="" disabled>
@@ -201,8 +202,7 @@ export const NpcEditorPanel: React.FC = () => {
           <FontAwesomeIcon icon={faDice} />
         </button>
       </div>
-  
-      {/* Input Box for NPC Description */}
+
       <textarea
         placeholder="Description"
         value={description}
@@ -210,10 +210,10 @@ export const NpcEditorPanel: React.FC = () => {
           setDescription(e.target.value);
           handleInputChange('description', e.target.value);
         }}
+        onBlur={handleInputBlur}
         className="border border-gray-300 rounded p-3 mb-3 mx-4 h-96 outline-none resize-none text-black bg-272424  "
       ></textarea>
-  
-      {/* Dice Roll Button with faDice icon */}
+
       <button
         className="rounded hover:bg-gray-600"
         onClick={handleDiceRoll}
