@@ -5,7 +5,7 @@ import { useDrag } from 'react-dnd';
 import { ItemTypes } from '../Components/Constants';
 import { justDrag } from '../Components/Functions/TitleFunctions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faBriefcase, faDice, faTimes, faSync  } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faBriefcase, faDice, faTimes, faSync, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { ChromePicker, ColorResult } from 'react-color';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 import { togglePanelVisibility , setPanelVisibility, getPanelVisibility } from '../state/panelVisibility';
@@ -92,6 +92,8 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
   const [job, setJob] = useState('');
   const [race, setRace] = useState('');
   const [description, setDescription] = useState('');
+  const [src, setSrc] = useState('');
+  const [filePath, setFilePath] = useState<string>(''); // State to hold file path
   
   const races = ['human', 'elf', 'orc', 'dwarf'];
 
@@ -144,6 +146,7 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
       setJob(token.getJob());
       setRace(token.getRace());
       setDescription(token.getDescription());
+      setSrc(token.getSrc());
     } else {
       clearFields();
     }
@@ -155,6 +158,42 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
     setRace('');
     setDescription('');
   }
+
+  // Function to handle image upload
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    token = getActiveNpcToken();
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file size
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
+      if (file.size > maxSizeInBytes) {
+        addActivity('File size exceeds the limit of 5MB. Please choose a smaller file.');
+        return;
+      }
+
+      // Check file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        addActivity('Invalid file type. Please select a JPEG, PNG, or GIF file.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        if (token) {
+          token.setSrc(dataUrl);
+          addActivity('Image uploaded');
+        }
+      };
+      reader.readAsDataURL(file);
+
+      // Set file path
+      setFilePath(file.name); // Assuming file name as the file path for simplicity
+    } else {
+      addActivity('No file selected. Please choose an image file.');
+    }
+  };
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -182,7 +221,6 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
       document.body.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-  
 
   return (
     <div className={`w-1/7 h-full bg-editor-panel rounded z-10 relative`}>
@@ -264,7 +302,23 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
         }}
         onBlur={handleInputBlur}
         className="border border-gray-300 rounded p-3 mb-3 mx-4 h-96 outline-none resize-none text-black bg-272424  "
-      ></textarea>    
+      ></textarea>   
+      <div className="flex items-center border border-gray-300 rounded p-3 mb-4 mx-4">
+        <div>
+          <p className="text-lg font-semibold">Token Icon</p>
+          <div style={{ width: '70px', height: '70px', borderRadius: '50%', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <img src={src} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' }} />
+          </div>
+        </div>
+        <div className="ml-4">
+          <label htmlFor="upload" className="cursor-pointer bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300">
+            <FontAwesomeIcon icon={faUpload} className="mr-2" /> Browse
+            <input id="upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          </label>
+        </div>
+      </div> 
+      {/* File path display under the upload box */}
+      <div className="text-xs text-gray-500 mx-4 mb-2">{filePath}</div>
     </div>
   );    
 }; 

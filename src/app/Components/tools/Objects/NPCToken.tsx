@@ -1,10 +1,8 @@
-// Objects/NPCToken.tsx
 import React, { Component } from 'react';
 import defaultImage from '../../imgs/NPCAvatar.png';
 import { getGlobalActiveTool } from '../ToolPanel';
-import { StaticImageData } from 'next/image';
 import { setPanelVisibility } from '@/app/state/panelVisibility';
-import { setActiveElement, setActiveNpcToken } from '@/app/state/ActiveElement';
+import { setActiveNpcToken } from '@/app/state/ActiveElement';
 import { getZoomScaleFactor } from '../useTools/useZoom';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 
@@ -15,7 +13,7 @@ interface NPCTokenProps {
   description?: string;
   x?: number;
   y?: number;
-  src?: string | StaticImageData;
+  src?: string; // Change src type to string for file paths
 }
 
 interface NPCTokenState {
@@ -23,10 +21,11 @@ interface NPCTokenState {
   position: { x: number; y: number };
   offsetX: number;
   offsetY: number;
-  name: string; // Define the name property in the state
-  job: string; // Define the job property in the state
-  race: string; // Define the race property in the state
-  description: string; // Define the description property in the state
+  name: string;
+  job: string;
+  race: string;
+  description: string;
+  src: string; // Change src type to string for file paths
 }
 
 class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
@@ -35,10 +34,11 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
     position: { x: this.props.x || 0, y: this.props.y || 0 },
     offsetX: 0,
     offsetY: 0,
-    name: this.props.name || '', // Initialize name with default value from props
-    job: this.props.job || '', // Initialize job with default value from props
-    race: this.props.race || '', // Initialize race with default value from props
-    description: this.props.description || '', // Initialize description with default value from props
+    name: this.props.name || '',
+    job: this.props.job || '',
+    race: this.props.race || '',
+    description: this.props.description || '',
+    src: this.props.src || defaultImage.src,
   };
 
   tokenRef = React.createRef<HTMLDivElement>();
@@ -60,6 +60,10 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
     this.setState({ description: value });
   };
 
+  setSrc = (value: string) => {
+    this.setState({ src: value });
+  };
+
   getName = () => {
     return this.state.name || '';
   };
@@ -74,6 +78,10 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
 
   getDescription = () => {
     return this.state.description || '';
+  };
+
+  getSrc = () => {
+    return this.state.src || defaultImage.src;
   };
 
   handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -127,7 +135,6 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
 
   render() {
     const { position, isDragging } = this.state;
-    const { name = '', job = '', description = '', race = '', src } = this.props;
 
     return (
       <div
@@ -142,15 +149,16 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
         }}
         onMouseDown={this.handleMouseDown}
       >
-        {src !== undefined ? (
-          <img src={typeof src === 'string' ? src : src.src} alt={this.state.name} style={{ width: '70px', height: '60px' }} />
-        ) : (
-          <img src={defaultImage.src} alt={this.state.name} style={{ width: '70px', height: '60px' }} />
-        )}
+        <div style={{
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          overflow: 'hidden',
+          position: 'relative',
+        }}>
+          <img src={this.state.src} alt={defaultImage.src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
         <p style={{ color: 'black', margin: 0, textAlign: 'center' }}>{this.state.name}</p>
-        {/* <p style={{ color: 'black', margin: 0, textAlign: 'center' }}>{this.state.job}</p>
-        <p style={{ color: 'black', margin: 0, textAlign: 'center' }}>{this.state.description}</p>
-        <p style={{ color: 'black', margin: 0, textAlign: 'center' }}>{this.state.race}</p> */}
       </div>
     );
   }
