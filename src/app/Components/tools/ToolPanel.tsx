@@ -144,7 +144,6 @@ const ToolPanel: React.FC = () => {
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    addActivity("is writing" + getIsWriting());
     if(getIsWriting())
       return;
     if (document.hasFocus()) {

@@ -1,4 +1,6 @@
 // panelVisibility.ts
+import { addActivity } from "../Panels/ConsoleBar";
+
 interface PanelVisibility {
   [key: string]: boolean;
 }
@@ -23,6 +25,7 @@ export const togglePanelVisibility = (panelName: string) => {
 };
 
 export const setPanelVisibility = (panelName: string, isVisible: boolean) => {
+
   if (panelVisibility.hasOwnProperty(panelName)) {
     panelVisibility[panelName] = isVisible; // Set visibility status
     const panelDiv = document.getElementById(panelName);
@@ -32,3 +35,11 @@ export const setPanelVisibility = (panelName: string, isVisible: boolean) => {
   }
 };
 
+export const getPanelVisibility = (panelName: string): boolean | undefined => {
+  if (panelVisibility.hasOwnProperty(panelName)) {
+    return panelVisibility[panelName];
+  } else {
+    console.error(`Panel "${panelName}" does not exist.`);
+    return undefined;
+  }
+};

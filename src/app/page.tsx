@@ -19,9 +19,9 @@ const Home: React.FC = () => {
   const [isCanvasHidden, setIsCanvasHidden] = useState<{ [canvasId: string]: boolean }>(
     canvasList.reduce((acc, canvasId) => ({ ...acc, [canvasId]: false }), {})
   );
-
   // States for visibility of panels
   const [currentColor, setCurrentColor] = useState<string>("#000000");
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       handleShortcuts(event, shortcuts);
@@ -72,7 +72,7 @@ const Home: React.FC = () => {
       <div id="rightPanelWrapper" style={{ display: 'none' }}>
         <RightPanel numberOfLayers={layersStackRef.current.length} />
       </div>
-      <div id="npcEditorPanelWrapper" style={{display: 'block', zIndex: 998 }}>
+      <div id="npcEditorPanelWrapper" style={{display: 'none', zIndex: 998 }}>
         <NpcEditorPanel />
       </div>
       <div id="zoom" style={{ position: 'absolute', transform: `scale(${getZoomScaleFactor()})`, left: '50%', top: '50%', transformOrigin: 'center center'  }}>

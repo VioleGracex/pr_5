@@ -5,14 +5,13 @@ import { useDrag } from 'react-dnd';
 import { ItemTypes } from '../Components/Constants';
 import { justDrag } from '../Components/Functions/TitleFunctions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faBriefcase, faDice, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faBriefcase, faDice, faTimes, faSync  } from '@fortawesome/free-solid-svg-icons';
 import { ChromePicker, ColorResult } from 'react-color';
 import { addActivity } from '@/app/Panels/ConsoleBar';
-import { togglePanelVisibility , setPanelVisibility } from '../state/panelVisibility';
+import { togglePanelVisibility , setPanelVisibility, getPanelVisibility } from '../state/panelVisibility';
 import {getActiveNpcToken } from '../state/ActiveElement';
-import NPCTokenProps from '../Components/tools/Objects/NPCToken';
-import NPCToken from '../Components/tools/Objects/NPCToken';
 import { setIsWriting } from '../state/isWriting';
+import NPCToken from '../Components/tools/Objects/NPCToken';
 /* import { setIsPaletteVisibleState, getIsPaletteVisibleState, usePalette } from '../Components/tools/useTools/usePalette'; */
 
 // Global variable to track the visibility of the NPC editor window
@@ -84,12 +83,16 @@ export const RightPanel: React.FC<RightPanelProps> = ({ numberOfLayers }) => {
   );
 };
 
-export const NpcEditorPanel: React.FC = () => {
+interface NPCEditor {
+  token?: NPCToken | null;
+}
+
+export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
   const [name, setName] = useState('');
   const [job, setJob] = useState('');
   const [race, setRace] = useState('');
   const [description, setDescription] = useState('');
-
+  
   const races = ['human', 'elf', 'orc', 'dwarf'];
 
   const handleDiceRoll = () => {
@@ -103,46 +106,96 @@ export const NpcEditorPanel: React.FC = () => {
 
   const handleClosePanel = () => {
     setPanelVisibility('npcEditorPanelWrapper', false);
+    clearFields();
   };
 
   const handleInputChange = (propertyName: string, value: string) => {
     setIsWriting(true);
-    const activeNpcToken = getActiveNpcToken();
-    
-    if (activeNpcToken) {
-        switch (propertyName) {
-            case 'name':
-              activeNpcToken.setName(value);
-                addActivity('called set name');
-                break;
-            case 'job':
-              activeNpcToken.setJob(value);
-                break;
-            case 'race':
-              activeNpcToken.setRace(value);
-                break;
-            case 'description':
-              activeNpcToken.setDescription(value);
-                break;
-            default:
-                break;
-        }
+    token = getActiveNpcToken()
+    if (token) {
+      switch (propertyName) {
+        case 'name':
+          token.setName(value);
+          addActivity('called set name');
+          break;
+        case 'job':
+          token.setJob(value);
+          break;
+        case 'race':
+          token.setRace(value);
+          break;
+        case 'description':
+          token.setDescription(value);
+          break;
+        default:
+          break;
+      }
     }
-};
+  };
 
   const handleInputBlur = () => {
     setIsWriting(false);
   };
+
+  const refreshFields = () => {
+    token = getActiveNpcToken();
+    if (token) {
+      setName(token.getName());
+      setJob(token.getJob());
+      setRace(token.getRace());
+      setDescription(token.getDescription());
+    } else {
+      clearFields();
+    }
+  };
+
+  const clearFields= () => {
+    setName('');
+    setJob('');
+    setRace('');
+    setDescription('');
+  }
   
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (event.button === 0) { // Check if the left mouse button was clicked
+        /* if(getActiveNpcToken() !== token) // refresh rightaway with no closing
+        {
+          refreshFields();
+        } */
+        const panel = document.querySelector('.bg-editor-panel'); // Adjust selector based on your panel class
+        const npcToken = document.querySelector('NpcToken'); // Adjust selector based on your NPC token class
+        if (panel && !panel.contains(event.target as Node)) {
+          if (npcToken && !npcToken.contains(event.target as Node)) {
+            refreshFields();
+          } else {
+            handleClosePanel();
+            refreshFields();
+          }
+        }
+      }
+    };
+  
+    document.body.addEventListener('mousedown', handleClickOutside);
+  
+    return () => {
+      document.body.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [refreshFields]);
+  
+  
+
   return (
     <div className={`w-1/7 h-full bg-editor-panel rounded z-10 relative`}>
       <div className="flex justify-between items-center mt-4 ml-4 mb-4">
-        <p className="text-lg font-semibold">NPC Editor</p>
+        <p className="text-lg font-semibold">NPC Editor <button className="rounded hover:bg-gray-600" onClick={refreshFields}>
+        <FontAwesomeIcon icon={faSync} /> {/* Add the refresh icon */}
+        </button></p>
         <button className="hover:bg-gray-1000 text-gray-200 px-2 py-1 mr-4 mb-3" onClick={handleClosePanel}>
           <FontAwesomeIcon icon={faTimes} />
         </button>
       </div>
-
+  
       <div className="flex items-center border border-gray-300 rounded p-3 mb-4 mx-4">
         <FontAwesomeIcon icon={faUser} className="mr-2" />
         <input
@@ -160,7 +213,7 @@ export const NpcEditorPanel: React.FC = () => {
           <FontAwesomeIcon icon={faDice} />
         </button>
       </div>
-
+  
       <div className="flex items-center border border-gray-300 rounded p-3 mb-4 mx-4">
         <FontAwesomeIcon icon={faBriefcase} className="mr-2" />
         <input
@@ -178,7 +231,7 @@ export const NpcEditorPanel: React.FC = () => {
           <FontAwesomeIcon icon={faDice} />
         </button>
       </div>
-
+  
       <div className="flex items-center border border-gray-300 rounded p-3 mb-4 mx-4">
         <select
           value={race}
@@ -202,7 +255,7 @@ export const NpcEditorPanel: React.FC = () => {
           <FontAwesomeIcon icon={faDice} />
         </button>
       </div>
-
+  
       <textarea
         placeholder="Description"
         value={description}
@@ -212,18 +265,10 @@ export const NpcEditorPanel: React.FC = () => {
         }}
         onBlur={handleInputBlur}
         className="border border-gray-300 rounded p-3 mb-3 mx-4 h-96 outline-none resize-none text-black bg-272424  "
-      ></textarea>
-
-      <button
-        className="rounded hover:bg-gray-600"
-        onClick={handleDiceRoll}
-      >
-        <FontAwesomeIcon icon={faDice} />
-      </button>
+      ></textarea>    
     </div>
-  );  
-};
-
+  );    
+}; 
 
 interface PalettePanel {
   selectedColor: string;
