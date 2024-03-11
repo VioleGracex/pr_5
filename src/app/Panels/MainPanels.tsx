@@ -181,8 +181,7 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
     return () => {
       document.body.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [refreshFields]);
-  
+  }, []);
   
 
   return (
