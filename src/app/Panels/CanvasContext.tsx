@@ -19,7 +19,7 @@ interface CanvasContextProps {
   setStrokeColor: Dispatch<SetStateAction<string>>;
   npcTokens: React.ReactNode[];
   buildings: React.ReactNode[];
-  buildingStrokes: { path: { x: number; y: number }[]; color: string }[][];
+  buildingStrokes:  { path: { x: number; y: number }[]; color: string }[];
   canvasId: string;
   selectedObject:  typeof NPCToken | null;
   setSelectedObject: Dispatch<SetStateAction< typeof NPCToken | null>>;
@@ -38,7 +38,7 @@ interface CanvasProviderProps {
   scaleFactor: number;
 }
 
-interface Stroke {
+export interface Stroke {
   path: { x: number; y: number }[];
   color: string;
 }
@@ -46,7 +46,6 @@ interface Stroke {
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
 //#region [consts]
   const [isDrawing, setIsDrawing] = useState(false);
-  const [isBuilding, setIsBuilding] = useState(false);
   const [currentColor, setCurrentColor] = useState("black");
   const [selectedObject, setSelectedObject] = useState< typeof NPCToken | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number } | null>(null);
@@ -59,7 +58,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [npcTokens, setNpcTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [buildings, setBuildings] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number }[]>([]); // New state to store building points
-  const [buildingStrokes, setBuildingStrokes] = useState<{ path: { x: number; y: number }[]; color: string }[][]>([]);
+  const [buildingStrokes, setBuildingStrokes] = useState<Stroke[]>([]);
 //#endregion
 
 
@@ -207,20 +206,31 @@ const createBuilding = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) =>
 
   const { offsetX = 0, offsetY = 0 } = nativeEvent;
   const newPoint = { x: offsetX, y: offsetY };
+  const thresholdDistance = 10; // Define the threshold distance
+
+  // Check if the point is the first point
+  if (currentBuildingPoints.length > 2) 
+  {
+      // Calculate the distance between the new point and the first point
+      const distance = Math.sqrt((currentBuildingPoints[0].x - newPoint.x) ** 2 + (currentBuildingPoints[0].y - newPoint.y) ** 2);
+
+      // Check if the distance is within the threshold range
+      if (distance <= thresholdDistance) {
+        // If it is near the first point, call the finishBuilding function
+        finishBuilding();
+        return;
+      }
+  }
 
   // Check if the new point is too close to existing points
   const isTooClose = currentBuildingPoints.some((point) => {
     const distance = Math.sqrt((point.x - newPoint.x) ** 2 + (point.y - newPoint.y) ** 2);
-    return distance < 10; // Adjust the threshold distance as needed
+    return distance < thresholdDistance; // Adjust the threshold distance as needed
   });
 
   // If the new point is too close to existing points, return without adding it
   if (isTooClose) {
-    // Check if the point is the first point
-    if (currentBuildingPoints.length > 0 && currentBuildingPoints[0].x === newPoint.x && currentBuildingPoints[0].y === newPoint.y) {
-      // If it is the first point, call the finishBuilding function
-      finishBuilding();
-    }
+    
     return;
   }
 
@@ -233,38 +243,69 @@ const createBuilding = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) =>
   setCurrentBuildingPoints((prevPoints) => [...prevPoints, newPoint]);
 };
 
-  
   // Function to clear the points of the building currently under construction
   const clearCurrentBuildingPoints = () => {
     setCurrentBuildingPoints([]);
   };
   
-
   // Function to finish building creation
   const finishBuilding = () => {
-    setIsBuilding(false);
     if (currentBuildingPoints.length < 2) {
       // Building requires at least two points
       return;
     }
-
+    const currentBuildingLines: Stroke[] = [];
     // Close the building shape by connecting the last point to the first
     const closedBuildingPoints = [...currentBuildingPoints, currentBuildingPoints[0]];
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if(canvas && context)
+    {
+      context.strokeStyle = 'blue'; // Set the color for the paths
+      context.lineWidth = 1; // Set the width of the stroke (adjust as needed)
+      context.beginPath();
+      // Render building points
+      if (currentBuildingPoints.length > 1) {
+        const startPoint = currentBuildingPoints[0];
+        context.moveTo(startPoint.x, startPoint.y);
+    
+        for (let i = 1; i < currentBuildingPoints.length; i++) {
+          const point = currentBuildingPoints[i];
+          context.lineTo(point.x, point.y);
+    
+          // Capture the line between points as a stroke
+          const newStroke: Stroke = {
+            path: [currentBuildingPoints[i - 1], point], // Line between previous and current point
+            color: 'blue', // Or any other desired color
+          };
+          currentBuildingLines.push(newStroke);
+        }
+    
+        context.lineTo(startPoint.x, startPoint.y);
+      }
+    
+      context.stroke();
+    }
+    
 
     // Create a new Building object with the closed points
     const newBuilding = (
       <Building
         key={buildings.length} // Use a unique key for each building
+        id={"building_" + buildings.length} // Pass the id as a prop
         points={closedBuildingPoints}
+        strokes={currentBuildingLines}
       />
     );
-    setBuildings([...buildings, newBuilding]);
+    // Update the state to include the new NPC token
+    setBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
+    //setBuildings([...buildings, newBuilding]);
 
     // Clear the current building points
     setCurrentBuildingPoints([]);
 
     // Log the activity
-    addActivity("Building created");
+    addActivity("Building created" + `building length ${buildings.length}`);
   };
 
 //#region drawing
@@ -272,6 +313,7 @@ const startPencilDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>
   const { offsetX = 0, offsetY = 0 } = nativeEvent;
   if (contextRef.current) {
     contextRef.current.strokeStyle = strokeColor;
+    contextRef.current.lineWidth = 3; // Set the width of the stroke (adjust as needed) add this as a meter to palette
     contextRef.current.beginPath();
     contextRef.current.moveTo(offsetX, offsetY);
     setIsDrawing(true);
@@ -371,7 +413,7 @@ const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => 
   };
 
   const deleteBuilding = (index: number) => {
-    setBuildings((prevTokens) => prevTokens.filter((_, i) => i !== index));
+    setBuildings((prevBuilding) => prevBuilding.filter((_, i) => i !== index));
     // Optionally, you can add additional cleanup logic here if needed
   };
 //#endregion
@@ -411,34 +453,9 @@ const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => 
             context.stroke();
           });
 
+          buildingInConstruction(context, currentBuildingPoints); 
           
 
-          context.strokeStyle = 'blue'; // Set the color for the paths
-          context.beginPath();
-          // Render building points
-          if (currentBuildingPoints.length > 1) {
-            const startPoint = currentBuildingPoints[0];
-            context.moveTo(startPoint.x, startPoint.y);
-    
-            for (let i = 1; i < currentBuildingPoints.length; i++) {
-              const point = currentBuildingPoints[i];
-              context.lineTo(point.x, point.y);
-            }
-    
-            // Connect the last point with the first point to close the path
-            context.lineTo(startPoint.x, startPoint.y);
-          }
-    
-          context.stroke();
-           // Render building points
-           currentBuildingPoints.forEach(({ x, y }) => {
-            const pointRadius = 3; // Adjust the radius of the point as needed
-            context.beginPath();
-            context.arc(x, y, pointRadius, 0, Math.PI * 2);
-            context.fillStyle = 'black'; // Adjust the color of the point as needed
-            context.fill();
-            context.closePath();
-          }); 
       }
     }
 
@@ -490,3 +507,34 @@ export const useCanvas = (canvasId: string) => {
   }
   return context;
 };
+
+function buildingInConstruction(context: CanvasRenderingContext2D, currentBuildingPoints: { x: number; y: number; }[]) {
+  context.strokeStyle = 'blue'; // Set the color for the paths
+  context.lineWidth = 1; // Set the width of the stroke (adjust as needed)
+  context.beginPath();
+  
+  if (currentBuildingPoints.length > 1) {
+    const startPoint = currentBuildingPoints[0];
+    context.moveTo(startPoint.x, startPoint.y);
+
+    for (let i = 1; i < currentBuildingPoints.length; i++) {
+      const point = currentBuildingPoints[i];
+      context.lineTo(point.x, point.y);
+    }
+
+    // Connect the last point with the first point to close the path
+    context.lineTo(startPoint.x, startPoint.y);
+  }
+  context.stroke();
+
+  // Render building points
+  currentBuildingPoints.forEach(({ x, y }) => {
+    const pointRadius = 3; // Adjust the radius of the point as needed
+    context.beginPath();
+    context.arc(x, y, pointRadius, 0, Math.PI * 2);
+    context.fillStyle = 'black'; // Adjust the color of the point as needed
+    context.fill();
+    context.closePath();
+  });
+}
+
