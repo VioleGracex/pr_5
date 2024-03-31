@@ -1,3 +1,4 @@
+// Objects/NpcToken.tsx
 import React, { Component } from 'react';
 import defaultImage from '../../imgs/NPCAvatar.png';
 import { getGlobalActiveTool } from '../ToolPanel';

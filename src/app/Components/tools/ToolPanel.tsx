@@ -180,8 +180,6 @@ const ToolPanel: React.FC = () => {
               addActivity(`Selected tool: ${newGlobalActiveTool}`);
             }
         }
-        
-       
       }
     }
   };  
