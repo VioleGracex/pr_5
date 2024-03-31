@@ -4,7 +4,7 @@ import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
 import NPCToken from "../Components/tools/Objects/NPCToken";
 import { getActiveNpcToken, setActiveElement, setActiveNpcToken } from "../state/ActiveElement";
-import Building from "../Components/tools/Objects/Building";
+import Building, {BuildingProps} from "../Components/tools/Objects/Building";
 
 interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -19,7 +19,6 @@ interface CanvasContextProps {
   setStrokeColor: Dispatch<SetStateAction<string>>;
   npcTokens: React.ReactNode[];
   buildings: React.ReactNode[];
-  buildingStrokes:  { path: { x: number; y: number }[]; color: string }[];
   canvasId: string;
   selectedObject:  typeof NPCToken | null;
   setSelectedObject: Dispatch<SetStateAction< typeof NPCToken | null>>;
@@ -58,7 +57,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [npcTokens, setNpcTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [buildings, setBuildings] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number }[]>([]); // New state to store building points
-  const [buildingStrokes, setBuildingStrokes] = useState<Stroke[]>([]);
 //#endregion
 
 
@@ -254,39 +252,8 @@ const createBuilding = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) =>
       // Building requires at least two points
       return;
     }
-    const currentBuildingLines: Stroke[] = [];
     // Close the building shape by connecting the last point to the first
     const closedBuildingPoints = [...currentBuildingPoints, currentBuildingPoints[0]];
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d");
-    if(canvas && context)
-    {
-      context.strokeStyle = 'blue'; // Set the color for the paths
-      context.lineWidth = 1; // Set the width of the stroke (adjust as needed)
-      context.beginPath();
-      // Render building points
-      if (currentBuildingPoints.length > 1) {
-        const startPoint = currentBuildingPoints[0];
-        context.moveTo(startPoint.x, startPoint.y);
-    
-        for (let i = 1; i < currentBuildingPoints.length; i++) {
-          const point = currentBuildingPoints[i];
-          context.lineTo(point.x, point.y);
-    
-          // Capture the line between points as a stroke
-          const newStroke: Stroke = {
-            path: [currentBuildingPoints[i - 1], point], // Line between previous and current point
-            color: 'blue', // Or any other desired color
-          };
-          currentBuildingLines.push(newStroke);
-        }
-    
-        context.lineTo(startPoint.x, startPoint.y);
-      }
-    
-      context.stroke();
-    }
-    
 
     // Create a new Building object with the closed points
     const newBuilding = (
@@ -294,7 +261,6 @@ const createBuilding = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) =>
         key={buildings.length} // Use a unique key for each building
         id={"building_" + buildings.length} // Pass the id as a prop
         points={closedBuildingPoints}
-        strokes={currentBuildingLines}
       />
     );
     // Update the state to include the new NPC token
@@ -453,13 +419,16 @@ const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => 
             context.stroke();
           });
 
+          // Render buildings and connect points
+          RenderBuildingArea(buildings, context);
+
           buildingInConstruction(context, currentBuildingPoints); 
           
 
       }
     }
 
-  }, [strokes, npcTokens, selectedObject, mousePosition, currentBuildingPoints, buildingStrokes]);
+  }, [strokes, npcTokens, selectedObject, mousePosition, currentBuildingPoints]);
 
 //#endregion
 
@@ -477,7 +446,6 @@ const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => 
     setStrokeColor: setCurrentColor,
     npcTokens,
     buildings,
-    buildingStrokes,
     canvasId,
     selectedObject,
     setSelectedObject,
@@ -507,6 +475,36 @@ export const useCanvas = (canvasId: string) => {
   }
   return context;
 };
+
+function RenderBuildingArea(buildings: React.ReactNode[], context: CanvasRenderingContext2D) {
+  buildings.forEach((building: React.ReactNode) => {
+    if (React.isValidElement(building)) {
+      const { points } = building.props as BuildingProps;
+      if (points && points.length > 1) {
+        // Draw building lines
+        context.strokeStyle = 'black';
+        context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(points[0].x, points[0].y);
+        points.slice(1).forEach((point) => {
+          context.lineTo(point.x, point.y);
+        });
+        context.lineTo(points[0].x, points[0].y);
+        context.stroke();
+
+        // Fill building area with light grey
+        context.fillStyle = 'rgba(200, 200, 200, 0.5)'; // Adjust opacity as needed
+        context.beginPath();
+        context.moveTo(points[0].x, points[0].y);
+        points.slice(1).forEach((point) => {
+          context.lineTo(point.x, point.y);
+        });
+        context.lineTo(points[0].x, points[0].y);
+        context.fill();
+      }
+    }
+  });
+}
 
 function buildingInConstruction(context: CanvasRenderingContext2D, currentBuildingPoints: { x: number; y: number; }[]) {
   context.strokeStyle = 'blue'; // Set the color for the paths

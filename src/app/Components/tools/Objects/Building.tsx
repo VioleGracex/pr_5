@@ -5,7 +5,7 @@ interface BuildingProps {
   id?: string;
   name?: string;
   points?: { x: number; y: number }[];
-  strokes: { path: { x: number; y: number }[]; color: string }[];
+  strokes?: { path: { x: number; y: number }[]; color: string }[];
 }
 
 interface BuildingState {
