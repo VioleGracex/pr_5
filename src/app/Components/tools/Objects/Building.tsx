@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Stroke } from '@/app/Panels/CanvasContext';
 
-interface BuildingProps {
+export interface BuildingProps {
   id?: string;
   name?: string;
   points?: { x: number; y: number }[];

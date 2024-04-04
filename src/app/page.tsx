@@ -8,7 +8,7 @@ import { LeftPanel, RightPanel, NpcEditorPanel, PalettePanel } from './Panels/Ma
 import { ConsoleBar, addActivity } from './Panels/ConsoleBar';
 import { handleShortcuts } from './Components/tools/shortcuts';
 import shortcuts from './Components/tools/shortcutConfig'; // Import the shortcuts configuration
-import { CanvasProvider } from './Panels/CanvasContext';
+import { CanvasProvider } from "./Panels/CanvasProvider";
 import { Canvas } from './Panels/Canvas';
 import { getZoomScaleFactor } from './Components/tools/useTools/useZoom';
 
