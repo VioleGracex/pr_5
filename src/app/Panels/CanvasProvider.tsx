@@ -1,9 +1,9 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, MouseEvent } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
 import NPCToken from "../Components/tools/Objects/NPCToken";
 import { setActiveElement, setActiveNpcToken } from "../state/ActiveElement";
-import Building from "../Components/tools/Objects/Building";
+import Building, {BuildingProps} from "../Components/tools/Objects/Building";
 import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext } from "./CanvasContext";
 
 
@@ -80,7 +80,10 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
             // Right-click: Cancel building construction by clearing all points
             clearCurrentBuildingPoints();
           }
-
+          break;
+        case 'RGB': //Random GeneratedBuilding
+          addActivity(`Used ${activeTool} Tool`);
+          createRandomBuildingNearCursor(event); // Call the function to generate shape with NPC
           break;
         default:
           addActivity(`Selected ${activeTool}`);
@@ -235,6 +238,70 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     addActivity("Building created" + `building length ${buildings.length}`);
   };
 
+  // Define the shape points
+
+  const shapePoints: { [key: string]: { x: number; y: number }[] } = {
+    square: [
+      { x: -50, y: -50 },
+      { x: 50, y: -50 },
+      { x: 50, y: 50 },
+      { x: -50, y: 50 }
+    ],
+    rectangle: [
+      { x: -75, y: -50 },
+      { x: 75, y: -50 },
+      { x: 75, y: 50 },
+      { x: -75, y: 50 }
+    ],
+    triangle: [
+      { x: 0, y: -75 },
+      { x: -75, y: 75 },
+      { x: 75, y: 75 }
+    ],
+   
+  };
+
+  const getRandomShape = () => {
+    const shapes = Object.keys(shapePoints);
+    const randomIndex = Math.floor(Math.random() * shapes.length);
+    return shapes[randomIndex];
+  };
+  // Define the type for the shape parameter
+  type ShapeType = keyof typeof shapePoints;
+
+  // Function to generate random points for a given shape
+  const generateRandomPointsForShape = (shape: ShapeType, mouseX: number, mouseY: number): { x: number; y: number }[] => {
+    const points = shapePoints[shape];
+    const randomizedPoints = points.map(point => ({
+      x: point.x + mouseX,
+      y: point.y + mouseY
+    }));
+    return randomizedPoints;
+  };
+
+  // Function to create a building from points
+  const createBuildingFromPoints = (points: BuildingProps['points']): JSX.Element => {
+    return (
+      <Building
+        key={buildings.length}
+        id={"building_" + buildings.length}
+        points={points}
+      />
+    );
+  };
+
+  // Function to create a random building with a random shape near the cursor
+  const createRandomBuildingNearCursor = (event: MouseEvent<HTMLCanvasElement>) => {
+    const mouseX = event.clientX; // X-coordinate of the mouse
+    const mouseY = event.clientY; // Y-coordinate of the mouse
+    const randomShape = getRandomShape();
+    const randomPoints = generateRandomPointsForShape(randomShape, mouseX, mouseY);
+    const newBuilding = createBuildingFromPoints(randomPoints);
+    setBuildings(prevBuildings => [...prevBuildings, newBuilding]);
+  };
+  
+ 
+
   //#region drawing
   const startPencilDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX = 0, offsetY = 0 } = nativeEvent;
@@ -343,6 +410,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     // Optionally, you can add additional cleanup logic here if needed
   };
   //#endregion
+  
   //#region Rendering
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -19,14 +19,17 @@ import {
   faBuilding,
   faSackXmark,
   faEraser,
-  faMousePointer
+  faMousePointer,
+  faDice,
 } from '@fortawesome/free-solid-svg-icons';
 import MarqueeToolImage from '../imgs/MarqueeTool.png';
+import RandomBuilding from '../imgs/RandomBuilding.png';
 import { UseCircleDraw } from '../Functions/ShapeTool';
 import {
   togglePanelVisibility,
 } from '../../state/panelVisibility';
 import { setGlobalActiveTool } from './ToolPanel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 interface Tool {
@@ -54,13 +57,13 @@ const toolsMain: Tool[] = [
   { icon: faFillDrip, name: `Bucket Tool`, shortcut: `G`, group: `draw`, toolFunction: () => console.log('Bucket Tool function'), inBound: false, isToggle: true },
   { icon: faRuler, name: `Show Rulers`, shortcut: `R`, group: `view`, toolFunction: () => console.log('Show Rulers function'), inBound: false, isToggle: true},
   { icon: faPalette, name: `Palette`, shortcut: `K`, group: `draw`, toolFunction: () => togglePanelVisibility('palettePanelWrapper'), inBound: false, isToggle: false},
-  
 ];
 
 const toolsExtra: Tool[] = [
   { icon: faCircle, name: `Circle Tool`, shortcut: ``, group: `shapes`, toolFunction: () => UseCircleDraw(true), inBound: false, isToggle: true },
   { icon: faRectangleAd, name: `Rectangle Tool`, shortcut: ``, group: `shapes`, toolFunction: () => console.log('Rectangle Tool function'), inBound: true, isToggle: true },
-  { icon: faBuilding, name: `Building Tool`, shortcut: ``, group: `objects`, toolFunction: () => console.log('Pen Tool function'), inBound: false, isToggle: true },
+  { icon: faBuilding, name: `Building Tool`, shortcut: ``, group: `objects`, toolFunction: () => console.log('Building Tool function'), inBound: false, isToggle: true },
+  { Image: RandomBuilding, name: `RGB`, shortcut: ``, group: `objects`, toolFunction: () => console.log('Random Building Tool function'), inBound: false, isToggle: true },
   { icon: faSackXmark, name: `Item Token`, shortcut: ``, group: `objects`, toolFunction: () => console.log('handleItemTokenCreation'), inBound: false, isToggle: true },
   { icon: faUser, name: `NPC Token`, shortcut: ``, group: `objects`, toolFunction: () => console.log('handleNPCTokenCreation'), inBound: false, isToggle: true },
   { icon: faPaintBrush, name: `Brush`, shortcut: ``, group: `draw`, toolFunction: () => console.log('Brush function'), inBound: false, isToggle: true },

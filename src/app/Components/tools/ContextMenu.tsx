@@ -29,7 +29,7 @@ const ContextMenu: React.FC<{
               src={tool.Image.src}
               alt={tool.name}
               className="mr-2"
-              style={{ width: '1.3em', height: '1.3em' }}
+              style={{ width: '0.9em', height: '0.9em' }}
             />
           )}
           <span>{tool.name}</span>
