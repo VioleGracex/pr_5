@@ -1,4 +1,3 @@
-// panels/CanvasProvider.tsx
 import React, { useRef, useState, useEffect, MouseEvent } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
@@ -15,7 +14,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [selectedObject, setSelectedObject] = useState<typeof NPCToken | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number; } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const currentPath = useRef<{ x: number; y: number; }[]>([]);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
@@ -31,14 +29,14 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
     if (canvas && !isCanvasPrepared) {
-      /* canvas.width = window.innerWidth * 2;
-      canvas.height = window.innerHeight * 2; */
-      canvas.style.width = `${window.innerWidth}px`; //adjust size here it fucks up placements
+      canvas.width = window.innerWidth * 2;
+      canvas.height = window.innerHeight * 2;
+      canvas.style.width = `${window.innerWidth}px`;
       canvas.style.height = `${window.innerHeight}px`;
 
       const context = canvas.getContext("2d");
       if (context) {
-        context.scale(4, 4);
+        context.scale(2, 2);
         context.lineCap = "round";
         context.lineWidth = 5;
 
@@ -60,7 +58,9 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           startPencilDrawing(event);
           break;
         case 'NPC Token':
+          if (event.button === 0) {
           createNPCToken(event);
+          }
           break;
         case 'Move Tool':
           // Implement move tool functionality
@@ -74,7 +74,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
             // Left-click on the canvas
             const canvas = canvasRef.current;
             if (canvas) {
-              const { offsetX = 0, offsetY = 0 } = event.nativeEvent;
               // Start creating building placing points
               createBuilding(event);
             }
@@ -84,8 +83,10 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           }
           break;
         case 'RGB': //Random GeneratedBuilding
+        if (event.button === 0) {
           addActivity(`Used ${activeTool} Tool`);
           createRandomBuildingNearCursor(event); // Call the function to generate shape with NPC
+        }
           break;
         default:
           addActivity(`Selected ${activeTool}`);
@@ -94,7 +95,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     } else {
       addActivity("Error Using Tool not found");
     }
-    
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -125,7 +125,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
   //#endregion
   //----------------------------------NPC---------------------------------------------
-  const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => { // add canvas width and height
+  const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
 
     if (!canvas) return;
@@ -134,10 +134,10 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     const canvasRect = canvas.getBoundingClientRect();
 
     // Calculate the offset of the mouse event relative to the canvas
-    /* const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
-    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY; */
-    const offsetX = nativeEvent.clientX - window.scrollX;
-    const offsetY = nativeEvent.clientY - window.scrollY;
+    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
+    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
+    /* const offsetX = nativeEvent.clientX - window.scrollX;
+    const offsetY = nativeEvent.clientY - window.scrollY; */
 
     // Adjust the offset based on the scale factor
     const scaledOffsetX = (offsetX / scaleFactor) - 30;
@@ -156,6 +156,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
     // Log the activity (optional)
     addActivity(`Created NPC at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
+    addActivity("wa");
   };
   //----------------------------------Building---------------------------------------------
   const createBuilding = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
@@ -170,7 +171,10 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
     if (!canvas || !context) return;
 
-    const { offsetX = 0, offsetY = 0 } = nativeEvent;
+    /* const { offsetX = 0, offsetY = 0 } = nativeEvent; */
+    const canvasRect = canvas.getBoundingClientRect();
+    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
+    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
     const newPoint = { x: offsetX, y: offsetY };
     const thresholdDistance = 10; // Define the threshold distance
 
@@ -273,10 +277,21 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
   // Function to generate random points for a given shape
   const generateRandomPointsForShape = (shape: ShapeType, mouseX: number, mouseY: number): { x: number; y: number }[] => {
+    const canvas = canvasRef.current;
+    const context = contextRef.current;
+
+    if (!canvas || !context) return [];
+
+    /* const { offsetX = 0, offsetY = 0 } = nativeEvent; */
+    const canvasRect = canvas.getBoundingClientRect();
+    const offsetX = mouseX- canvasRect.left - window.scrollX;
+    const offsetY = mouseY - canvasRect.top - window.scrollY;
     const points = shapePoints[shape];
     const randomizedPoints = points.map(point => ({
-      x: point.x + mouseX,
-      y: point.y + mouseY
+      /* x: point.x + mouseX,
+      y: point.y + mouseY */
+      x: point.x + offsetX,
+      y: point.y + offsetY
     }));
     return randomizedPoints;
   };
@@ -299,7 +314,13 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     const randomShape = getRandomShape();
     const randomPoints = generateRandomPointsForShape(randomShape, mouseX, mouseY);
     const newBuilding = createBuildingFromPoints(randomPoints);
-    setBuildings(prevBuildings => [...prevBuildings, newBuilding]);
+    setBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
+    //setBuildings([...buildings, newBuilding]);
+    // Clear the current building points
+    setCurrentBuildingPoints([]);
+
+    // Log the activity
+    addActivity("Building created" + `building length ${buildings.length}`);
   };
   
  
