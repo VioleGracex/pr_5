@@ -28,8 +28,8 @@ const handleMouseDown = (event: MouseEvent) => {
     const activeTool = getGlobalActiveTool();
     if (activeTool === 'Zoom Tool') {
       // Check if the click event occurred within the canvas area
-      const canvas = document.getElementById('canvas'); // Assuming the canvas element has an ID of 'canvas'
-      if (canvas && canvas.contains(event.target as Node)) {
+      const canvas = document.getElementById('canvas'); // Assuming the canvas element has an ID of 'canvas' // ERROR
+      if (canvas && canvas.contains(event.target as Node)) { // make sure it works only within the canvas
         // Check if it's a left click
         if (event.button === 0) {
           zoomIn();

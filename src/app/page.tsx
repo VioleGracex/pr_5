@@ -19,30 +19,59 @@ const Home: React.FC = () => {
   const [isCanvasHidden, setIsCanvasHidden] = useState<{ [canvasId: string]: boolean }>(
     canvasList.reduce((acc, canvasId) => ({ ...acc, [canvasId]: false }), {})
   );
-  // States for visibility of panels
   const [currentColor, setCurrentColor] = useState<string>("#000000");
+  const [dragging, setDragging] = useState(false);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [canvasOffset, setCanvasOffset] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       handleShortcuts(event, shortcuts);
-      // Toggle palette panel visibility when "k" key is pressed
       if (event.ctrlKey && event.shiftKey && event.key === 'N') {
         createNewCanvas();
       }
     };
 
+    const handleMouseDown = (event: MouseEvent) => {
+      if (event.button === 1) {
+        setDragging(true);
+      setDragStart({ x: event.clientX, y: event.clientY });
+      }
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      if (dragging && dragStart) {
+        const deltaX = (event.clientX - dragStart.x)*0.1;
+        const deltaY = (event.clientY - dragStart.y)*0.1;
+        setCanvasOffset({ x: canvasOffset.x + deltaX, y: canvasOffset.y + deltaY });
+        setDragStart({ x: event.clientX, y: event.clientY });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setDragging(false);
+      setDragStart(null);
+    };
+
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, []); // No dependencies, so it only runs once on component mount
+  }, [canvasOffset, dragging, dragStart]); 
 
   useEffect(() => {
     const handleContextMenu = (event: MouseEvent) => event.preventDefault();
     document.addEventListener('contextmenu', handleContextMenu);
     return () => document.removeEventListener('contextmenu', handleContextMenu);
   }, []);
+
   const handleColorSelection = (color: string) => {
     setCurrentColor(color);
   };
@@ -60,55 +89,62 @@ const Home: React.FC = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-  <div className="flex flex-col h-screen bg-Menu-panel rounded relative">
-    <div id="MenuBar" style={{ display: 'block', zIndex: 1000 }}>
-      <MenuBar />
-    </div>
-      
-    <div className="flex flex-1" >
-      <div id="leftPanelWrapper" style={{ display: 'block', zIndex: 999 }}>
-        <LeftPanel />
+      <div className="flex flex-col h-screen bg-Menu-panel rounded relative">
+        <div id="MenuBar" style={{ display: 'block', zIndex: 1000 }}>
+          <MenuBar />
+        </div>
+        
+        <div className="flex flex-1" >
+          <div id="leftPanelWrapper" style={{ display: 'block', zIndex: 999 }}>
+            <LeftPanel />
+          </div>
+          <div id="rightPanelWrapper" style={{ display: 'none' }}>
+            <RightPanel numberOfLayers={layersStackRef.current.length} />
+          </div>
+          <div id="npcEditorPanelWrapper" style={{display: 'none', zIndex: 998 }}>
+            <NpcEditorPanel />
+          </div>
+          <div id="zoom" style={{
+            position: 'absolute',
+            transform: `scale(${getZoomScaleFactor()})`,
+            left: `${canvasOffset.x}%`, // Use canvasOffset.x as left position
+            top: `${canvasOffset.y}%`, // Use canvasOffset.y as top position
+            transformOrigin: 'center center'
+          }}>
+            <div style={{ overflow: 'hidden' }}>
+              {canvasList.map((canvasId, index) => (
+                <React.Fragment key={canvasId}>
+                  {!isCanvasHidden[canvasId] && (
+                    <div id='canvas' style={{
+                      zIndex: index + 1,
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)'
+                    }}>
+                      <CanvasProvider canvasId={canvasId} strokeColor={currentColor} scaleFactor={getZoomScaleFactor()} >
+                        <Canvas />
+                      </CanvasProvider>
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+          <div id="palettePanelWrapper" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'none', zIndex: 1002 }}>
+            <PalettePanel
+              selectedColor={currentColor}
+              onSelectColor={handleColorSelection}
+              onChangeComplete={handleColorChangeComplete}
+            />
+          </div>
+        </div>
+        <div className="rounded" style={{ zIndex: 1001 }}>
+          <ConsoleBar />
+        </div>
       </div>
-      <div id="rightPanelWrapper" style={{ display: 'none' }}>
-        <RightPanel numberOfLayers={layersStackRef.current.length} />
-      </div>
-      <div id="npcEditorPanelWrapper" style={{display: 'none', zIndex: 998 }}>
-        <NpcEditorPanel />
-      </div>
-      <div id="zoom" style={{ position: 'absolute', transform: `scale(${getZoomScaleFactor()})`, left: '50%', top: '50%', transformOrigin: 'center center'  }}>
-      <div style={{ overflow: 'hidden', maxHeight: '99vh'  }}>
-        {canvasList.map((canvasId, index) => (
-          <React.Fragment key={canvasId}>
-            {!isCanvasHidden[canvasId] && (
-              <div id = 'canvas' style={{ zIndex: index + 1, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
-                {/* Set z-index to index + 1 to ensure each canvas is placed above the others */}
-                <CanvasProvider canvasId={canvasId} strokeColor={currentColor} scaleFactor={getZoomScaleFactor()} >
-                  <Canvas />
-                </CanvasProvider>
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-      </div>
-      <div id="palettePanelWrapper" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'none', zIndex: 1002 }}>
-        {/* Set z-index to 1002 to ensure palette panel is above canvas and NPC panel */}
-        {/* Render palette panel content here */}
-        <PalettePanel
-          selectedColor={currentColor}
-          onSelectColor={handleColorSelection}
-          onChangeComplete={handleColorChangeComplete}
-        />
-      </div>
-    </div>
-    <div className="rounded" style={{ zIndex: 1001 }}>
-      {/* Set z-index to 1001 to ensure console bar is above canvas and NPC panel */}
-      <ConsoleBar />
-    </div>
-  </div>
-</DndProvider>
+    </DndProvider>
   );
-  
 };
 
 export default Home;

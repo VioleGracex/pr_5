@@ -1,3 +1,4 @@
+// panels/CanvasProvider.tsx
 import React, { useRef, useState, useEffect, MouseEvent } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
@@ -14,6 +15,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [selectedObject, setSelectedObject] = useState<typeof NPCToken | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number; } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const currentPath = useRef<{ x: number; y: number; }[]>([]);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
@@ -29,14 +31,14 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
     if (canvas && !isCanvasPrepared) {
-      canvas.width = window.innerWidth * 2;
-      canvas.height = window.innerHeight * 2;
-      canvas.style.width = `${window.innerWidth}px`;
+      /* canvas.width = window.innerWidth * 2;
+      canvas.height = window.innerHeight * 2; */
+      canvas.style.width = `${window.innerWidth}px`; //adjust size here it fucks up placements
       canvas.style.height = `${window.innerHeight}px`;
 
       const context = canvas.getContext("2d");
       if (context) {
-        context.scale(2, 2);
+        context.scale(4, 4);
         context.lineCap = "round";
         context.lineWidth = 5;
 
@@ -92,6 +94,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     } else {
       addActivity("Error Using Tool not found");
     }
+    
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -122,7 +125,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
   //#endregion
   //----------------------------------NPC---------------------------------------------
-  const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+  const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => { // add canvas width and height
     const canvas = canvasRef.current;
 
     if (!canvas) return;
@@ -153,7 +156,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
     // Log the activity (optional)
     addActivity(`Created NPC at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
-    addActivity("wa");
   };
   //----------------------------------Building---------------------------------------------
   const createBuilding = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {

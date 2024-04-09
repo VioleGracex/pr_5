@@ -70,7 +70,7 @@ export function Canvas() {
   }, [strokes, mousePosition, canvasRef]);
 
   return (
-    <canvas
+    <canvas id="canvas"
       onMouseDown={(e) => startactivity(e)}
       onMouseUp={finishDrawing}
       onMouseMove={(e) => draw(e)}
