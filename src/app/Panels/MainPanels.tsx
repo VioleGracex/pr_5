@@ -12,7 +12,10 @@ import { togglePanelVisibility , setPanelVisibility, getPanelVisibility } from '
 import {getActiveNpcToken } from '../state/ActiveElement';
 import { setIsWriting } from '../state/isWriting';
 import NPCToken from '../Components/tools/Objects/NPCToken';
-import JobsData from '../Components/Data/Jobs.json'; // Assuming Jobs.json is in the same directory
+import JobsData from '../Components/Data/Jobs.json'; 
+import NamesData from '../Components/Data/Names.json'; 
+import RacesData from '../Components/Data/Races.json';  
+
 /* import { setIsPaletteVisibleState, getIsPaletteVisibleState, usePalette } from '../Components/tools/useTools/usePalette'; */
 
 
@@ -98,16 +101,26 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
   const [description, setDescription] = useState('');
   const [src, setSrc] = useState('');
   const [filePath, setFilePath] = useState<string>(''); // State to hold file path
+  const names = NamesData;
   const jobTitles = JobsData;
-  const races = ['human', 'elf', 'orc', 'dwarf'];
-
+  // Extract names from RacesData
+const races: string[] = RacesData.categories.reduce((acc: string[], category: any) => {
+    // Check if the category name exists
+    if (category && category.name && category[category.name]) {
+        const categoryNames = category[category.name].map((creature: any) => creature.name);
+        return [...acc, ...categoryNames];
+    } else {
+        // If the category name or category[category.name] is undefined, return the accumulator
+        return acc;
+    }
+}, []);
 
   const handleDiceRoll = (propertyName: string) => {
     token = getActiveNpcToken();
     if (token) {
       switch (propertyName) {
         case 'name':
-          const randomName = races[Math.floor(Math.random() * races.length)];
+          const randomName = names[Math.floor(Math.random() * names.length)];
           token.setName(randomName);
           break;
         case 'job':
