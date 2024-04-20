@@ -148,6 +148,15 @@ const ToolPanel: React.FC = () => {
       return;
     if (document.hasFocus()) {
       const matchingTool = tools.find((tool) => tool.shortcut === event.key.toUpperCase());
+
+      // Check if only the specified key is pressed without any modifier keys
+      const isOnlyKey = !event.ctrlKey
+
+      const isOnlyKeys = 
+            (!event.ctrlKey && !event.altKey) && 
+            (tools.find((tool) => tool.shortcut === event.key.toUpperCase()) !== undefined);
+
+        if (!isOnlyKeys) {return}
   
       if (event.shiftKey && matchingTool) { //swap active tool while swapping !!!! FIX
         const matchingToolEx = toolsEx.find((tool) => tool.group === matchingTool.group);

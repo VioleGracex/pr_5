@@ -7,6 +7,7 @@ import './MenuBar.css'; // Import the CSS file
 import { MenuItems,menuConfig } from './MenuConfig';
 import { addActivity } from '../../../Panels/ConsoleBar';
 import { MenuItem } from './MenuBarItem';
+import { getIsWriting } from '@/app/state/isWriting';
 
 const MenuBar: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -78,7 +79,7 @@ const MenuBar: React.FC = () => {
             {/* View Menu */}
             <Menu label="View" index={5}>
               {menuConfig.find(menu => menu.label === "View")?.children?.map((item, index) => (
-                      <MenuItem key={index} label={item.label} onClick={item.onClick} />
+                      <MenuItem key={index} {...item} />
                     ))}
               {/* ... other view menu items ... */}
             </Menu>
@@ -126,6 +127,8 @@ const Menu: React.FC<MenuProps> = ({ label, children, index }) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+
 
   return (
     <div className="group relative" ref={menuRef}>

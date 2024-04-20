@@ -120,7 +120,8 @@ const races: string[] = RacesData.categories.reduce((acc: string[], category: an
     if (token) {
       switch (propertyName) {
         case 'name':
-          const randomName = names[Math.floor(Math.random() * names.length)];
+          const randomName = names[Math.floor(Math.random() * names.length)];+
+          setName(randomName);
           token.setName(randomName);
           break;
         case 'job':
@@ -144,9 +145,6 @@ const races: string[] = RacesData.categories.reduce((acc: string[], category: an
     return null; // Ensure a JSX element is returned
   };
   
-
-
-
   const handleClosePanel = () => {
     setPanelVisibility('npcEditorPanelWrapper', false);
     clearFields();
@@ -353,7 +351,7 @@ const races: string[] = RacesData.categories.reduce((acc: string[], category: an
         </div>
         <div className="ml-4">
           <label htmlFor="upload" className="cursor-pointer bg-gray-200 px-4 py-2 rounded-lg text-gray-500 hover:bg-gray-300">
-            <FontAwesomeIcon icon={faUpload} className="mr-2" /> Browse
+            <FontAwesomeIcon icon={faUpload} className="mr-2 mt-9 " /> Browse
             <input id="upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
           </label>
         </div>

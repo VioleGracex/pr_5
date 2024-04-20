@@ -2,7 +2,10 @@
 "use client"; // This is a client component 👈🏽
 import React, { useEffect, useState } from 'react';
 import { appWindow } from '@tauri-apps/api/window';
-import { FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes } from 'react-icons/fa';
+import { FaDownload ,FaWindowMinimize, FaWindowRestore, FaRegWindowMaximize, FaTimes } from 'react-icons/fa';
+import { dialog,shell  } from '@tauri-apps/api';
+import { addActivity } from '@/app/Panels/ConsoleBar';
+
 
 export const handleExit = async () => {
   // Close the app window
@@ -38,6 +41,8 @@ export const handleToggleMaximize = async (setIsFullscreen: React.Dispatch<React
   // Log the event
   console.log('Toggle Maximize button clicked');
 };
+
+
 
 export const useDrag = (handleDoubleClick: () => void) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -119,6 +124,11 @@ export const TitleButtons: React.FC<{ isFullscreen: boolean; setIsFullscreen: Re
 }) => {
   return (
     <div className="fixed space-x-6 mt-2 right-4 top-4 justify-end" style={{ zIndex: 10 }}>
+
+      {/* Download Button */}
+      {/* <button onClick={openDownloadManager} className="btn whitespace-nowrap cursor-pointer" title="Downloads">
+        <FaDownload />
+      </button> */}
       {/* Minimize Button */}
       <button onClick={handleMinimize} className="btn whitespace-nowrap cursor-pointer" title="Minimize">
         <FaWindowMinimize />
