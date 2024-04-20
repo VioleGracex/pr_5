@@ -7,54 +7,55 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LeftPanel, RightPanel, NpcEditorPanel, PalettePanel } from './Panels/MainPanels';
 import { ConsoleBar, addActivity } from './Panels/ConsoleBar';
 import { handleShortcuts } from './Components/tools/shortcuts';
-import shortcuts from './Components/tools/shortcutConfig';
 import { CanvasProvider } from "./Panels/CanvasProvider";
 import { Canvas } from './Panels/Canvas';
 import { getZoomScaleFactor } from './Components/tools/useTools/useZoom';
 import { allBarShortcuts } from './Components/tools/MenuBar/MenuConfig';
 
-export const Home: React.FC = () => {
+export interface HomeProps {
+  canvasList: string[];
+  isCanvasHidden: { [canvasId: string]: boolean };
+  currentColor: string;
+  dragging: boolean;
+  dragStart: { x: number; y: number } | null;
+  canvasOffset: { x: number; y: number };
+  setCurrentColor: React.Dispatch<React.SetStateAction<string>>;
+  setCanvasList: React.Dispatch<React.SetStateAction<string[]>>;
+  setIsCanvasHidden: React.Dispatch<React.SetStateAction<{ [canvasId: string]: boolean }>>;
+  setDragging: React.Dispatch<React.SetStateAction<boolean>>;
+  setDragStart: React.Dispatch<React.SetStateAction<{ x: number; y: number } | null>>;
+  setCanvasOffset: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
+}
+
+const MainPage: React.FC<HomeProps> = ({
+  canvasList = ['Canvas0'],
+  isCanvasHidden = { 'Canvas0': false },
+  currentColor = '#000000',
+  dragging = false,
+  dragStart = null,
+  canvasOffset = { x: 50, y: 50 },
+  setCurrentColor,
+  setCanvasList,
+  setIsCanvasHidden,
+  setDragging,
+  setDragStart,
+  setCanvasOffset
+}) => {
   const gridSize = 100;
   const layersStackRef = useRef([{ id: 1, name: 'Default Layer' }]);
-  const [canvasList, setCanvasList] = useState<string[]>(['Canvas0']); // List of canvas IDs
-  const [isCanvasHidden, setIsCanvasHidden] = useState<{ [canvasId: string]: boolean; }>(
+  [dragging, setDragging] = useState(false);
+  [dragStart, setDragStart] = useState<{ x: number; y: number; } | null>(null);
+  [canvasOffset, setCanvasOffset] = useState<{ x: number; y: number; }>({ x: 50, y: 50 });
+  /* [isCanvasHidden, setIsCanvasHidden] = useState<{ [canvasId: string]: boolean }>({
+    'Canvas0': false
+  }); */
+  [isCanvasHidden, setIsCanvasHidden] = useState<{ [canvasId: string]: boolean; }>(
     canvasList.reduce((acc, canvasId) => ({ ...acc, [canvasId]: false }), {})
   );
-  const [currentColor, setCurrentColor] = useState<string>("#000000");
-  const [dragging, setDragging] = useState(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number; } | null>(null);
-  const [canvasOffset, setCanvasOffset] = useState<{ x: number; y: number; }>({ x: 50, y: 50 });
-
-  const saveData = () => {
-    const dataToSave = {
-      canvasList,
-      isCanvasHidden,
-      // Add other data you want to save here...
-    };
-
-    const json = JSON.stringify(dataToSave);
-
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'data.wise'; // Set the file name with .wise extension
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      //handleShortcuts(event, shortcuts);
-      handleShortcuts(event,allBarShortcuts)
-      //handleShortcuts(event,menuConfig. get all shortcuts map ?)
-      /* if (event.ctrlKey && event.shiftKey && event.key === 'N') {
-        //createNewCanvas();
-        saveData();
-      } */
+      handleShortcuts(event, allBarShortcuts)
     };
 
     const handleMouseDown = (event: MouseEvent) => {
@@ -106,11 +107,12 @@ export const Home: React.FC = () => {
   };
 
   const createNewCanvas = () => {
-    const newCanvasId = `Canvas${canvasList.length}`;
-    setCanvasList((prevList) => [...prevList, newCanvasId]);
-    setIsCanvasHidden((prevVisibility) => ({ ...prevVisibility, [newCanvasId]: false }));
-    addActivity(`create new canvas ${newCanvasId}`);
-  };
+    const newId: string = `Canvas${canvasList.length}`;
+    setCanvasList((prevList) => [...prevList, newId]);
+    setIsCanvasHidden((prevVisibility) => ({ ...prevVisibility, [newId]: false }));
+    addActivity(`create new canvas ${newId}`);
+};
+
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -171,26 +173,4 @@ export const Home: React.FC = () => {
   );
 };
 
-
-/* export const saveHomeData = () => {
-  // Generate data representing the Home component
-  const homeData = <Home />;
-
-  // Convert the data to JSON
-  const jsonData = JSON.stringify(homeData);
-
-  // Create a Blob with the JSON data
-  const blob = new Blob([jsonData], { type: 'application/json' });
-
-  // Create a download link
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'homeData.wise'; // Set the file name with .wise extension
-
-  // Trigger a click event to download the file
-  a.click();
-
-  // Cleanup
-  URL.revokeObjectURL(a.href);
-};
- */
+export default MainPage;

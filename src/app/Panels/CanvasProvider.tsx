@@ -24,7 +24,15 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
 
 
-
+  // Function to gather data
+  const getData = () => {
+    return {
+      npcTokens,
+      strokes,
+      buildings,
+      currentBuildingPoints
+    };
+  };
   //#endregion
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
@@ -470,7 +478,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         RenderBuildingArea(buildings, context);
 
         buildingInConstruction(context, currentBuildingPoints);
-
 
       }
     }
