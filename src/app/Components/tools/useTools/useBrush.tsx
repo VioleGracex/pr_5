@@ -1,6 +1,6 @@
 //useBrush.tsx
 import { addActivity } from "@/app/Panels/ConsoleBar";
-import { getGlobalActiveTool, setGlobalActiveTool } from "../ToolPanel";
+import { getGlobalActiveTool, setGlobalActiveTool } from "../InstrumentsTools/ToolPanel";
 
 function useBrush(): void {
   

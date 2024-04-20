@@ -1,5 +1,5 @@
 // useTools/useZoom.tsx
-import { getGlobalActiveTool } from "../ToolPanel";
+import { getGlobalActiveTool } from "../InstrumentsTools/ToolPanel";
 import { addActivity } from "@/app/Panels/ConsoleBar";
 
 let zoomScaleFactor: number = 1;

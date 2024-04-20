@@ -3,7 +3,7 @@
 // "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import ToolIcon from './ToolIcon';
-import ContextMenu from './ContextMenu';
+import ContextMenu from '../ContextMenu';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 import { toolsMain, toolsExtra } from './toolConfig';
 import { getIsWriting } from '@/app/state/isWriting';

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, MouseEvent } from "react";
 import { addActivity } from "./ConsoleBar";
-import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
+import { getGlobalActiveTool } from "../Components/tools/InstrumentsTools/ToolPanel";
 import NPCToken from "../Components/tools/Objects/NPCToken";
 import { setActiveElement, setActiveNpcToken } from "../state/ActiveElement";
 import Building, {BuildingProps} from "../Components/tools/Objects/Building";
@@ -31,8 +31,8 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     if (canvas && !isCanvasPrepared) {
       canvas.width = window.innerWidth * 2;
       canvas.height = window.innerHeight * 2;
-      canvas.style.width = `${window.innerWidth+5000}px`;
-      canvas.style.height = `${window.innerHeight+5000}px`;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
 
       const context = canvas.getContext("2d");
       if (context) {

@@ -1,7 +1,7 @@
 // pages/page.tsx
 "use client";
 import React, { useEffect, useState, useRef } from 'react';
-import MenuBar from './Components/MenuBar';
+import MenuBar from './Components/tools/MenuBar/MenuBar';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LeftPanel, RightPanel, NpcEditorPanel, PalettePanel } from './Panels/MainPanels'; // Import other panels

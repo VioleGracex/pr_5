@@ -1,0 +1,853 @@
+{
+    "categories": [
+      {
+        "name": "intelligent_creatures",
+        "intelligent_creatures" : [
+          {
+            "name": "Dragonborn",
+            "description": "Dragonborn look very much like dragons standing erect in humanoid form, though they lack wings or a tail.",
+            "keywords": ["Dragonborn", "dragon", "humanoid", "strength", "charisma", "draconic ancestry", "breath weapon", "damage resistance"]
+          },
+          {
+            "name": "Dwarf",
+            "description": "Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal.",
+            "keywords": ["Dwarf", "hardy", "skilled", "warriors", "miners", "stone", "metal", "constitution", "darkvision", "dwarven resilience", "dwarven combat training", "stonecunning"]
+          },
+          {
+            "name": "Elf",
+            "description": "Elves are a magical people of otherworldly grace, living in the world but not entirely part of it.",
+            "keywords": ["Elf", "magical", "otherworldly", "grace", "darkvision", "keen senses", "fey ancestry", "trance"]
+          },
+          {
+            "name": "Gnome",
+            "description": "A gnome’s energy and enthusiasm for living shines through every inch of his or her tiny body.",
+            "keywords": ["Gnome", "energy", "enthusiasm", "tiny", "intelligence", "darkvision", "gnome cunning"]
+          },
+          {
+            "name": "Half-Elf",
+            "description": "Half-elves combine what some say are the best qualities of their elf and human parents.",
+            "keywords": ["Half-Elf", "versatile", "charisma", "darkvision", "fey ancestry", "skill versatility"]
+          },
+          {
+            "name": "Halfling",
+            "description": "The diminutive halflings survive in a world full of larger creatures by avoiding notice or, barring that, avoiding offense.",
+            "keywords": ["Halfling", "diminutive", "survive", "dexterity", "luck", "brave", "halfling nimbleness"]
+          },
+          {
+            "name": "Half-Orc",
+            "description": "Some half-orcs rise to become proud leaders of orc communities. Some venture into the world to prove their worth.",
+            "keywords": ["Half-Orc", "strength", "constitution", "darkvision", "menacing", "relentless endurance", "savage attacks"]
+          },
+          {
+            "name": "Human",
+            "description": "Humans are the most adaptable and ambitious people among the common races.",
+            "keywords": ["Human", "boy", "man", "girl", "woman", "old man", "youth", "adolescent", "teenager", "adult", "elderly"]
+          },
+          {
+            "name": "Tiefling",
+            "description": "To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling.",
+            "keywords": ["Tiefling", "charisma", "intelligence", "darkvision", "hellish resistance", "infernal legacy"]
+          },
+          {
+            "name": "Aarakocra",
+            "description": "Aarakocra are avian humanoids who live in high, mountainous regions.",
+            "keywords": ["Aarakocra", "avian", "mountainous", "flight", "talons"]
+          },
+          {
+            "name": "Aasimar",
+            "description": "Aasimar are humans with a celestial heritage, which shows through glowing eyes, a radiant aura, and feathered wings.",
+            "keywords": ["Aasimar", "celestial", "heritage", "glowing eyes", "radiant aura", "feathered wings"]
+          },
+          {
+            "name": "Air Genasi",
+            "description": "Air Genasi are descended from djinn and have powers over air and wind.",
+            "keywords": ["Air Genasi", "descended", "djinn", "air", "wind", "levitate"]
+          },
+          {
+            "name": "Bugbear",
+            "description": "Bugbears are large, hairy goblinoids known for their strength and stealth.",
+            "keywords": ["Bugbear", "large", "hairy", "goblinoids", "strength", "stealth"]
+          },
+          {
+            "name": "Centaur",
+            "description": "Centaur are half-human, half-horse creatures known for their speed and archery skills.",
+            "keywords": ["Centaur", "half-human", "half-horse", "speed", "archery", "hooves"]
+          },
+          {
+            "name": "Changeling",
+            "description": "Changelings are shapeshifters capable of altering their appearance at will.",
+            "keywords": ["Changeling", "shapeshifters", "appearance", "alter", "will"]
+          },
+          {
+            "name": "Deep Gnome",
+            "description": "Deep gnomes, or svirfneblin, are subterranean cousins of gnomes known for their stealth and magic.",
+            "keywords": ["Deep Gnome", "svirfneblin", "subterranean", "stealth", "magic", "darkvision"]
+          },
+          {
+            "name": "Duergar",
+            "description": "Duergar are gray-skinned dwarves with a penchant for slavery and psionic powers.",
+            "keywords": ["Duergar", "gray-skinned", "dwarves", "slavery", "psionic", "powers", "darkvision"]
+          },
+          {
+            "name": "Earth Genasi",
+            "description": "Earth Genasi have powers over earth and stone, often displaying rock-like skin.",
+            "keywords": ["Earth Genasi", "powers", "earth", "stone", "rock-like skin", "pass without trace"]
+          },
+          {
+            "name": "Eladrin",
+            "description": "Eladrin are elves with a strong connection to the Feywild, allowing them to teleport and wield fey magic.",
+            "keywords": ["Eladrin", "elves", "Feywild", "teleport", "fey magic"]
+          },
+          {
+            "name": "Fairy",
+            "description": "Fairies are small, winged creatures known for their mischievous behavior and magical abilities.",
+            "keywords": ["Fairy", "small", "winged", "mischievous", "magical", "fey"]
+          },
+          {
+            "name": "Firbolg",
+            "description": "Firbolg are gentle giants who live in harmony with nature, possessing magical abilities.",
+            "keywords": ["Firbolg", "gentle giants", "nature", "magical abilities"]
+          },
+          {
+            "name": "Fire Genasi",
+            "description": "Fire Genasi are descended from efreet and have powers over flame and heat.",
+            "keywords": ["Fire Genasi", "descended", "efreet", "fire", "heat", "produce flame"]
+          },
+          {
+            "name": "Githyanki",
+            "description": "Githyanki are militaristic warriors from the Astral Plane, often wielding silver swords.",
+            "keywords": ["Githyanki", "militaristic", "warriors", "Astral Plane", "silver swords", "teleport"]
+          },
+          {
+            "name": "Githzerai",
+            "description": "Githzerai are monks and psionicists who dwell in the chaos of Limbo.",
+            "keywords": ["Githzerai", "monks", "psionicists", "chaos", "Limbo", "mage hand"]
+          },
+          {
+            "name": "Goblin",
+            "description": "Goblins are small, cowardly creatures known for their cunning and love of mayhem.",
+            "keywords": ["Goblin", "small", "cowardly", "cunning", "mayhem"]
+          },
+          {
+            "name": "Goliath",
+            "description": "Goliaths are large, nomadic humanoids known for their strength and endurance.",
+            "keywords": ["Goliath", "large", "nomadic", "humanoids", "strength", "endurance"]
+          },
+          {
+            "name": "Harengon",
+            "description": "Harengon are rabbit-like humanoids with strong legs and keen senses.",
+            "keywords": ["Harengon", "rabbit-like", "humanoids", "strong legs", "keen senses"]
+          },
+          {
+            "name": "Hobgoblin",
+            "description": "Hobgoblins are militaristic goblinoids known for their discipline and tactical prowess.",
+            "keywords": ["Hobgoblin", "militaristic", "goblinoids", "discipline", "tactical prowess"]
+          },
+          {
+            "name": "Kenku",
+            "description": "Kenku are crow-like humanoids known for their mimicry and stealth.",
+            "keywords": ["Kenku", "crow-like", "humanoids", "mimicry", "stealth"]
+          },
+          {
+            "name": "Kobold",
+            "description": "Kobolds are small, cowardly creatures who often serve stronger creatures as minions.",
+            "keywords": ["Kobold", "small", "cowardly", "minions", "trapmaking", "pack tactics"]
+          },
+          {
+            "name": "Lizardfolk",
+            "description": "Lizardfolk are reptilian humanoids who live in swamps and jungles, known for their primal instincts.",
+            "keywords": ["Lizardfolk", "reptilian", "humanoids", "swamps", "jungles", "primal instincts"]
+          },
+          {
+            "name": "Minotaur",
+            "description": "Minotaurs are bull-headed humanoids known for their brute strength and love of battle.",
+            "keywords": ["Minotaur", "bull-headed", "humanoids", "brute strength", "battle", "labyrinth"]
+          },
+          {
+            "name": "Orc",
+            "description": "Orcs are aggressive humanoids who live for battle and conquest.",
+            "keywords": ["Orc", "aggressive", "humanoids", "battle", "conquest"]
+          },
+          {
+            "name": "Satyr",
+            "description": "Satyrs are hedonistic creatures with the lower bodies of goats and the upper bodies of humans.",
+            "keywords": ["Satyr", "hedonistic", "goats", "humans", "music", "fey"]
+          },
+          {
+            "name": "Sea Elf",
+            "description": "Sea Elves are ocean-dwelling elves known for their mastery of the sea and underwater realms.",
+            "keywords": ["Sea Elf", "ocean-dwelling", "elves", "sea", "underwater", "mastery"]
+          },
+          {
+            "name": "Shadar-kai",
+            "description": "Shadar-kai are shadowfell natives who possess a connection to darkness and death.",
+            "keywords": ["Shadar-kai", "shadowfell", "natives", "darkness", "death", "blessing of the raven queen"]
+          },
+          {
+            "name": "Shifter",
+            "description": "Shifters are humanoids with bestial traits, capable of tapping into their primal instincts.",
+            "keywords": ["Shifter", "bestial", "traits", "primal instincts", "shapechange"]
+          },
+          {
+            "name": "Tabaxi",
+            "description": "Tabaxi are feline humanoids known for their agility, curiosity, and love of treasure.",
+            "keywords": ["Tabaxi", "feline", "humanoids", "agility", "curiosity", "treasure", "feline agility"]
+          },
+          {
+            "name": "Tortle",
+            "description": "Tortles are humanoid turtles known for their resilience and natural armor.",
+            "keywords": ["Tortle", "humanoid", "turtles", "resilience", "natural armor", "hold breath"]
+          },
+          {
+            "name": "Triton",
+            "description": "Tritons are aquatic humanoids devoted to protecting the oceans and their denizens.",
+            "keywords": ["Triton", "aquatic", "humanoids", "oceans", "protection", "amphibious"]
+          },
+          {
+            "name": "Water Genasi",
+            "description": "Water Genasi are descended from marids and have powers over water and ice.",
+            "keywords": ["Water Genasi", "descended", "marids", "water", "ice", "shape water"]
+          },
+          {
+            "name": "Yuan-ti",
+            "description": "Yuan-ti are snake-like humanoids known for their cunning and mastery of deception.",
+            "keywords": ["Yuan-ti", "snake-like", "humanoids", "cunning", "deception", "poison immunity"]
+          },
+          {
+            "name": "Kender",
+            "description": "Kender are small, curious creatures known for their fearlessness and knack for finding trouble.",
+            "keywords": ["Kender", "small", "curious", "fearlessness", "trouble", "nimble fingers"]
+          },
+          {
+            "name": "Astral Elf",
+            "description": "Astral Elves are elves with a strong connection to the Astral Plane, granting them knowledge of the cosmos.",
+            "keywords": ["Astral Elf", "elves", "Astral Plane", "cosmos", "knowledge"]
+          },
+          {
+            "name": "Autognome",
+            "description": "Autognomes are mechanical gnomes created by artificers, known for their inventiveness and precision.",
+            "keywords": ["Autognome", "mechanical", "gnomes", "artificers", "inventiveness", "precision"]
+          },
+          {
+            "name": "Giff",
+            "description": "Giffs are hippopotamus-like humanoids known for their militaristic society and love of firearms.",
+            "keywords": ["Giff", "hippopotamus-like", "humanoids", "militaristic", "firearms", "artillery proficiency"]
+          },
+          {
+            "name": "Hadozee",
+            "description": "Hadozee are simian sailors known for their agility and ability to swing through the rigging.",
+            "keywords": ["Hadozee", "simian", "sailors", "agility", "rigging", "swing"]
+          },
+          {
+            "name": "Plasmoid",
+            "description": "Plasmoids are amorphous creatures made of sentient, gelatinous material.",
+            "keywords": ["Plasmoid", "amorphous", "gelatinous", "sentient", "material"]
+          },
+          {
+            "name": "Thri-kreen",
+            "description": "Thri-kreen are insectoid humanoids known for their speed, agility, and psychic abilities.",
+            "keywords": ["Thri-kreen", "insectoid", "humanoids", "speed", "agility", "psychic abilities"]
+          },
+          {
+            "name": "Owlin",
+            "description": "Owlins are owl-like humanoids known for their wisdom and keen eyesight.",
+            "keywords": ["Owlin", "owl-like", "humanoids", "wisdom", "keen eyesight", "flight"]
+          },
+          {
+            "name": "Cervan",
+            "description": "Cervans are deer-like humanoids known for their grace and connection to nature.",
+            "keywords": ["Cervan", "deer-like", "humanoids", "grace", "nature", "antlers"]
+          },
+          {
+            "name": "Corvum",
+            "description": "Corvums are raven-like humanoids known for their intelligence and dark magic.",
+            "keywords": ["Corvum", "raven-like", "humanoids", "intelligence", "dark magic", "fly"]
+          },
+          {
+            "name": "Gallus",
+            "description": "Gallus are chicken-like humanoids known for their cowardice and affinity for the arcane.",
+            "keywords": ["Gallus", "chicken-like", "humanoids", "cowardice", "arcane", "peck"]
+          },
+          {
+            "name": "Hedge",
+            "description": "Hedges are hedgehog-like humanoids known for their defensive spines and burrowing ability.",
+            "keywords": ["Hedge", "hedgehog-like", "humanoids", "spines", "burrowing", "defensive"]
+          },
+          {
+            "name": "Jerbeen",
+            "description": "Jerbeens are jerboa-like humanoids known for their speed and agility.",
+            "keywords": ["Jerbeen", "jerboa-like", "humanoids", "speed", "agility", "burrow"]
+          },
+          {
+            "name": "Luma",
+            "description": "Lumas are moth-like humanoids known for their luminous wings and magical abilities.",
+            "keywords": ["Luma", "moth-like", "humanoids", "luminous", "wings", "magical", "glow"]
+          },
+          {
+            "name": "Mapach",
+            "description": "Mapachs are raccoon-like humanoids known for their dexterity and mischievous nature.",
+            "keywords": ["Mapach", "raccoon-like", "humanoids", "dexterity", "mischievous", "steal"]
+          },
+          {
+            "name": "Raptor",
+            "description": "Raptors are velociraptor-like humanoids known for their ferocity and pack tactics.",
+            "keywords": ["Raptor", "velociraptor-like", "humanoids", "ferocity", "pack tactics", "claws"]
+          },
+          {
+            "name": "Strig",
+            "description": "Strigs are owl-like humanoids known for their wisdom and mastery of illusion magic.",
+            "keywords": ["Strig", "owl-like", "humanoids", "wisdom", "illusion magic", "silent flight"]
+          },
+          {
+            "name": "Vulpin",
+            "description": "Vulpins are fox-like humanoids known for their cunning and agility.",
+            "keywords": ["Vulpin", "fox-like", "humanoids", "cunning", "agility", "sneak"]
+          }
+        ]},
+        {
+        "name": "normal animals",
+        "normal animals": [
+            {
+            "name": "cat",
+            "description": "Small domesticated carnivorous mammal with soft fur, a short snout, and retractile claws.",
+            "keywords": ["Cat", "Kitten", "Feline", "domesticated", "carnivorous", "mammal", "soft fur", "short snout", "retractile claws"]
+            },
+            {
+            "name": "Dog",
+            "description": "Domesticated carnivorous mammal that typically has a long snout, an acute sense of smell, and a barking, howling, or whining voice.",
+            "keywords": ["Dog", "Puppy", "Canine", "domesticated", "carnivorous", "mammal", "long snout", "acute sense of smell", "barking", "howling", "whining voice"]
+            },
+            {
+            "name": "Horse",
+            "description": "Large hoofed mammal with a flowing mane and tail, used for riding, racing, and to carry and pull loads.",
+            "keywords": ["Horse", "Steed", "Equine", "large", "hoofed", "mammal", "flowing mane", "flowing tail", "riding", "racing", "carrying loads", "pulling loads"]
+            },
+            {
+            "name": "Cow",
+            "description": "Large domesticated ruminant mammal with a distinctively humped back and horns, often raised for meat and dairy products.",
+            "keywords": ["Cow", "Cattle", "Bovine", "large", "domesticated", "ruminant", "mammal", "humped back", "horns", "meat", "dairy products"]
+            },
+            {
+            "name": "Sheep",
+            "description": "Domesticated ruminant mammal typically kept as livestock, valued for its wool and meat.",
+            "keywords": ["Sheep", "Lamb", "Ovine", "domesticated", "ruminant", "mammal", "livestock", "wool", "meat"]
+            },
+            {
+            "name": "Pig",
+            "description": "Domesticated hoofed mammal with sparse bristly hair and a flat snout, raised for meat.",
+            "keywords": ["Pig", "Piglet", "Swine", "domesticated", "hoofed", "mammal", "sparse bristly hair", "flat snout", "meat"]
+            },
+            {
+            "name": "Chicken",
+            "description": "Domesticated fowl, a subspecies of the red junglefowl, raised for its meat and eggs.",
+            "keywords": ["Chicken", "Chick", "Poultry", "domesticated", "fowl", "red junglefowl", "meat", "eggs"]
+            },
+            {
+            "name": "Duck",
+            "description": "Waterfowl with a broad blunt bill, short legs, webbed feet, and a waddling gait.",
+            "keywords": ["Duck", "Duckling", "Waterfowl", "waterfowl", "broad blunt bill", "short legs", "webbed feet", "waddling gait"]
+            },
+            {
+            "name": "Goose",
+            "description": "Large waterfowl with a long neck, short legs, and webbed feet, known for its honking call.",
+            "keywords": ["Goose", "Gosling", "Waterfowl", "large", "waterfowl", "long neck", "short legs", "webbed feet", "honking call"]
+            },
+            {
+            "name": "Rabbit",
+            "description": "Small, furry mammal with long ears and a short tail, known for its hopping gait.",
+            "keywords": ["Rabbit", "Bunny", "Hare", "small", "furry", "mammal", "long ears", "short tail", "hopping gait"]
+            },
+            {
+            "name": "Fox",
+            "description": "Carnivorous mammal with a pointed snout, bushy tail, and a coat typically reddish-brown in color.",
+            "keywords": ["Fox", "Fox Cub", "Vulpine", "carnivorous", "mammal", "pointed snout", "bushy tail", "reddish-brown coat"]
+            },
+            {
+            "name": "Wolf",
+            "description": "Carnivorous mammal closely related to the domestic dog, known for its pack behavior and howling vocalizations.",
+            "keywords": ["Wolf", "Wolf Pup", "Canine", "carnivorous", "mammal", "pack behavior", "howling vocalizations"]
+            },
+            {
+            "name": "Bear",
+            "description": "Large omnivorous mammal with a heavy build, thick fur, and a short tail.",
+            "keywords": ["Bear", "Cub", "Ursine", "large", "omnivorous", "mammal", "heavy build", "thick fur", "short tail"]
+            },
+            {
+            "name": "Deer",
+            "description": "Hoofed ruminant mammal with antlers in the males of most species, known for its graceful movements.",
+            "keywords": ["Deer", "Fawn", "Cervine", "hoofed", "ruminant", "mammal", "antlers", "graceful movements"]
+            },
+            {
+            "name": "Elephant",
+            "description": "Large herbivorous mammal with a long trunk, ivory tusks, and large ears, known for its intelligence and memory.",
+            "keywords": ["Elephant", "Calf", "Pachyderm", "large", "herbivorous", "mammal", "long trunk", "ivory tusks", "large ears", "intelligence", "memory"]
+            },
+            {
+            "name": "Giraffe",
+            "description": "Tall, long-necked herbivorous mammal with distinctive patches of color on its coat and ossicones on its head.",
+            "keywords": ["Giraffe", "Calf", "Long-neck", "tall", "long-necked", "herbivorous", "mammal", "distinctive patches of color", "ossicones"]
+            },
+            {
+            "name": "Lion",
+            "description": "Large carnivorous feline mammal with a tawny coat, a tufted tail, and a majestic mane in males.",
+            "keywords": ["Lion", "Cub", "Feline", "large", "carnivorous", "feline", "tawny coat", "tufted tail", "majestic mane"]
+            },
+            {
+            "name": "Tiger",
+            "description": "Large carnivorous feline mammal with a striped coat, known for its strength and agility.",
+            "keywords": ["Tiger", "Cub", "Feline", "large", "carnivorous", "feline", "striped coat", "strength", "agility"]
+            },
+            {
+            "name": "Zebra",
+            "description": "Herbivorous mammal with distinctive black and white stripes on its coat, known for its social behavior.",
+            "keywords": ["Zebra", "Foal", "Striped Horse", "herbivorous", "mammal", "distinctive stripes", "social behavior"]
+            },
+            {
+            "name": "Kangaroo",
+            "description": "Marsupial mammal with powerful hind legs adapted for leaping, native to Australia.",
+            "keywords": ["Kangaroo", "Joey", "Marsupial", "marsupial", "powerful hind legs", "leaping", "Australia"]
+            },
+            {
+            "name": "Penguin",
+            "description": "Flightless seabird with distinctive black and white plumage, known for its waddling gait.",
+            "keywords": ["Penguin", "Chick", "Seabird", "flightless", "seabird", "black and white plumage", "waddling gait"]
+            },
+            {
+            "name": "Polar Bear",
+            "description": "Large carnivorous bear adapted to life in the Arctic, known for its thick fur and white coloration.",
+            "keywords": ["Polar Bear", "Cub", "Ursine", "large", "carnivorous", "Arctic", "thick fur", "white coloration"]
+            },
+            {
+            "name": "Panda",
+            "description": "Bear native to China characterized by its distinctive black and white coat and bamboo diet.",
+            "keywords": ["Panda", "Cub", "Bear", "native to China", "black and white coat", "bamboo diet"]
+            },
+            {
+            "name": "Monkey",
+            "description": "Primate with a long tail and opposable thumbs, known for its intelligence and playful behavior.",
+            "keywords": ["Monkey", "Infant", "Primate", "long tail", "opposable thumbs", "intelligence", "playful behavior"]
+            },
+            {
+            "name": "Squirrel",
+            "description": "Small rodent with a bushy tail, known for its habit of storing nuts in the ground.",
+            "keywords": ["Squirrel", "Pup", "Rodent", "small", "bushy tail", "storing nuts"]
+            },
+            {
+            "name": "Raccoon",
+            "description": "Nocturnal mammal with distinctive facial markings and a ringed tail, known for its intelligence and dexterity.",
+            "keywords": ["Raccoon", "Kit", "Procyonid", "nocturnal", "facial markings", "ringed tail", "intelligence", "dexterity"]
+            },
+            {
+            "name": "Hedgehog",
+            "description": "Small spiny mammal with a rounded body and short legs, known for curling into a ball when threatened.",
+            "keywords": ["Hedgehog", "Hoglet", "Spiny Mammal", "small", "spiny", "rounded body", "short legs", "curling into a ball"]
+            },
+            {
+            "name": "Owl",
+            "description": "Nocturnal bird of prey with large forward-facing eyes, silent flight, and a hooked beak.",
+            "keywords": ["Owl", "Owlet", "Bird of Prey", "nocturnal", "bird of prey", "large eyes", "silent flight", "hooked beak"]
+            },
+            {
+            "name": "Eagle",
+            "description": "Large predatory bird with a hooked beak and strong talons, known for its keen eyesight and powerful flight.",
+            "keywords": ["Eagle", "Eaglet", "Bird of Prey", "large", "predatory", "hooked beak", "strong talons", "keen eyesight", "powerful flight"]
+            },
+            {
+            "name": "Falcon",
+            "description": "Bird of prey with long, pointed wings and a notched beak, prized for its hunting prowess.",
+            "keywords": ["Falcon", "Eyas", "Bird of Prey", "bird of prey", "long wings", "pointed wings", "notched beak", "hunting prowess"]
+            },
+            {
+            "name": "Seagull",
+            "description": "Medium to large seabird with long wings and a distinctive cry, often found near coastal areas.",
+            "keywords": ["Seagull", "Chick", "Seabird", "seabird", "long wings", "distinctive cry", "coastal areas"]
+            },
+            {
+            "name": "Crow",
+            "description": "Black passerine bird known for its intelligence, adaptability, and distinctive cawing calls.",
+            "keywords": ["Crow", "Chick", "Corvid", "black", "passerine bird", "intelligence", "adaptability", "cawing calls"]
+            },
+            {
+            "name": "Swan",
+            "description": "Large waterfowl with a long neck and typically all-white plumage, known for its grace and beauty.",
+            "keywords": ["Swan", "Cygnets", "Waterfowl", "large", "waterfowl", "long neck", "white plumage", "grace", "beauty"]
+            },
+            {
+            "name": "Pelican",
+            "description": "Large waterbird with a distinctive pouched bill and a long throat, known for its exceptional fishing skills.",
+            "keywords": ["Pelican", "Chick", "Waterbird", "large", "waterbird", "pouched bill", "long throat", "fishing skills"]
+            },
+            {
+            "name": "Dolphin",
+            "description": "Highly intelligent aquatic mammal known for its playful behavior and communication abilities.",
+            "keywords": ["Dolphin", "Calf", "Cetacean", "intelligent", "aquatic mammal", "playful behavior", "communication abilities"]
+            },
+            {
+            "name": "Shark",
+            "description": "Large predatory fish with a cartilaginous skeleton, sharp teeth, and a streamlined body.",
+            "keywords": ["Shark", "Pup", "Elasmobranch", "predatory fish", "cartilaginous skeleton", "sharp teeth", "streamlined body"]
+            },
+            {
+            "name": "Octopus",
+            "description": "Marine mollusk with a soft body, eight sucker-bearing arms, and a beak-like mouth, known for its intelligence and camouflage abilities.",
+            "keywords": ["Octopus", "Octopusling", "Cephalopod", "marine mollusk", "soft body", "eight arms", "sucker-bearing arms", "beak-like mouth", "intelligence", "camouflage abilities"]
+            },
+            {
+            "name": "Crocodile",
+            "description": "Large semiaquatic reptile with a long snout, sharp teeth, and a powerful tail, known for its ambush hunting style.",
+            "keywords": ["Crocodile", "Hatchling", "Reptile", "large", "semiaquatic reptile", "long snout", "sharp teeth", "powerful tail", "ambush hunting"]
+            },
+            {
+            "name": "Turtle",
+            "description": "Reptile with a bony or leathery shell into which it can retract its head and limbs, known for its slow movement.",
+            "keywords": ["Turtle", "Hatchling", "Reptile", "bony shell", "leathery shell", "head retraction", "limb retraction", "slow movement"]
+            },
+            {
+            "name": "Snake",
+            "description": "Long, legless reptile with a cylindrical body and flexible jaws, known for its venomous species and constriction abilities.",
+            "keywords": ["Snake", "Hatchling", "Reptile", "long", "legless reptile", "cylindrical body", "flexible jaws", "venomous", "constriction abilities"]
+            },
+            {
+            "name": "Frog",
+            "description": "Amphibian with a short body, long hind legs, and a distinctive call, typically found in moist environments.",
+            "keywords": ["Frog", "Tadpole", "Amphibian", "short body", "long hind legs", "distinctive call", "moist environments"]
+            },
+            {
+            "name": "Salamander",
+            "description": "Amphibian with a slender body, long tail, and moist skin, known for its ability to regenerate lost body parts.",
+            "keywords": ["Salamander", "Larva", "Amphibian", "slender body", "long tail", "moist skin", "regeneration"]
+            },
+            {
+            "name": "Toad",
+            "description": "Amphibian with a stout body, short legs, and dry warty skin, typically found in drier habitats than frogs.",
+            "keywords": ["Toad", "Tadpole", "Amphibian", "stout body", "short legs", "dry warty skin", "drier habitats"]
+            },
+            {
+            "name": "Typhon",
+            "description": "Monstrous serpentine giant and the most deadly creature in Greek mythology.",
+            "keywords": ["Typhon", "monstrous", "serpentine", "giant", "deadly", "Greek", "mythology"]
+            }
+        ]},
+        {
+        "name": "Aquatic and Marine Mammals",
+        "creatures": [
+          {
+            "name": "Bahamut",
+            "description": "Whale monster in Arabic mythology whose body supports the earth. Possibly the origin of the word Behemoth in Judeo-Christian lore.",
+            "keywords": ["Bahamut", "Arabic", "whale", "monster", "earth", "Behemoth", "mythology"]
+          },
+          {
+            "name": "Bake-kujira",
+            "description": "Ghost whale in Japanese folklore.",
+            "keywords": ["Bake-kujira", "Japanese", "ghost", "whale", "folklore"]
+          },
+          {
+            "name": "Cetus",
+            "description": "Monster with the head of a boar or greyhound, the body of a whale or dolphin, and a divided, fan-like tail in Greek mythology.",
+            "keywords": ["Cetus", "Greek", "monster", "boar", "greyhound", "whale", "dolphin", "mythology"]
+          },
+          {
+            "name": "Devil Whale",
+            "description": "Whale capable of swallowing ships in English folklore.",
+            "keywords": ["Devil Whale", "English", "whale", "swallowing ships", "folklore"]
+          },
+          {
+            "name": "Encantado",
+            "description": "Shapeshifting trickster dolphins in Brazilian folklore.",
+            "keywords": ["Encantado", "Brazilian", "shapeshifting", "trickster", "dolphins", "folklore"]
+          },
+          {
+            "name": "Glashtyn",
+            "description": "Horse goblin from the sea in Celtic folklore.",
+            "keywords": ["Glashtyn", "Celtic", "horse goblin", "sea", "folklore"]
+          },
+          {
+            "name": "Makara",
+            "description": "Half terrestrial animal in the frontal part and half aquatic animal in the hind part in Hindu mythology.",
+            "keywords": ["Makara", "Hindu mythology", "terrestrial", "aquatic", "frontal part", "hind part", "mythology"]
+          },
+          {
+            "name": "Mug-wamp",
+            "description": "Giant sturgeon monster said to inhabit Lake Temiskaming in Ontario, Canada, in Canadian folklore.",
+            "keywords": ["Mug-wamp", "Canadian", "giant sturgeon", "monster", "Lake Temiskaming", "Ontario", "folklore"]
+          },
+          {
+            "name": "Sea Goat",
+            "description": "Half goat, half fish creature in Greek mythology.",
+            "keywords": ["Sea Goat", "Greek", "half goat", "half fish", "mythology"]
+          },
+          {
+            "name": "Selkie",
+            "description": "Shapeshifting seal people in Scottish folklore.",
+            "keywords": ["Selkie", "Scottish", "shapeshifting", "seal people", "folklore"]
+          },
+          {
+            "name": "Water Bull",
+            "description": "Nocturnal amphibious bull in Scottish folklore.",
+            "keywords": ["Water Bull", "Scottish", "nocturnal", "amphibious", "bull", "folklore"]
+          },
+          {
+            "name": "Water Horse",
+            "description": "General name for mythical water dwelling horses found in many cultures.",
+            "keywords": ["Water Horse", "mythical", "water dwelling", "horses", "folklore"]
+          },
+          {
+            "name": "Ceffyl Dŵr",
+            "description": "Water horse in Welsh mythology.",
+            "keywords": ["Ceffyl Dŵr", "Welsh", "water horse", "mythology"]
+          },
+          {
+            "name": "Each-uisge",
+            "description": "Malevolent shapeshifting oceanic water horse in Scottish folklore.",
+            "keywords": ["Each-uisge", "Scottish", "malevolent", "shapeshifting", "oceanic", "water horse", "folklore"]
+          },
+          {
+            "name": "Enbarr",
+            "description": "Manann's horse, capable of traversing land and sea in Irish mythology.",
+            "keywords": ["Enbarr", "Irish", "Manann", "horse", "traversing", "land", "sea", "mythology"]
+          },
+          {
+            "name": "Hippocampus",
+            "description": "Horse with a fish tail in Greek mythology.",
+            "keywords": ["Hippocampus", "Greek", "horse", "fish tail", "mythology"]
+          },
+          {
+            "name": "Ichthyocentaurs",
+            "description": "Upper body of a man, lower front of a horse, tail of a fish in Greek mythology.",
+            "keywords": ["Ichthyocentaurs", "Greek", "man", "horse", "fish tail", "mythology"]
+          },
+          {
+            "name": "Kelpie",
+            "description": "Water horse in Scottish folklore.",
+            "keywords": ["Kelpie", "Scottish", "water horse", "folklore"]
+          },
+          {
+            "name": "Morvarc'h",
+            "description": "Legendary horse that could gallop on the waves in Breton folklore.",
+            "keywords": ["Morvarc'h", "Breton", "legendary horse", "gallop", "waves", "folklore"]
+          },
+          {
+            "name": "Nixie",
+            "description": "Shapeshifting water being known for appearing as horses in Germanic folklore.",
+            "keywords": ["Nixie", "Germanic", "shapeshifting", "water being", "horses", "folklore"]
+          },
+          {
+            "name": "Nuckelavee",
+            "description": "Skinless oceanic water horse with pestilent breath in Orcadian folklore.",
+            "keywords": ["Nuckelavee", "Orcadian", "skinless", "oceanic", "water horse", "pestilent breath", "folklore"]
+          },
+          {
+            "name": "Nuggle",
+            "description": "Mischievous male water horse in Scottish folklore.",
+            "keywords": ["Nuggle", "Scottish", "mischievous", "male", "water horse", "folklore"]
+          },
+          {
+            "name": "Tangie",
+            "description": "Shapeshifting sea water horse in Scottish folklore.",
+            "keywords": ["Tangie", "Scottish", "shapeshifting", "sea", "water horse", "folklore"]
+          }
+        ]
+      },
+      {
+        "name": "Arthropods",
+        "creatures": [
+          {
+            "name": "Anansi",
+            "description": "Trickster spider in West African folklore.",
+            "keywords": ["Anansi", "West African", "trickster", "spider", "folklore"]
+          },
+          {
+            "name": "Arachne",
+            "description": "Skilled mortal weaver who challenged Athena and was transformed into a spider in Greek mythology.",
+            "keywords": ["Arachne", "Greek", "mortal", "weaver", "Athena", "transformed", "spider", "mythology"]
+          },
+          {
+            "name": "Basilisk",
+            "description": "Legendary reptile with a lethal gaze or breath in European mythology.",
+            "keywords": ["Basilisk", "legendary", "reptile", "lethal gaze", "lethal breath", "European", "mythology"]
+          },
+          {
+            "name": "Broxa",
+            "description": "Bogeyman of the Brox, a marshy area near York, England, in English folklore.",
+            "keywords": ["Broxa", "Bogeyman", "Brox", "York", "England", "marshy area", "folklore"]
+          },
+          {
+            "name": "Camanchee",
+            "description": "Two-headed dragonfly said to have been seen in the West Indies, particularly in Jamaica, in Caribbean folklore.",
+            "keywords": ["Camanchee", "two-headed", "dragonfly", "West Indies", "Jamaica", "Caribbean", "folklore"]
+          },
+          {
+            "name": "Cenobites",
+            "description": "Order of demons in Clive Barker's Hellraiser universe.",
+            "keywords": ["Cenobites", "demons", "Clive Barker", "Hellraiser", "universe"]
+          },
+          {
+            "name": "Charybdis",
+            "description": "Whirlpool monster that swallows ships in Greek mythology.",
+            "keywords": ["Charybdis", "whirlpool", "monster", "swallows ships", "Greek", "mythology"]
+          },
+          {
+            "name": "Cuélebre",
+            "description": "Giant serpent-dragon from Asturian mythology.",
+            "keywords": ["Cuélebre", "giant", "serpent-dragon", "Asturian", "mythology"]
+          },
+          {
+            "name": "Drider",
+            "description": "Spider-like creature, combining drow and spider traits, in Dungeons & Dragons.",
+            "keywords": ["Drider", "spider-like", "creature", "drow", "spider", "Dungeons & Dragons"]
+          },
+          {
+            "name": "Elverman",
+            "description": "House spirit in Swedish folklore that sometimes appears as a giant spider.",
+            "keywords": ["Elverman", "house spirit", "Swedish", "folklore", "giant spider"]
+          },
+          {
+            "name": "Giant Spiders",
+            "description": "Enormous spiders found in various mythologies and fantasy literature.",
+            "keywords": ["Giant Spiders", "enormous", "spiders", "mythologies", "fantasy literature"]
+          },
+          {
+            "name": "Jba Fofi",
+            "description": "Giant spider reported from the Congo.",
+            "keywords": ["Jba Fofi", "giant spider", "Congo"]
+          },
+          {
+            "name": "Kumo",
+            "description": "Giant spider in Japanese mythology.",
+            "keywords": ["Kumo", "giant", "spider", "Japanese", "mythology"]
+          },
+          {
+            "name": "Mermecolion",
+            "description": "Imaginary creature with the body of an ant and the head of a lion.",
+            "keywords": ["Mermecolion", "imaginary", "creature", "ant", "lion"]
+          },
+          {
+            "name": "Mongolian Death Worm",
+            "description": "Large worm reported to inhabit the Gobi Desert.",
+            "keywords": ["Mongolian Death Worm", "large worm", "Gobi Desert"]
+          },
+          {
+            "name": "Nalusa Falaya",
+            "description": "Chickasaw spider monster that kidnaps and eats small children in Native American folklore.",
+            "keywords": ["Nalusa Falaya", "Chickasaw", "spider monster", "kidnaps", "eats", "small children", "Native American", "folklore"]
+          },
+          {
+            "name": "Nephilim",
+            "description": "Giant offspring of angels and humans in Judeo-Christian mythology.",
+            "keywords": ["Nephilim", "giant", "offspring", "angels", "humans", "Judeo-Christian", "mythology"]
+          },
+          {
+            "name": "Púca",
+            "description": "Shapeshifting creature often seen as a giant insect in Irish folklore.",
+            "keywords": ["Púca", "shapeshifting", "creature", "giant insect", "Irish", "folklore"]
+          },
+          {
+            "name": "Rákshasa",
+            "description": "Demon-like beings with supernatural powers in Hindu mythology.",
+            "keywords": ["Rákshasa", "demon-like", "supernatural powers", "Hindu mythology"]
+          },
+          {
+            "name": "Sandman",
+            "description": "Mythological character said to sprinkle sand in the eyes of sleeping children to bring on dreams.",
+            "keywords": ["Sandman", "mythological character", "sleeping children", "dreams"]
+          },
+          {
+            "name": "Scorpion Man",
+            "description": "Mythical creature with the head of a human and the body of a scorpion in Mesopotamian mythology.",
+            "keywords": ["Scorpion Man", "mythical creature", "human head", "scorpion body", "Mesopotamian", "mythology"]
+          },
+          {
+            "name": "Shelob",
+            "description": "Giant spider antagonist in J.R.R. Tolkien's Middle-earth legendarium.",
+            "keywords": ["Shelob", "giant spider", "J.R.R. Tolkien", "Middle-earth", "legendarium"]
+          },
+          {
+            "name": "Stymphalian Birds",
+            "description": "Man-eating birds with beaks of bronze and sharp metallic feathers in Greek mythology.",
+            "keywords": ["Stymphalian Birds", "man-eating birds", "bronze beaks", "metallic feathers", "Greek", "mythology"]
+          },
+          {
+            "name": "Tarasque",
+            "description": "Legendary dragon with six short legs like a bear's, an ox-like body covered with a turtle shell, and a scorpion's tail in French folklore.",
+            "keywords": ["Tarasque", "legendary", "dragon", "short legs", "bear", "ox", "turtle shell", "scorpion tail", "French", "folklore"]
+          },
+          {
+            "name": "Tatzelwurm",
+            "description": "Dragon or dragon-like cryptid reported in various Alpine countries.",
+            "keywords": ["Tatzelwurm", "dragon", "dragon-like", "cryptid", "Alpine countries"]
+          },
+          {
+            "name": "Tsuchigumo",
+            "description": "Mythical creature, possibly spider-like, from Japanese folklore.",
+            "keywords": ["Tsuchigumo", "mythical creature", "spider-like", "Japanese", "folklore"]
+          },
+          {
+            "name": "Umi Bozu",
+            "description": "Giant sea monster from Japanese folklore.",
+            "keywords": ["Umi Bozu", "giant", "sea monster", "Japanese", "folklore"]
+          },
+          {
+            "name": "Ushi-oni",
+            "description": "Ox-headed, spider-like yokai from Japanese mythology.",
+            "keywords": ["Ushi-oni", "ox-headed", "spider-like", "yokai", "Japanese", "mythology"]
+          },
+          {
+            "name": "Yara-Ma-Yha-Who",
+            "description": "Small, red, frog-like creature from Australian Aboriginal mythology.",
+            "keywords": ["Yara-Ma-Yha-Who", "small", "red", "frog-like", "Australian", "Aboriginal", "mythology"]
+          }
+        ]
+      },
+      {
+        "category": "Individuals",
+        "items": [
+          {
+            "name": "Argus Panoptes",
+            "description": "Hundred-eyed giant in Greek mythology, serving as a watchman for Hera.",
+            "keywords": ["Argus Panoptes", "hundred-eyed giant", "Greek", "mythology", "watchman", "Hera"]
+          },
+          {
+            "name": "Cadmus",
+            "description": "Legendary founder of Thebes and slayer of the Ismenian Dragon in Greek mythology.",
+            "keywords": ["Cadmus", "legendary", "founder", "Thebes", "slayer", "Ismenian Dragon", "Greek", "mythology"]
+          },
+          {
+            "name": "Geryon",
+            "description": "Three-bodied giant, son of Chrysaor and Callirrhoe, slain by Heracles in Greek mythology.",
+            "keywords": ["Geryon", "three-bodied giant", "Chrysaor", "Callirrhoe", "Heracles", "Greek", "mythology"]
+          },
+          {
+            "name": "Ladon",
+            "description": "Hundred-headed dragon that guarded the golden apples in the Garden of the Hesperides in Greek mythology.",
+            "keywords": ["Ladon", "hundred-headed dragon", "golden apples", "Garden of the Hesperides", "Greek", "mythology"]
+          },
+          {
+            "name": "Pegasus",
+            "description": "Winged divine horse in Greek mythology.",
+            "keywords": ["Pegasus", "winged", "divine horse", "Greek", "mythology"]
+          },
+          {
+            "name": "Polyphemus",
+            "description": "Cyclops encountered by Odysseus in Homer's Odyssey.",
+            "keywords": ["Polyphemus", "Cyclops", "Odysseus", "Homer", "Odyssey"]
+          },
+          {
+            "name": "Python",
+            "description": "Serpent, dragon, or dragon-like creature in Greek mythology.",
+            "keywords": ["Python", "serpent", "dragon", "dragon-like", "Greek", "mythology"]
+          },
+          {
+            "name": "Sphinx",
+            "description": "Mythological creature with the head of a human, wings of an eagle, and body of a lion, often depicted as female in Greek mythology.",
+            "keywords": ["Sphinx", "mythological creature", "human head", "eagle wings", "lion body", "female", "Greek", "mythology"]
+          },
+          {
+            "name": "Typhon",
+            "description": "Monstrous serpentine giant and the most deadly creature in Greek mythology.",
+            "keywords": ["Typhon", "monstrous", "serpentine", "giant", "deadly", "Greek", "mythology"]
+          }
+        ]
+      }
+    ]
+}
+  

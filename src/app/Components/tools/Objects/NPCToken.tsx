@@ -1,7 +1,7 @@
 // Objects/NpcToken.tsx
 import React, { Component } from 'react';
 import defaultImage from '../../imgs/NPCAvatar.png';
-import { getGlobalActiveTool } from '../ToolPanel';
+import { getGlobalActiveTool } from '../InstrumentsTools/ToolPanel';
 import { setPanelVisibility } from '@/app/state/panelVisibility';
 import { setActiveNpcToken } from '@/app/state/ActiveElement';
 import { getZoomScaleFactor } from '../useTools/useZoom';

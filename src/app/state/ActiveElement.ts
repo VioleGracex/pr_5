@@ -1,5 +1,5 @@
 // state/ActiveElement.ts
-import { getGlobalActiveTool } from "../Components/tools/ToolPanel";
+import { getGlobalActiveTool } from "../Components/tools/InstrumentsTools/ToolPanel";
 import { addActivity } from "../Panels/ConsoleBar";
 import NPCToken from "../Components/tools/Objects/NPCToken";
 

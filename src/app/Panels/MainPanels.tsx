@@ -1,6 +1,6 @@
 // Panels/MainPanels.tsx
 import React, { useState, useEffect } from 'react';
-import ToolPanel from '../Components/tools/ToolPanel';
+import ToolPanel from '../Components/tools/InstrumentsTools/ToolPanel';
 import { useDrag } from 'react-dnd';
 import { ItemTypes } from '../Components/Constants';
 import { justDrag } from '../Components/Functions/TitleFunctions';
@@ -311,7 +311,7 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
           </div>
         </div>
         <div className="ml-4">
-          <label htmlFor="upload" className="cursor-pointer bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300">
+          <label htmlFor="upload" className="cursor-pointer bg-gray-200 px-4 py-2 rounded-lg text-gray-500 hover:bg-gray-300">
             <FontAwesomeIcon icon={faUpload} className="mr-2" /> Browse
             <input id="upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
           </label>
