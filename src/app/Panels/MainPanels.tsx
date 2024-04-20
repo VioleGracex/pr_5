@@ -12,7 +12,10 @@ import { togglePanelVisibility , setPanelVisibility, getPanelVisibility } from '
 import {getActiveNpcToken } from '../state/ActiveElement';
 import { setIsWriting } from '../state/isWriting';
 import NPCToken from '../Components/tools/Objects/NPCToken';
+import JobsData from '../Components/Data/Jobs.json'; // Assuming Jobs.json is in the same directory
 /* import { setIsPaletteVisibleState, getIsPaletteVisibleState, usePalette } from '../Components/tools/useTools/usePalette'; */
+
+
 
 // Global variable to track the visibility of the NPC editor window
 export const LeftPanel: React.FC = () => {
@@ -87,6 +90,7 @@ interface NPCEditor {
   token?: NPCToken | null;
 }
 
+
 export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
   const [name, setName] = useState('');
   const [job, setJob] = useState('');
@@ -94,17 +98,41 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
   const [description, setDescription] = useState('');
   const [src, setSrc] = useState('');
   const [filePath, setFilePath] = useState<string>(''); // State to hold file path
-  
+  const jobTitles = JobsData;
   const races = ['human', 'elf', 'orc', 'dwarf'];
 
-  const handleDiceRoll = () => {
-    alert('Dice rolled!');
-  };
 
-  const handleRandomRace = () => {
-    const randomRace = races[Math.floor(Math.random() * races.length)];
-    setRace(randomRace);
+  const handleDiceRoll = (propertyName: string) => {
+    token = getActiveNpcToken();
+    if (token) {
+      switch (propertyName) {
+        case 'name':
+          const randomName = races[Math.floor(Math.random() * races.length)];
+          token.setName(randomName);
+          break;
+        case 'job':
+          const randomJobTitle = jobTitles[Math.floor(Math.random() * jobTitles.length)];
+          setJob(randomJobTitle);
+          token.setJob(randomJobTitle);
+          break;
+        case 'race':
+          const randomRace = races[Math.floor(Math.random() * races.length)];
+          setRace(randomRace);
+          token.setRace(randomRace); // Should this be `setRace` instead of `setJob`?
+          break;
+        case 'description':
+          // Handle description logic here if needed
+          break;
+        default:
+          break;
+      }
+      alert('Dice rolled!');
+    }
+    return null; // Ensure a JSX element is returned
   };
+  
+
+
 
   const handleClosePanel = () => {
     setPanelVisibility('npcEditorPanelWrapper', false);
@@ -246,7 +274,7 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
           onBlur={handleInputBlur}
           className="flex-grow outline-none text-black"
         />
-        <button className="ml-3 rounded hover:bg-gray-600" onClick={handleDiceRoll}>
+        <button className="ml-3 rounded hover:bg-gray-600" onClick={() => handleDiceRoll('name')}>
           <FontAwesomeIcon icon={faDice} />
         </button>
       </div>
@@ -264,7 +292,7 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
           onBlur={handleInputBlur}
           className="flex-grow outline-none text-black"
         />
-        <button className="ml-3 rounded hover:bg-gray-600" onClick={handleDiceRoll}>
+        <button className="ml-3 rounded hover:bg-gray-600" onClick={() => handleDiceRoll('job')}>
           <FontAwesomeIcon icon={faDice} />
         </button>
       </div>
@@ -288,7 +316,7 @@ export const NpcEditorPanel: React.FC<NPCEditor> = ({ token }) => {
             </option>
           ))}
         </select>
-        <button className="ml-3 rounded hover:bg-gray-600" onClick={handleRandomRace}>
+        <button className="ml-3 rounded hover:bg-gray-600" onClick={() => handleDiceRoll('race')}>
           <FontAwesomeIcon icon={faDice} />
         </button>
       </div>
