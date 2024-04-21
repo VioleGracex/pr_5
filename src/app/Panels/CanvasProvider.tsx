@@ -1,3 +1,4 @@
+// CanvasProvider.tsx
 import React, { useRef, useState, useEffect, MouseEvent } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/InstrumentsTools/ToolPanel";
@@ -5,7 +6,7 @@ import NPCToken from "../Components/tools/Objects/NPCToken";
 import { setActiveElement, setActiveNpcToken } from "../state/ActiveElement";
 import Building, {BuildingProps} from "../Components/tools/Objects/Building";
 import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext } from "./CanvasContext";
-
+import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   //#region [consts]
@@ -24,15 +25,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
 
 
-  // Function to gather data
-  const getData = () => {
-    return {
-      npcTokens,
-      strokes,
-      buildings,
-      currentBuildingPoints
-    };
-  };
   //#endregion
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
@@ -164,9 +156,9 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
     // Log the activity (optional)
     addActivity(`Created NPC at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
-    addActivity("wa");
   };
   //----------------------------------Building---------------------------------------------
+  //#region building
   const createBuilding = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     if (nativeEvent.button !== 0) {
       // Right mouse click: Delete all points of the building currently under construction
@@ -330,7 +322,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     // Log the activity
     addActivity("Building created" + `building length ${buildings.length}`);
   };
-  
+//#endregion
  
 
   //#region drawing
@@ -445,6 +437,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   //#region Rendering
   useEffect(() => {
     const canvas = canvasRef.current;
+    
 
     if (canvas) {
       const context = canvas.getContext("2d");
@@ -457,8 +450,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         npcTokens.forEach((token) => {
           if (React.isValidElement(token)) {
             const { x = 0, y = 0 } = token.props;
-            const scaledX = x * scaleFactor;
-            const scaledY = y * scaleFactor;
             // Draw NPC token at scaled coordinates
             // context.drawImage(defaultImage, scaledX, scaledY, 50, 50);
           }
@@ -508,15 +499,23 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     deleteBuilding,
   };
 
+  const saveThisCanvasData = () => {
+    // Call saveCanvasDataToJson with the correct argument, which is contextValue
+    saveCanvasData(contextValue);
+  };
   return (
     <CanvasContext.Provider value={contextValue}>
       {/* <div style={{position: 'absolute'}}> {children}
              {/* Render NPC tokens as children }
              {npcTokens}</div> */}
+      <div style={{ position: 'relative', zIndex: '10000000000' }}>
+        <SaveDataButton canvasData={contextValue} />
+      </div>
       {children}
       {npcTokens}
       {buildings}
 
     </CanvasContext.Provider>
+    
   );
 };
