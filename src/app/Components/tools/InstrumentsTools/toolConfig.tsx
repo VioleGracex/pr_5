@@ -49,7 +49,7 @@ const toolsMain: Tool[] = [
   { icon: faArrowsAlt, name: `Move Tool`, shortcut: `V`, group: `move`, toolFunction: () => setGlobalActiveTool(`Move Tool`), inBound: false, isToggle: true },
   { Image: MarqueeToolImage, name: `Marquee tool`, shortcut: `M`, group: `selection`, toolFunction: () => console.log('Marquee Tool function'), inBound: false, isToggle: true },
   /* { icon: faCrop, name: `Crop Tool`, shortcut: `C`, group: `crop`, toolFunction: () => console.log('Crop Tool function'), inBound: false, isToggle: true }, */
-  { icon: faUser, name: `Token`, shortcut: `P`, group: `objects`, toolFunction: () => setGlobalActiveTool('Token'), inBound: false, isToggle: true },
+  { icon: faUser, name: `NPC Token`, shortcut: `P`, group: `objects`, toolFunction: () => setGlobalActiveTool('NPC Token'), inBound: false, isToggle: true },
   { icon: faPencil, name: `Pencil`, shortcut: `B`, group: `draw`, toolFunction: usePencil, inBound: false, isToggle: true },
   { icon: faSearch, name: `Zoom Tool`, shortcut: `Z`, group: `view`, toolFunction: () => setGlobalActiveTool(`Zoom Tool`), inBound: false, isToggle: true },
   { icon: faFont, name: `Text Tool`, shortcut: `T`, group: `text`, toolFunction: () => console.log('Text Tool function'), inBound: false, isToggle: true },
@@ -66,7 +66,7 @@ const toolsExtra: Tool[] = [
   { icon: faBuilding, name: `Building Tool`, shortcut: ``, group: `objects`, toolFunction: () => console.log('Building Tool function'), inBound: false, isToggle: true },
   { Image: RandomBuilding, name: `RGB`, shortcut: ``, group: `objects`, toolFunction: () => console.log('Random Building Tool function'), inBound: false, isToggle: true },
   { icon: faSackXmark, name: `Item Token`, shortcut: ``, group: `objects`, toolFunction: () => console.log('handleItemTokenCreation'), inBound: false, isToggle: true },
-  { icon: faUser, name: `Token`, shortcut: ``, group: `objects`, toolFunction: () => console.log('handleTokenCreation'), inBound: false, isToggle: true },
+  { icon: faUser, name: `NPC Token`, shortcut: ``, group: `objects`, toolFunction: () => console.log('handleNPCTokenCreation'), inBound: false, isToggle: true },
   { icon: faPaintBrush, name: `Brush`, shortcut: ``, group: `draw`, toolFunction: () => console.log('Brush function'), inBound: false, isToggle: true },
   {icon: faEraser, name: `Eraser`, shortcut: ``, group: `draw`, toolFunction: () => console.log('Brush function'), inBound: false, isToggle: true },
   // Add more tools as needed

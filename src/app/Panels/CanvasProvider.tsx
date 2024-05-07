@@ -62,6 +62,11 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           createNPCToken(event);
           }
           break;
+        case 'Item Token':
+          if (event.button === 0) {
+          createItemToken(event);
+          }
+          break;          
         case 'Move Tool':
           // Implement move tool functionality
           break;
@@ -126,6 +131,40 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   //#endregion
   //----------------------------------Token---------------------------------------------
   const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+
+    if (!canvas) return;
+
+    // Get the bounding rectangle of the canvas
+    const canvasRect = canvas.getBoundingClientRect();
+
+    // Calculate the offset of the mouse event relative to the canvas
+    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
+    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
+    /* const offsetX = nativeEvent.clientX - window.scrollX;
+    const offsetY = nativeEvent.clientY - window.scrollY; */
+
+    // Adjust the offset based on the scale factor
+    const scaledOffsetX = (offsetX / scaleFactor) - 30;
+    const scaledOffsetY = (offsetY / scaleFactor) - 20;
+
+    // Create a new  token with adjusted coordinates
+    const newToken = (
+      <Token
+        type = 'npc'
+        key={Tokens.length} // Use a unique key for each token
+        x={scaledOffsetX}
+        y={scaledOffsetY} />
+    );
+
+    // Update the state to include the new token
+    setTokens((prevTokens) => [...prevTokens, newToken]);
+
+    // Log the activity (optional)
+    addActivity(`Created Token at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
+  };
+
+  const createItemToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
 
     if (!canvas) return;

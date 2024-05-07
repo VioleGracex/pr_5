@@ -1,7 +1,7 @@
 // Objects/NpcToken.tsx
 import React, { Component } from 'react';
 import defaultNPCImage from '../../imgs/NPCAvatar.png';
-import defaultItemImage from '../../imgs/ItemImage.png'; // Default item image
+import defaultItemImage from '../../imgs/ItemToken.png'; // Default item image
 import { getGlobalActiveTool } from '../InstrumentsTools/ToolPanel';
 import { setPanelVisibility } from '@/app/state/panelVisibility';
 import { setActiveToken } from '@/app/state/ActiveElement';
