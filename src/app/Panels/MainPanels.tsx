@@ -9,9 +9,9 @@ import { faUser, faBriefcase, faDice, faTimes, faSync, faUpload } from '@fortawe
 import { ChromePicker, ColorResult } from 'react-color';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 import { togglePanelVisibility , setPanelVisibility, getPanelVisibility } from '../state/panelVisibility';
-import {getActiveNpcToken } from '../state/ActiveElement';
+import {getActiveToken } from '../state/ActiveElement';
 import { setIsWriting } from '../state/isWriting';
-import NPCToken from '../Components/tools/Objects/NPCToken';
+import Token from '../Components/tools/Objects/Token';
 import JobsData from '../Components/Data/Jobs.json'; 
 import NamesData from '../Components/Data/Names.json'; 
 import RacesData from '../Components/Data/Races.json';  
@@ -90,7 +90,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({ numberOfLayers }) => {
 };
 
 interface NPCEditor {
-  token?: NPCToken | null;
+  token?: Token | null;
 }
 
 
@@ -116,7 +116,7 @@ const races: string[] = RacesData.categories.reduce((acc: string[], category: an
 }, []);
 
   const handleDiceRoll = (propertyName: string) => {
-    token = getActiveNpcToken();
+    token = getActiveToken();
     if (token) {
       switch (propertyName) {
         case 'name':
@@ -152,7 +152,7 @@ const races: string[] = RacesData.categories.reduce((acc: string[], category: an
 
   const handleInputChange = (propertyName: string, value: string) => {
     setIsWriting(true);
-    token = getActiveNpcToken()
+    token = getActiveToken()
     if (token) {
       switch (propertyName) {
         case 'name':
@@ -179,7 +179,7 @@ const races: string[] = RacesData.categories.reduce((acc: string[], category: an
   };
 
   const refreshFields = () => {
-    token = getActiveNpcToken();
+    token = getActiveToken();
     if (token) {
       setName(token.getName());
       setJob(token.getJob());
@@ -200,7 +200,7 @@ const races: string[] = RacesData.categories.reduce((acc: string[], category: an
 
   // Function to handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    token = getActiveNpcToken();
+    token = getActiveToken();
     const file = event.target.files?.[0];
     if (file) {
       // Check file size

@@ -1,7 +1,7 @@
 // Canvas.tsx
 import React, { useEffect } from "react";
 import { useCanvas } from "./CanvasContext";
-import { getActiveNpcToken } from "../state/ActiveElement";
+import { getActiveToken } from "../state/ActiveElement";
 
 export function Canvas() {
   const {
@@ -12,16 +12,16 @@ export function Canvas() {
     draw,
     strokes,
     mousePosition, // Add mousePosition
-    deleteNPCToken,
+    deleteToken,
   } = useCanvas("exampleCanvas");
 
   const handleDeleteKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Delete") {
-      const activeToken = getActiveNpcToken();
+      const activeToken = getActiveToken();
       if (activeToken) {
         const activeIndex = activeToken.getIndex(); // Assuming getIndex() returns the index of the active NPC token
         if (activeIndex !== undefined) {
-          deleteNPCToken(activeIndex);
+          deleteToken(activeIndex);
         }
       }
     }

@@ -2,8 +2,8 @@
 import React, { useRef, useState, useEffect, MouseEvent } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/InstrumentsTools/ToolPanel";
-import NPCToken from "../Components/tools/Objects/NPCToken";
-import { setActiveElement, setActiveNpcToken } from "../state/ActiveElement";
+import Token from "../Components/tools/Objects/Token";
+import { setActiveElement, setActiveToken } from "../state/ActiveElement";
 import Building, {BuildingProps} from "../Components/tools/Objects/Building";
 import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext } from "./CanvasContext";
 import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
@@ -12,7 +12,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   //#region [consts]
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState("black");
-  const [selectedObject, setSelectedObject] = useState<typeof NPCToken | null>(null);
+  const [selectedObject, setSelectedObject] = useState<typeof Token | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number; } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -20,7 +20,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [initialPoint, setInitialPoint] = useState<{ x: number; y: number; }>({ x: 0, y: 0 });
   const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
-  const [npcTokens, setNpcTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
+  const [Tokens, setTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [buildings, setBuildings] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
 
@@ -67,7 +67,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           break;
         case 'Cursor Tool':
           setActiveElement(null);
-          setActiveNpcToken(null);
+          setActiveToken(null);
           break;
         case 'Building Tool':
           if (event.button === 0) {
@@ -85,7 +85,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         case 'RGB': //Random GeneratedBuilding
         if (event.button === 0) {
           addActivity(`Used ${activeTool} Tool`);
-          createRandomBuildingNearCursor(event); // Call the function to generate shape with NPC
+          createRandomBuildingNearCursor(event); // Call the function to generate shape with 
         }
           break;
         default:
@@ -124,7 +124,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   }, [addActivity]);
 
   //#endregion
-  //----------------------------------NPC---------------------------------------------
+  //----------------------------------Token---------------------------------------------
   const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
 
@@ -143,19 +143,20 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     const scaledOffsetX = (offsetX / scaleFactor) - 30;
     const scaledOffsetY = (offsetY / scaleFactor) - 20;
 
-    // Create a new NPC token with adjusted coordinates
+    // Create a new  token with adjusted coordinates
     const newToken = (
-      <NPCToken
-        key={npcTokens.length} // Use a unique key for each token
+      <Token
+        type = 'item'
+        key={Tokens.length} // Use a unique key for each token
         x={scaledOffsetX}
         y={scaledOffsetY} />
     );
 
-    // Update the state to include the new NPC token
-    setNpcTokens((prevTokens) => [...prevTokens, newToken]);
+    // Update the state to include the new token
+    setTokens((prevTokens) => [...prevTokens, newToken]);
 
     // Log the activity (optional)
-    addActivity(`Created NPC at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
+    addActivity(`Created Token at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
   };
   //----------------------------------Building---------------------------------------------
   //#region building
@@ -234,7 +235,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         id={"building_" + buildings.length} // Pass the id as a prop
         points={closedBuildingPoints} />
     );
-    // Update the state to include the new NPC token
+    // Update the state to include the new token
     setBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
     //setBuildings([...buildings, newBuilding]);
     // Clear the current building points
@@ -423,8 +424,8 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
 
-  const deleteNPCToken = (index: number) => {
-    setNpcTokens((prevTokens) => prevTokens.filter((_, i) => i !== index));
+  const deleteToken = (index: number) => {
+    setTokens((prevTokens) => prevTokens.filter((_, i) => i !== index));
     // Optionally, you can add additional cleanup logic here if needed
   };
 
@@ -446,11 +447,11 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         context.fillStyle = "white";
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Render NPC tokens
-        npcTokens.forEach((token) => {
+        // Render tokens
+        Tokens.forEach((token) => {
           if (React.isValidElement(token)) {
             const { x = 0, y = 0 } = token.props;
-            // Draw NPC token at scaled coordinates
+            // Draw token at scaled coordinates
             // context.drawImage(defaultImage, scaledX, scaledY, 50, 50);
           }
         });
@@ -473,7 +474,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       }
     }
 
-  }, [strokes, npcTokens, selectedObject, mousePosition, currentBuildingPoints]);
+  }, [strokes, Tokens, selectedObject, mousePosition, currentBuildingPoints]);
 
   //#endregion
   // Update the context value to include isDragging
@@ -488,14 +489,14 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     strokes,
     strokeColor,
     setStrokeColor: setCurrentColor,
-    npcTokens,
+    Tokens,
     buildings,
     canvasId,
     selectedObject,
     setSelectedObject,
     mousePosition,
     setMousePosition,
-    deleteNPCToken,
+    deleteToken,
     deleteBuilding,
   };
 
@@ -505,14 +506,11 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   };
   return (
     <CanvasContext.Provider value={contextValue}>
-      {/* <div style={{position: 'absolute'}}> {children}
-             {/* Render NPC tokens as children }
-             {npcTokens}</div> */}
       <div style={{ position: 'relative', zIndex: '10000000000' }}>
         <SaveDataButton canvasData={contextValue} />
       </div>
       {children}
-      {npcTokens}
+      {Tokens}
       {buildings}
 
     </CanvasContext.Provider>

@@ -1,11 +1,11 @@
 // state/ActiveElement.ts
 import { getGlobalActiveTool } from "../Components/tools/InstrumentsTools/ToolPanel";
 import { addActivity } from "../Panels/ConsoleBar";
-import NPCToken from "../Components/tools/Objects/NPCToken";
+import Token from "../Components/tools/Objects/Token";
 
 let activeElement: HTMLElement | null = null;
 let activeBorderContainer: HTMLDivElement | null = null;
-const selectionDict: Record<string, boolean> = {'NpcToken' : true}; // Dictionary to track selection status of HTML elements
+const selectionDict: Record<string, boolean> = {'Token' : true}; // Dictionary to track selection status of HTML elements
 
 const drawBorder = (element: HTMLElement) => {
   // Remove existing border container if any
@@ -116,24 +116,24 @@ document.addEventListener('mousedown', handleMouseDown); */
 
 
 // Example usage:
-let activeNpcToken: NPCToken | null = null;
+let activeToken: Token | null = null;
 let activeRedBorderContainer: HTMLDivElement | null = null;
 
-export const setActiveNpcToken = (element: NPCToken | null) => {
-  if (activeNpcToken !== element) {
-    activeNpcToken = element;
+export const setActiveToken = (element: Token | null) => {
+  if (activeToken !== element) {
+    activeToken = element;
     if (activeRedBorderContainer) {
       activeRedBorderContainer.remove(); // Remove existing border container if changing active element
       activeRedBorderContainer = null;
     }
-    if (activeNpcToken) {
-      createRedBorder(activeNpcToken.tokenRef.current);
+    if (activeToken) {
+      createRedBorder(activeToken.tokenRef.current);
     }
   }
 };
 
-export const getActiveNpcToken = () => {
-  return activeNpcToken;
+export const getActiveToken = () => {
+  return activeToken;
 };
 
 const createRedBorder = (element: HTMLElement | null) => {

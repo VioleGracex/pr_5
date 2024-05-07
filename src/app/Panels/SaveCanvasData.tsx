@@ -22,7 +22,7 @@ const SaveDataButton: React.FC<{ canvasData: CanvasContextProps }> = ({ canvasDa
   const handleSaveClick = () => {
     const dataToSave = {
       strokes: canvasData.strokes,
-      npcTokens: canvasData.npcTokens,
+      Tokens: canvasData.Tokens,
       buildings: canvasData.buildings
     };
     // Construct the file path with folder "project" and file name as canvas ID
@@ -43,7 +43,7 @@ export default SaveDataButton;
 export const saveCanvasData = (canvasData: CanvasContextProps) => {
   const dataToSave = {
     strokes: canvasData.strokes,
-    npcTokens: canvasData.npcTokens,
+    Tokens: canvasData.Tokens,
     buildings: canvasData.buildings
   };
   // Construct the file path with folder "project" and file name as canvas ID

@@ -1,13 +1,18 @@
 // Objects/NpcToken.tsx
 import React, { Component } from 'react';
-import defaultImage from '../../imgs/NPCAvatar.png';
+import defaultNPCImage from '../../imgs/NPCAvatar.png';
+import defaultItemImage from '../../imgs/ItemImage.png'; // Default item image
 import { getGlobalActiveTool } from '../InstrumentsTools/ToolPanel';
 import { setPanelVisibility } from '@/app/state/panelVisibility';
-import { setActiveNpcToken } from '@/app/state/ActiveElement';
+import { setActiveToken } from '@/app/state/ActiveElement';
 import { getZoomScaleFactor } from '../useTools/useZoom';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 
-interface NPCTokenProps {
+// Define the type for the token, e.g., 'npc' or 'item'
+type TokenType = 'npc' | 'item';
+
+interface TokenProps {
+  type: TokenType;
   name?: string;
   race?: string;
   job?: string;
@@ -17,7 +22,7 @@ interface NPCTokenProps {
   src?: string; // Change src type to string for file paths
 }
 
-interface NPCTokenState {
+interface TokenState {
   isDragging: boolean;
   position: { x: number; y: number };
   offsetX: number;
@@ -30,8 +35,8 @@ interface NPCTokenState {
   index: number; // Add index property to the state
 }
 
-class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
-  state: NPCTokenState = {
+class Token extends Component<TokenProps, TokenState> {
+  state: TokenState = {
     isDragging: false,
     position: { x: this.props.x || 0, y: this.props.y || 0 },
     offsetX: 0,
@@ -40,7 +45,7 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
     job: this.props.job || '',
     race: this.props.race || '',
     description: this.props.description || '',
-    src: this.props.src || defaultImage.src,
+    src: this.props.src || this.props.type === 'npc' ? defaultNPCImage.src : defaultItemImage.src,
     index: 0, // Initialize index property
   };
 
@@ -89,7 +94,7 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
   };
 
   getSrc = () => {
-    return this.state.src || defaultImage.src;
+    return this.state.src || defaultNPCImage.src;
   };
 
   getIndex = () => {
@@ -106,7 +111,7 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
     if (activeTool === 'Move Tool') {
       this.setState({ isDragging: true });
     } else if (activeTool === 'Cursor Tool') {
-      setActiveNpcToken(this);
+      setActiveToken(this);
       setPanelVisibility('npcEditorPanelWrapper', true);
     }
   };
@@ -150,8 +155,8 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
 
     return (
       <div
-        className="NpcToken"
-        id="NpcToken"
+        className="Token"
+        id="Token"
         ref={this.tokenRef}
         style={{
           position: 'absolute',
@@ -168,7 +173,7 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
           overflow: 'hidden',
           position: 'relative',
         }}>
-          <img src={this.state.src} alt={defaultImage.src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={this.state.src} alt={defaultNPCImage.src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <p style={{ color: 'black', margin: 0, textAlign: 'center' }}>{this.state.name}</p>
       </div>
@@ -176,4 +181,4 @@ class NPCToken extends Component<NPCTokenProps, NPCTokenState> {
   }
 }
 
-export default NPCToken;
+export default Token;

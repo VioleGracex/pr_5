@@ -1,7 +1,7 @@
 // CanvasContext.tsx
 import React, { createContext, useContext, ReactNode, SetStateAction, Dispatch } from "react";
-import NPCToken from "../Components/tools/Objects/NPCToken";
-import { getActiveNpcToken } from "../state/ActiveElement";
+import Token from "../Components/tools/Objects/Token";
+import { getActiveToken } from "../state/ActiveElement";
 import {BuildingProps} from "../Components/tools/Objects/Building";
 
 export interface CanvasContextProps {
@@ -15,14 +15,14 @@ export interface CanvasContextProps {
   strokes: { path: { x: number; y: number }[]; color: string }[];
   strokeColor: string;
   setStrokeColor: Dispatch<SetStateAction<string>>;
-  npcTokens: React.ReactNode[];
+  Tokens: React.ReactNode[];
   buildings: React.ReactNode[];
   canvasId: string;
-  selectedObject:  typeof NPCToken | null;
-  setSelectedObject: Dispatch<SetStateAction< typeof NPCToken | null>>;
+  selectedObject:  typeof Token | null;
+  setSelectedObject: Dispatch<SetStateAction< typeof Token | null>>;
   mousePosition: { x: number; y: number } | null;
   setMousePosition: Dispatch<SetStateAction<{ x: number; y: number } | null>>;
-  deleteNPCToken: (index: number) => void; // Define deleteNPCToken function
+  deleteToken: (index: number) => void; // Define deleteNPCToken function
   deleteBuilding: (index: number) => void; // Define deleteNPCToken function
 }
 
