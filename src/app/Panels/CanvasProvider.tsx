@@ -7,6 +7,10 @@ import { setActiveElement, setActiveToken } from "../state/ActiveElement";
 import Building, {BuildingProps} from "../Components/tools/Objects/Building";
 import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext } from "./CanvasContext";
 import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
+import createToken from "./CanvasNew/TokenCreator";
+import createWireBuilding from "./CanvasNew/BuildingCreator";
+import createSquareGrid from "./CanvasNew/SquareGrid";
+
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   //#region [consts]
@@ -24,7 +28,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [buildings, setBuildings] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
 
-
   //#endregion
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
@@ -33,19 +36,21 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       canvas.height = window.innerHeight * 2;
       canvas.style.width = `${window.innerWidth}px`;
       canvas.style.height = `${window.innerHeight}px`;
-
+  
       const context = canvas.getContext("2d");
       if (context) {
         context.scale(2, 2);
         context.lineCap = "round";
         context.lineWidth = 5;
-
+        
         setIsCanvasPrepared(true);
         canvas.style.zIndex = "-100";
-        contextRef.current = context;
+        
       }
     }
   };
+  
+  
 
 
   //#region [Buttons]
@@ -59,12 +64,12 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           break;
         case 'NPC Token':
           if (event.button === 0) {
-          createNPCToken(event);
+            createToken(event, 'npc', canvasRef, Tokens, setTokens, scaleFactor);
           }
           break;
         case 'Item Token':
           if (event.button === 0) {
-          createItemToken(event);
+            createToken(event, 'item', canvasRef, Tokens, setTokens, scaleFactor);
           }
           break;          
         case 'Move Tool':
@@ -81,6 +86,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
             if (canvas) {
               // Start creating building placing points
               createBuilding(event);
+              //createWireBuilding(event,canvasRef,contextRef,currentBuildingPoints,setCurrentBuildingPoints,buildings,setBuildings,scaleFactor); //fix finish building points gets displaced
             }
           } else if (event.button === 2) {
             // Right-click: Cancel building construction by clearing all points
@@ -109,7 +115,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         case 'Building Tool':
           if (event.key == "Enter") {
             addActivity("Finish building");
-            finishBuilding();
+
           }
           break;
         default:
@@ -129,74 +135,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   }, [addActivity]);
 
   //#endregion
-  //----------------------------------Token---------------------------------------------
-  const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-
-    if (!canvas) return;
-
-    // Get the bounding rectangle of the canvas
-    const canvasRect = canvas.getBoundingClientRect();
-
-    // Calculate the offset of the mouse event relative to the canvas
-    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
-    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
-    /* const offsetX = nativeEvent.clientX - window.scrollX;
-    const offsetY = nativeEvent.clientY - window.scrollY; */
-
-    // Adjust the offset based on the scale factor
-    const scaledOffsetX = (offsetX / scaleFactor) - 30;
-    const scaledOffsetY = (offsetY / scaleFactor) - 20;
-
-    // Create a new  token with adjusted coordinates
-    const newToken = (
-      <Token
-        type = 'npc'
-        key={Tokens.length} // Use a unique key for each token
-        x={scaledOffsetX}
-        y={scaledOffsetY} />
-    );
-
-    // Update the state to include the new token
-    setTokens((prevTokens) => [...prevTokens, newToken]);
-
-    // Log the activity (optional)
-    addActivity(`Created Token at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
-  };
-
-  const createItemToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-
-    if (!canvas) return;
-
-    // Get the bounding rectangle of the canvas
-    const canvasRect = canvas.getBoundingClientRect();
-
-    // Calculate the offset of the mouse event relative to the canvas
-    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
-    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
-    /* const offsetX = nativeEvent.clientX - window.scrollX;
-    const offsetY = nativeEvent.clientY - window.scrollY; */
-
-    // Adjust the offset based on the scale factor
-    const scaledOffsetX = (offsetX / scaleFactor) - 30;
-    const scaledOffsetY = (offsetY / scaleFactor) - 20;
-
-    // Create a new  token with adjusted coordinates
-    const newToken = (
-      <Token
-        type = 'item'
-        key={Tokens.length} // Use a unique key for each token
-        x={scaledOffsetX}
-        y={scaledOffsetY} />
-    );
-
-    // Update the state to include the new token
-    setTokens((prevTokens) => [...prevTokens, newToken]);
-
-    // Log the activity (optional)
-    addActivity(`Created Token at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
-  };
+ 
   //----------------------------------Building---------------------------------------------
   //#region building
   const createBuilding = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
@@ -283,7 +222,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     // Log the activity
     addActivity("Building created" + `building length ${buildings.length}`);
   };
-
   // Define the shape points
 
   const shapePoints: { [key: string]: { x: number; y: number }[] } = {
@@ -483,7 +421,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       const context = canvas.getContext("2d");
       if (context) {
         //rendering bg  HERE ! make grid here
-        context.fillStyle = "white";
+        context.fillStyle = "#898989";
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         // Render tokens
@@ -506,9 +444,12 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         });
 
         // Render buildings and connect points
-        RenderBuildingArea(buildings, context);
+       
 
         buildingInConstruction(context, currentBuildingPoints);
+
+        RenderBuildingArea(buildings, context);
+        
 
       }
     }
@@ -545,13 +486,19 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   };
   return (
     <CanvasContext.Provider value={contextValue}>
-      <div style={{ position: 'relative', zIndex: '10000000000' }}>
+      {/* <div style={{ position: 'relative', zIndex: '10000000000' }}>
         <SaveDataButton canvasData={contextValue} />
-      </div>
+      </div> */}
       {children}
+      {createSquareGrid({ 
+        width: parseInt(canvasRef?.current?.style?.width || '0', 10), 
+        height: parseInt(canvasRef?.current?.style?.height || '0', 10), 
+        areaOfSquare: 3
+      })}
+
+
       {Tokens}
       {buildings}
-
     </CanvasContext.Provider>
     
   );

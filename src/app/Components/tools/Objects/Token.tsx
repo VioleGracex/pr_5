@@ -1,4 +1,4 @@
-// Objects/NpcToken.tsx
+// Objects/Token.tsx
 import React, { Component } from 'react';
 import defaultNPCImage from '../../imgs/NPCAvatar.png';
 import defaultItemImage from '../../imgs/ItemToken.png'; // Default item image
@@ -9,10 +9,10 @@ import { getZoomScaleFactor } from '../useTools/useZoom';
 import { addActivity } from '@/app/Panels/ConsoleBar';
 
 // Define the type for the token, e.g., 'npc' or 'item'
-type TokenType = 'npc' | 'item';
+export type TokenType = 'npc' | 'item';
 
 interface TokenProps {
-  type: TokenType;
+  type: string;
   name?: string;
   race?: string;
   job?: string;

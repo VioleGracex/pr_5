@@ -11,7 +11,7 @@ import { CanvasProvider } from "./Panels/CanvasProvider";
 import { Canvas } from './Panels/Canvas';
 import { getZoomScaleFactor } from './Components/tools/useTools/useZoom';
 import { allBarShortcuts } from './Components/tools/MenuBar/MenuConfig';
-import { CanvasContextProps } from './Panels/CanvasContext';
+import Layer from './Panels/CanvasNew/Layer';
 
 
 export interface HomeProps {
@@ -57,7 +57,7 @@ const MainPage: React.FC<HomeProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      //handleShortcuts(event, allBarShortcuts)
+      handleShortcuts(event, allBarShortcuts)
       if (event.ctrlKey && event.key === 's') {
         addActivity("ZBI");
         //event.preventDefault(); // Prevent the default browser save dialog
@@ -206,7 +206,6 @@ const saveDCanvasDataToJson = () => {
         <div id="MenuBar" style={{ display: 'block', zIndex: 1000 }}>
           <MenuBar />
         </div>
-
         <div className="flex flex-1">
           <div id="leftPanelWrapper" style={{ display: 'block', zIndex: 999 }}>
             <LeftPanel />
@@ -224,6 +223,7 @@ const saveDCanvasDataToJson = () => {
             top: `${canvasOffset.y}%`, // Use canvasOffset.y as top position
             transformOrigin: 'center center'
           }}>
+            
             <div style={{ overflow: 'hidden' }}>
             {canvasList.map((canvasId) => renderDCanvas(canvasId))}
             </div>

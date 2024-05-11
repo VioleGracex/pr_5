@@ -74,6 +74,9 @@ body {
   z-index: 999;
 }
 
+.canvas{
+  background-color: black;
+}
 /* Add this CSS to your stylesheet */
 .canvas-container {
   position: relative;
@@ -86,4 +89,23 @@ body {
   position: fixed; /* Position panels fixed to prevent affecting canvas */
   z-index: 2; /* Ensure panels are above canvas */
   /* Additional styling for panel wrappers */
+}
+
+
+.tile {
+  width: 20px; /* Adjust width as needed */
+  height: 20px; /* Adjust height as needed */
+  border: 0.5px dashed rgba(0, 0, 0, 0.5);/* Black border */
+  display: absolute; /* Display rows as flex for horizontal alignment */
+}
+
+.grid-row {
+  display: flex; /* Display rows as flex for horizontal alignment */
+}
+
+
+.grid-container {
+  position: absolute;
+  top: 0;
+  left: 0;
 }

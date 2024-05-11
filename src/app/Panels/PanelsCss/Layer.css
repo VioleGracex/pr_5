@@ -1,0 +1,28 @@
+.layer {
+    background-color: #898989; /* Background color */
+    position: absolute;
+    width: 100%; /* Adjust as needed */
+    height: 100%; /* Adjust as needed */
+    border: 1px solid #000; /* Border for the layer */
+    overflow: auto; /* Enable scrolling for content exceeding layer size */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+    overflow-y: hidden; /* Hide vertical scrollbar */
+  }
+  
+  .grid-lines {
+    
+    top: 0;
+    left: 0;
+  }
+  
+  .grid-row {
+    display: flex;
+  }
+  
+  .tile {
+    width: 20px; /* Adjust as needed */
+    height: 20px; /* Adjust as needed */
+    border: 1px solid #000; /* Border for each tile */
+    box-sizing: border-box;
+  }
+  
