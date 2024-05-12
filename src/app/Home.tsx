@@ -17,11 +17,9 @@ import Layer from './Panels/CanvasNew/Layer';
 export interface HomeProps {
   canvasList: string[];
   isCanvasHidden: { [canvasId: string]: boolean };
-  currentColor: string;
   dragging: boolean;
   dragStart: { x: number; y: number } | null;
   canvasOffset: { x: number; y: number };
-  setCurrentColor: React.Dispatch<React.SetStateAction<string>>;
   setCanvasList: React.Dispatch<React.SetStateAction<string[]>>;
   setIsCanvasHidden: React.Dispatch<React.SetStateAction<{ [canvasId: string]: boolean }>>;
   setDragging: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,11 +30,9 @@ export interface HomeProps {
 const MainPage: React.FC<HomeProps> = ({
   canvasList = ['Canvas0'],
   isCanvasHidden = { 'Canvas0': false },
-  currentColor = '#000000',
   dragging = false,
   dragStart = null,
   canvasOffset = { x: 50, y: 50 },
-  setCurrentColor,
   setCanvasList,
   setIsCanvasHidden,
   setDragging,
@@ -48,6 +44,7 @@ const MainPage: React.FC<HomeProps> = ({
   [dragging, setDragging] = useState(false);
   [dragStart, setDragStart] = useState<{ x: number; y: number; } | null>(null);
   [canvasOffset, setCanvasOffset] = useState<{ x: number; y: number; }>({ x: 50, y: 50 });
+  const [currentColor, setCurrentColor] = useState<string>("#000000");
   /* [isCanvasHidden, setIsCanvasHidden] = useState<{ [canvasId: string]: boolean }>({
     'Canvas0': false
   }); */
