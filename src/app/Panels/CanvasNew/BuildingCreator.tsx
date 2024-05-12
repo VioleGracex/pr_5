@@ -1,9 +1,10 @@
 import React, { useState } from 'react'; // Don't forget to import useState
 import { addActivity } from '@/app/Panels/ConsoleBar'; // Import addActivity function
 import Building from '@/app/Components/tools/Objects/Building'; // Import Building component
+import { BuildingProps } from '@/app/Components/tools/Objects/Building';
 
 
-const createWireBuilding = (
+export const createWireBuilding = (
     { nativeEvent }: React.MouseEvent<HTMLCanvasElement>,
     canvasRef: React.RefObject<HTMLCanvasElement>,
     contextRef: React.RefObject<CanvasRenderingContext2D | null>, // Corrected type
@@ -13,10 +14,7 @@ const createWireBuilding = (
     setBuildings: React.Dispatch<React.SetStateAction<React.ReactNode[]>>,
     scaleFactor:number
   ) => {
-    const clearCurrentBuildingPoints = () => {
-      setCurrentBuildingPoints([]);
-    };
-  
+    
     const finishBuilding = () => {
       if (currentBuildingPoints.length < 2) {
         // Building requires at least two points
@@ -36,7 +34,7 @@ const createWireBuilding = (
       // Update the state to include the new building
       setBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
       // Clear the current building points
-      clearCurrentBuildingPoints();
+      setCurrentBuildingPoints([]);
   
       // Log the activity
       addActivity("Building created" + `building length ${buildings.length}`);
@@ -44,7 +42,7 @@ const createWireBuilding = (
   
     if (nativeEvent.button !== 0) {
       // Right mouse click: Delete all points of the building currently under construction
-      clearCurrentBuildingPoints();
+      setCurrentBuildingPoints([]);
       return;
     }
   
@@ -96,5 +94,90 @@ const createWireBuilding = (
     setCurrentBuildingPoints((prevPoints) => [...prevPoints, newPoint]);
   };
   
-  export default createWireBuilding;
+  export const createRandomBuilding = (
+    { nativeEvent }: React.MouseEvent<HTMLCanvasElement>,
+    canvasRef: React.RefObject<HTMLCanvasElement>,
+    contextRef: React.RefObject<CanvasRenderingContext2D | null>, // Corrected type
+    setCurrentBuildingPoints: React.Dispatch<React.SetStateAction<{ x: number; y: number }[]>>,
+    buildings: React.ReactNode[], // Assuming these are passed from a parent component
+    setBuildings: React.Dispatch<React.SetStateAction<React.ReactNode[]>>,
+    scaleFactor:number
+  ) =>{
+    const shapePoints: { [key: string]: { x: number; y: number }[] } = {
+      square: [
+        { x: -50, y: -50 },
+        { x: 50, y: -50 },
+        { x: 50, y: 50 },
+        { x: -50, y: 50 }
+      ],
+      rectangle: [
+        { x: -75, y: -50 },
+        { x: 75, y: -50 },
+        { x: 75, y: 50 },
+        { x: -75, y: 50 }
+      ],
+      triangle: [
+        { x: 0, y: -75 },
+        { x: -75, y: 75 },
+        { x: 75, y: 75 }
+      ],
+     
+    };
   
+    const getRandomShape = () => {
+      const shapes = Object.keys(shapePoints);
+      const randomIndex = Math.floor(Math.random() * shapes.length);
+      return shapes[randomIndex];
+    };
+    // Define the type for the shape parameter
+    type ShapeType = keyof typeof shapePoints;
+  
+    // Function to generate random points for a given shape
+    const generateRandomPointsForShape = (shape: ShapeType, mouseX: number, mouseY: number): { x: number; y: number }[] => {
+      const canvas = canvasRef.current;
+      const context = contextRef.current;
+  
+      if (!canvas || !context) return [];
+  
+      /* const { offsetX = 0, offsetY = 0 } = nativeEvent; */
+      const canvasRect = canvas.getBoundingClientRect();
+      const offsetX = mouseX- canvasRect.left - window.scrollX;
+      const offsetY = mouseY - canvasRect.top - window.scrollY;
+      const points = shapePoints[shape];
+      const randomizedPoints = points.map(point => ({
+        /* x: point.x + mouseX,
+        y: point.y + mouseY */
+        x: point.x + offsetX,
+        y: point.y + offsetY
+      }));
+      return randomizedPoints;
+    };
+  
+    // Function to create a building from points
+    const createBuildingFromPoints = (points: BuildingProps['points']): JSX.Element => {
+      return (
+        <Building
+          key={buildings.length}
+          id={"building_" + buildings.length}
+          points={points}
+        />
+      );
+    };
+  
+    // Function to create a random building with a random shape near the cursor
+
+      const mouseX = nativeEvent.clientX; // X-coordinate of the mouse
+      const mouseY = nativeEvent.clientY; // Y-coordinate of the mouse
+      const randomShape = getRandomShape();
+      const randomPoints = generateRandomPointsForShape(randomShape, mouseX, mouseY);
+      const newBuilding = createBuildingFromPoints(randomPoints);
+      setBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
+      //setBuildings([...buildings, newBuilding]);
+      // Clear the current building points
+      setCurrentBuildingPoints([]);
+  
+      // Log the activity
+      addActivity("Building created" + `building length ${buildings.length}`);
+
+  }
+

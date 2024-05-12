@@ -11,8 +11,6 @@ import { CanvasProvider } from "./Panels/CanvasProvider";
 import { Canvas } from './Panels/Canvas';
 import { getZoomScaleFactor } from './Components/tools/useTools/useZoom';
 import { allBarShortcuts } from './Components/tools/MenuBar/MenuConfig';
-import Layer from './Panels/CanvasNew/Layer';
-
 
 export interface HomeProps {
   canvasList: string[];

@@ -8,7 +8,7 @@ import Building, {BuildingProps} from "../Components/tools/Objects/Building";
 import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext } from "./CanvasContext";
 import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
 import createToken from "./CanvasNew/TokenCreator";
-import createWireBuilding from "./CanvasNew/BuildingCreator";
+import {createWireBuilding, createRandomBuilding} from "./CanvasNew/BuildingCreator";
 import createSquareGrid from "./CanvasNew/SquareGrid";
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
@@ -89,13 +89,13 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
             }
           } else if (event.button === 2) {
             // Right-click: Cancel building construction by clearing all points
-            clearCurrentBuildingPoints();
+            setCurrentBuildingPoints([]);
           }
           break;
         case 'RGB': //Random GeneratedBuilding
         if (event.button === 0) {
           addActivity(`Used ${activeTool} Tool`);
-          createRandomBuildingNearCursor(event); // Call the function to generate shape with 
+          createRandomBuilding(event,canvasRef,contextRef,setCurrentBuildingPoints,buildings,setBuildings,scaleFactor); // Call the function to generate shape with 
         }
           break;
         default:
