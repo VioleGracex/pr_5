@@ -53,9 +53,9 @@ export function RenderBuildingArea(buildings: React.ReactNode[], context: Canvas
     if (React.isValidElement(building)) {
       const { points } = building.props as BuildingProps;
       if (points && points.length > 1) {
-        // Draw building lines
-        context.strokeStyle = 'black';
-        context.lineWidth = 1;
+        // Draw the outer wall (black border)
+        context.strokeStyle = 'black'; // Set border color
+        context.lineWidth = 12; // Set border width
         context.beginPath();
         context.moveTo(points[0].x, points[0].y);
         points.slice(1).forEach((point) => {
@@ -64,23 +64,27 @@ export function RenderBuildingArea(buildings: React.ReactNode[], context: Canvas
         context.lineTo(points[0].x, points[0].y);
         context.stroke();
 
-        // Fill building area with light grey
-        context.fillStyle = 'rgba(200, 200, 200, 0.5)'; // Adjust opacity as needed
+        // Draw the inner wall (white interior)
+        context.strokeStyle = 'white'; // Set interior color
+        context.lineWidth = 10; // Set interior width (smaller than border)
         context.beginPath();
         context.moveTo(points[0].x, points[0].y);
         points.slice(1).forEach((point) => {
           context.lineTo(point.x, point.y);
         });
         context.lineTo(points[0].x, points[0].y);
-        context.fill();
+        context.stroke();
       }
     }
   });
 }
 
+
+
+
 export function buildingInConstruction(context: CanvasRenderingContext2D, currentBuildingPoints: { x: number; y: number; }[]) {
   context.strokeStyle = 'blue'; // Set the color for the paths
-  context.lineWidth = 1; // Set the width of the stroke (adjust as needed)
+  context.lineWidth = 12; // Set the width of the stroke (adjust as needed)
   context.beginPath();
   
   if (currentBuildingPoints.length > 1) {
@@ -99,10 +103,10 @@ export function buildingInConstruction(context: CanvasRenderingContext2D, curren
 
   // Render building points
   currentBuildingPoints.forEach(({ x, y }) => {
-    const pointRadius = 3; // Adjust the radius of the point as needed
+    const pointRadius = 6; // Adjust the radius of the point as needed
     context.beginPath();
     context.arc(x, y, pointRadius, 0, Math.PI * 2);
-    context.fillStyle = 'black'; // Adjust the color of the point as needed
+    context.fillStyle = 'white'; // Adjust the color of the point as needed
     context.fill();
     context.closePath();
   });

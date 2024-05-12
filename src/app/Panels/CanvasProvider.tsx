@@ -84,7 +84,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
             const canvas = canvasRef.current;
             if (canvas) {
               // Start creating building placing points
-              createBuilding(event);
+              //createBuilding(event);
               createWireBuilding(event,canvasRef,contextRef,currentBuildingPoints,setCurrentBuildingPoints,buildings,setBuildings,scaleFactor);
             }
           } else if (event.button === 2) {
