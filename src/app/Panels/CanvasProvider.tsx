@@ -10,6 +10,7 @@ import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
 import createToken from "./CanvasNew/TokenCreator";
 import {createWireBuilding, createRandomBuilding} from "./CanvasNew/BuildingCreator";
 import createSquareGrid from "./CanvasNew/SquareGrid";
+import { usePencilDrawing } from "./CanvasNew/CanvasPencil";
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   //#region [consts]
@@ -58,7 +59,8 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       switch (activeTool) {
         case 'Pencil':
           addActivity(`Used ${activeTool} Pen`);
-          startPencilDrawing(event);
+          //startPencilDrawing(event);
+          usePencilDrawing(event,contextRef,isDrawing,setIsDrawing,currentColor,initialPoint,setInitialPoint,currentPath,setStrokes,scaleFactor);
           break;
         case 'NPC Token':
           if (event.button === 0) {
@@ -114,7 +116,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         case 'Building Tool':
           if (event.key == "Enter") {
             addActivity("Finish building");
-            finishBuilding();
           }
           break;
         default:
@@ -133,206 +134,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     };
   }, [addActivity]);
 
-  //#endregion
-  //----------------------------------Token---------------------------------------------
-  const createNPCToken = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-
-    if (!canvas) return;
-
-    // Get the bounding rectangle of the canvas
-    const canvasRect = canvas.getBoundingClientRect();
-
-    // Calculate the offset of the mouse event relative to the canvas
-    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
-    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
-    /* const offsetX = nativeEvent.clientX - window.scrollX;
-    const offsetY = nativeEvent.clientY - window.scrollY; */
-
-    // Adjust the offset based on the scale factor
-    const scaledOffsetX = (offsetX / scaleFactor) - 30;
-    const scaledOffsetY = (offsetY / scaleFactor) - 20;
-
-    // Create a new  token with adjusted coordinates
-    const newToken = (
-      <Token
-        type = 'item'
-        key={Tokens.length} // Use a unique key for each token
-        x={scaledOffsetX}
-        y={scaledOffsetY} />
-    );
-
-    // Update the state to include the new token
-    setTokens((prevTokens) => [...prevTokens, newToken]);
-
-    // Log the activity (optional)
-    addActivity(`Created Token at coordinates ${scaledOffsetX}, ${scaledOffsetY}`);
-  };
-  //----------------------------------Building---------------------------------------------
-  //#region building
-  const createBuilding = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    if (nativeEvent.button !== 0) {
-      // Right mouse click: Delete all points of the building currently under construction
-      clearCurrentBuildingPoints();
-      return;
-    }
-
-    const canvas = canvasRef.current;
-    const context = contextRef.current;
-
-    if (!canvas || !context) return;
-
-    /* const { offsetX = 0, offsetY = 0 } = nativeEvent; */
-    const canvasRect = canvas.getBoundingClientRect();
-    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
-    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
-    const newPoint = { x: offsetX, y: offsetY };
-    const thresholdDistance = 10; // Define the threshold distance
-
-
-    // Check if the point is the first point
-    if (currentBuildingPoints.length > 2) {
-      // Calculate the distance between the new point and the first point
-      const distance = Math.sqrt((currentBuildingPoints[0].x - newPoint.x) ** 2 + (currentBuildingPoints[0].y - newPoint.y) ** 2);
-
-      // Check if the distance is within the threshold range
-      if (distance <= thresholdDistance) {
-        // If it is near the first point, call the finishBuilding function
-        finishBuilding();
-        return;
-      }
-    }
-
-    // Check if the new point is too close to existing points
-    const isTooClose = currentBuildingPoints.some((point) => {
-      const distance = Math.sqrt((point.x - newPoint.x) ** 2 + (point.y - newPoint.y) ** 2);
-      return distance < thresholdDistance; // Adjust the threshold distance as needed
-    });
-
-    // If the new point is too close to existing points, return without adding it
-    if (isTooClose) {
-
-      return;
-    }
-
-    // If there are no points yet, set the initial point and return
-    if (currentBuildingPoints.length === 0) {
-      setCurrentBuildingPoints([newPoint]);
-      return;
-    }
-    // Push the new point into the points array
-    setCurrentBuildingPoints((prevPoints) => [...prevPoints, newPoint]);
-  };
-
-  // Function to clear the points of the building currently under construction
-  const clearCurrentBuildingPoints = () => {
-    setCurrentBuildingPoints([]);
-  };
-
-  // Function to finish building creation
-  const finishBuilding = () => {
-    if (currentBuildingPoints.length < 2) {
-      // Building requires at least two points
-      return;
-    }
-    // Close the building shape by connecting the last point to the first
-    const closedBuildingPoints = [...currentBuildingPoints, currentBuildingPoints[0]];
-
-    // Create a new Building object with the closed points
-    const newBuilding = (
-      <Building
-        key={buildings.length} // Use a unique key for each building
-        id={"building_" + buildings.length} // Pass the id as a prop
-        points={closedBuildingPoints} />
-    );
-    // Update the state to include the new token
-    setBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
-    //setBuildings([...buildings, newBuilding]);
-    // Clear the current building points
-    setCurrentBuildingPoints([]);
-
-    // Log the activity
-    addActivity("Building created" + `building length ${buildings.length}`);
-  };
-
-  // Define the shape points
-
-  const shapePoints: { [key: string]: { x: number; y: number }[] } = {
-    square: [
-      { x: -50, y: -50 },
-      { x: 50, y: -50 },
-      { x: 50, y: 50 },
-      { x: -50, y: 50 }
-    ],
-    rectangle: [
-      { x: -75, y: -50 },
-      { x: 75, y: -50 },
-      { x: 75, y: 50 },
-      { x: -75, y: 50 }
-    ],
-    triangle: [
-      { x: 0, y: -75 },
-      { x: -75, y: 75 },
-      { x: 75, y: 75 }
-    ],
-   
-  };
-
-  const getRandomShape = () => {
-    const shapes = Object.keys(shapePoints);
-    const randomIndex = Math.floor(Math.random() * shapes.length);
-    return shapes[randomIndex];
-  };
-  // Define the type for the shape parameter
-  type ShapeType = keyof typeof shapePoints;
-
-  // Function to generate random points for a given shape
-  const generateRandomPointsForShape = (shape: ShapeType, mouseX: number, mouseY: number): { x: number; y: number }[] => {
-    const canvas = canvasRef.current;
-    const context = contextRef.current;
-
-    if (!canvas || !context) return [];
-
-    /* const { offsetX = 0, offsetY = 0 } = nativeEvent; */
-    const canvasRect = canvas.getBoundingClientRect();
-    const offsetX = mouseX- canvasRect.left - window.scrollX;
-    const offsetY = mouseY - canvasRect.top - window.scrollY;
-    const points = shapePoints[shape];
-    const randomizedPoints = points.map(point => ({
-      /* x: point.x + mouseX,
-      y: point.y + mouseY */
-      x: point.x + offsetX,
-      y: point.y + offsetY
-    }));
-    return randomizedPoints;
-  };
-
-  // Function to create a building from points
-  const createBuildingFromPoints = (points: BuildingProps['points']): JSX.Element => {
-    return (
-      <Building
-        key={buildings.length}
-        id={"building_" + buildings.length}
-        points={points}
-      />
-    );
-  };
-
-  // Function to create a random building with a random shape near the cursor
-  const createRandomBuildingNearCursor = (event: MouseEvent<HTMLCanvasElement>) => {
-    const mouseX = event.clientX; // X-coordinate of the mouse
-    const mouseY = event.clientY; // Y-coordinate of the mouse
-    const randomShape = getRandomShape();
-    const randomPoints = generateRandomPointsForShape(randomShape, mouseX, mouseY);
-    const newBuilding = createBuildingFromPoints(randomPoints);
-    setBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
-    //setBuildings([...buildings, newBuilding]);
-    // Clear the current building points
-    setCurrentBuildingPoints([]);
-
-    // Log the activity
-    addActivity("Building created" + `building length ${buildings.length}`);
-  };
 //#endregion
  
 
