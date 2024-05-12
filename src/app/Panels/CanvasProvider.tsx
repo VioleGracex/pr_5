@@ -81,11 +81,12 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           break;
         case 'Building Tool':
           if (event.button === 0) {
+            createBuilding(event);
             // Left-click on the canvas
             const canvas = canvasRef.current;
             if (canvas) {
               // Start creating building placing points
-              createBuilding(event);
+              //createBuilding(event);
               //createWireBuilding(event,canvasRef,contextRef,currentBuildingPoints,setCurrentBuildingPoints,buildings,setBuildings,scaleFactor); //fix finish building points gets displaced
             }
           } else if (event.button === 2) {
@@ -95,7 +96,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           break;
         case 'RGB': //Random GeneratedBuilding
         if (event.button === 0) {
-          addActivity(`Used ${activeTool} Tool`);
+          addActivity(`Used ${activeTool} RGB Tool`);
           createRandomBuildingNearCursor(event); // Call the function to generate shape with 
         }
           break;
@@ -287,6 +288,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
   // Function to create a random building with a random shape near the cursor
   const createRandomBuildingNearCursor = (event: MouseEvent<HTMLCanvasElement>) => {
+   
     const mouseX = event.clientX; // X-coordinate of the mouse
     const mouseY = event.clientY; // Y-coordinate of the mouse
     const randomShape = getRandomShape();
@@ -298,7 +300,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     setCurrentBuildingPoints([]);
 
     // Log the activity
-    addActivity("Building created" + `building length ${buildings.length}`);
+    //addActivity("Building created" + `building length ${buildings.length}`);
   };
 //#endregion
  
@@ -484,22 +486,31 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     // Call saveCanvasDataToJson with the correct argument, which is contextValue
     saveCanvasData(contextValue);
   };
+
   return (
     <CanvasContext.Provider value={contextValue}>
-      {/* <div style={{ position: 'relative', zIndex: '10000000000' }}>
-        <SaveDataButton canvasData={contextValue} />
-      </div> */}
+      <div style={{ position: 'relative', zIndex: '100' }}>
+        {/* <SaveDataButton canvasData={contextValue} /> */}
+      </div>
+      <div style={{ position: 'absolute', zIndex: '5' }}>
+        {createSquareGrid({ 
+          width: parseInt(canvasRef?.current?.style?.width || '0', 10), 
+          height: parseInt(canvasRef?.current?.style?.height || '0', 10), 
+          areaOfSquare: 3
+        })}
+      </div>
+  
+      <div style={{ position: 'absolute', zIndex: '10' }}>
+        {buildings}
+      </div>
+  
+      <div style={{ position: 'absolute', zIndex: '7' }}>
+        {Tokens}
+      </div>
+      
       {children}
-      {createSquareGrid({ 
-        width: parseInt(canvasRef?.current?.style?.width || '0', 10), 
-        height: parseInt(canvasRef?.current?.style?.height || '0', 10), 
-        areaOfSquare: 3
-      })}
-
-
-      {Tokens}
-      {buildings}
+      
     </CanvasContext.Provider>
-    
   );
+  
 };
