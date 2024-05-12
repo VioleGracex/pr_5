@@ -10,7 +10,7 @@ import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
 import createToken from "./CanvasNew/TokenCreator";
 import {createWireBuilding, createRandomBuilding} from "./CanvasNew/BuildingCreator";
 import createSquareGrid from "./CanvasNew/SquareGrid";
-import { usePencilDrawing } from "./CanvasNew/CanvasPencil";
+import { usePencilDrawing, drawPencil, finishDrawingPencil } from "./CanvasNew/CanvasPencil";
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   //#region [consts]
@@ -59,8 +59,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       switch (activeTool) {
         case 'Pencil':
           addActivity(`Used ${activeTool} Pen`);
-          //startPencilDrawing(event);
-          usePencilDrawing(event,contextRef,isDrawing,setIsDrawing,currentColor,initialPoint,setInitialPoint,currentPath,setStrokes,scaleFactor);
+          usePencilDrawing(event,contextRef,setIsDrawing,currentColor,setInitialPoint,currentPath,scaleFactor);
           break;
         case 'NPC Token':
           if (event.button === 0) {
@@ -109,103 +108,15 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    const activeTool = getGlobalActiveTool();
-    if (activeTool) {
-      switch (activeTool) {
-        case 'Building Tool':
-          if (event.key == "Enter") {
-            addActivity("Finish building");
-          }
-          break;
-        default:
-          addActivity(`Selected ${activeTool}`);
-          break;
-      }
-    } else {
-      addActivity("Error Using Tool not found");
-    }
+  const draw = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if(isDrawing)
+      drawPencil(event,contextRef,currentPath,scaleFactor);
   };
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [addActivity]);
-
+  const finishDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    finishDrawingPencil(event,contextRef,setIsDrawing,currentColor,initialPoint,currentPath,setStrokes,scaleFactor);
+  };
 //#endregion
  
-
-  //#region drawing
-  const startPencilDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    const { offsetX = 0, offsetY = 0 } = nativeEvent;
-    if (contextRef.current) {
-      contextRef.current.strokeStyle = strokeColor;
-      contextRef.current.lineWidth = 3; // Set the width of the stroke (adjust as needed) add this as a meter to palette
-      contextRef.current.beginPath();
-      contextRef.current.moveTo(offsetX, offsetY);
-      setIsDrawing(true);
-      setInitialPoint({ x: offsetX, y: offsetY });
-
-      // Create a new path for the current stroke
-      currentPath.current = [{ x: offsetX, y: offsetY }];
-    }
-  };
-
-  // Inside the draw function
-  const draw = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !contextRef.current) {
-      return;
-    }
-
-    const { offsetX = 0, offsetY = 0 } = nativeEvent;
-    const scaledOffsetX = offsetX / scaleFactor;
-    const scaledOffsetY = offsetY / scaleFactor;
-
-    contextRef.current.lineTo(scaledOffsetX, scaledOffsetY);
-    contextRef.current.stroke();
-
-    currentPath.current.push({ x: scaledOffsetX, y: scaledOffsetY });
-  };
-
-  // Inside the finishDrawing function
-  const finishDrawing = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-    setIsDrawing(false);
-
-    if (contextRef.current) {
-      const offsetX = nativeEvent.clientX;
-      const offsetY = nativeEvent.clientY;
-      const distance = Math.sqrt(
-        Math.pow(offsetX - initialPoint.x, 2) + Math.pow(offsetY - initialPoint.y, 2)
-      );
-
-      const scaledOffsetX = offsetX / scaleFactor;
-      const scaledOffsetY = offsetY / scaleFactor;
-
-      contextRef.current.lineTo(scaledOffsetX, scaledOffsetY);
-
-      const newStroke: Stroke = {
-        path: [...currentPath.current],
-        color: strokeColor,
-      };
-
-      if (distance < 2) {
-        contextRef.current.arc(
-          scaledOffsetX,
-          scaledOffsetY,
-          contextRef.current.lineWidth / 2,
-          0,
-          Math.PI * 2
-        );
-        contextRef.current.fill();
-      } else {
-        contextRef.current.stroke();
-        setStrokes((prevStrokes) => [...prevStrokes, newStroke]);
-      }
-    }
-  };
-  //#endregion
   //#region deletion
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -294,9 +205,9 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     contextRef,
     prepareCanvas,
     startactivity,
+    draw,
     finishDrawing,
     clearCanvas,
-    draw,
     strokes,
     strokeColor,
     setStrokeColor: setCurrentColor,
@@ -316,7 +227,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     saveCanvasData(contextValue);
   };
   return (
-    <CanvasContext.Provider value={contextValue}>
+    <CanvasContext.Provider value={contextValue} >
       
       {/* <SaveDataButton canvasData={contextValue} /> */}
       <div style={{ position: 'absolute', zIndex: '25' }}>

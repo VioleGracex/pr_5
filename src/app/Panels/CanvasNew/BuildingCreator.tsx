@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Don't forget to import useState
+import React from 'react'; // Don't forget to import useState
 import { addActivity } from '@/app/Panels/ConsoleBar'; // Import addActivity function
 import Building from '@/app/Components/tools/Objects/Building'; // Import Building component
 import { BuildingProps } from '@/app/Components/tools/Objects/Building';

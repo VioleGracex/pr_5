@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 
 export interface Stroke {
   path: { x: number; y: number }[];
@@ -8,13 +8,10 @@ export interface Stroke {
 export const usePencilDrawing = (
 { nativeEvent }: React.MouseEvent<HTMLCanvasElement>,
 contextRef: React.RefObject<CanvasRenderingContext2D | null>,
-isDrawing: boolean,
 setIsDrawing: React.Dispatch<React.SetStateAction<boolean>>,
 currentColor: string,
-initialPoint: { x: number; y: number; },
 setInitialPoint: React.Dispatch<React.SetStateAction<{ x: number; y: number; }>>,
 currentPath: React.MutableRefObject<{ x: number; y: number; }[]>,
-setStrokes: React.Dispatch<React.SetStateAction<Stroke[]>>,
 scaleFactor: number
 ) => {
  
@@ -30,29 +27,43 @@ scaleFactor: number
       // Create a new path for the current stroke
       currentPath.current = [{ x: offsetX, y: offsetY }];
     }
-  
 
-  // Inside the draw function
+};
 
-    if (!isDrawing || !contextRef.current) {
+
+ // Inside the draw function
+ export const drawPencil = (
+    { nativeEvent }: React.MouseEvent<HTMLCanvasElement>,
+    contextRef: React.RefObject<CanvasRenderingContext2D | null>,
+    currentPath: React.MutableRefObject<{ x: number; y: number; }[]>,
+    scaleFactor: number
+    ) => {
+    if (!contextRef.current) {
       return;
     }
-    else
-    {
-        const { offsetX = 0, offsetY = 0 } = nativeEvent;
-        const scaledOffsetX = offsetX / scaleFactor;
-        const scaledOffsetY = offsetY / scaleFactor;
 
-        contextRef.current.lineTo(scaledOffsetX, scaledOffsetY);
-        contextRef.current.stroke();
+    const { offsetX = 0, offsetY = 0 } = nativeEvent;
+    const scaledOffsetX = offsetX / scaleFactor;
+    const scaledOffsetY = offsetY / scaleFactor;
 
-        currentPath.current.push({ x: scaledOffsetX, y: scaledOffsetY });
-    }
-    
-  
+    contextRef.current.lineTo(scaledOffsetX, scaledOffsetY);
+    contextRef.current.stroke();
 
-  // Inside the finishDrawing function
-  const finishDrawing = () => {
+    currentPath.current.push({ x: scaledOffsetX, y: scaledOffsetY });
+  };
+
+
+// Inside the finishDrawing function
+export const finishDrawingPencil = (
+    { nativeEvent }: React.MouseEvent<HTMLCanvasElement>,
+    contextRef: React.RefObject<CanvasRenderingContext2D | null>,
+    setIsDrawing: React.Dispatch<React.SetStateAction<boolean>>,
+    currentColor: string,
+    initialPoint: { x: number; y: number; },
+    currentPath: React.MutableRefObject<{ x: number; y: number; }[]>,
+    setStrokes: React.Dispatch<React.SetStateAction<Stroke[]>>,
+    scaleFactor: number
+    ) => {
     setIsDrawing(false);
 
     if (contextRef.current) {
@@ -87,5 +98,3 @@ scaleFactor: number
       }
     }
   };
-
-};
