@@ -8,15 +8,11 @@ export interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   contextRef: React.RefObject<CanvasRenderingContext2D | null>;
   prepareCanvas: () => void;
-  startactivity: (event: React.MouseEvent<HTMLCanvasElement>) => void;
-  draw: (event: React.MouseEvent<HTMLCanvasElement>) => void;
-  finishDrawing: (event: React.MouseEvent<HTMLCanvasElement>) => void;
+  handleMouseDown: (event: React.MouseEvent<HTMLCanvasElement>) => void;
+  handleMouseMove: (event: React.MouseEvent<HTMLCanvasElement>) => void;
+  handleMouseUp: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   clearCanvas: () => void;
   strokes: { path: { x: number; y: number }[]; color: string }[];
-  strokeColor: string;
-  setStrokeColor: Dispatch<SetStateAction<string>>;
-  Tokens: React.ReactNode[];
-  buildings: React.ReactNode[];
   canvasId: string;
   selectedObject:  typeof Token | null;
   setSelectedObject: Dispatch<SetStateAction< typeof Token | null>>;

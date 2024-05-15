@@ -4,13 +4,13 @@ import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/InstrumentsTools/ToolPanel";
 import Token from "../Components/tools/Objects/Token";
 import { setActiveElement, setActiveToken } from "../state/ActiveElement";
-import Building, {BuildingProps} from "../Components/tools/Objects/Building";
 import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext } from "./CanvasContext";
 import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
 import createToken from "./CanvasNew/TokenCreator";
 import {createWireBuilding, createRandomBuilding} from "./CanvasNew/BuildingCreator";
 import createSquareGrid from "./CanvasNew/SquareGrid";
 import { usePencilDrawing, drawPencil, finishDrawingPencil } from "./CanvasNew/CanvasPencil";
+import { drawRectangle, finishDrawingRectangle } from "./CanvasNew/ShapeCreator";
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   //#region [consts]
@@ -22,11 +22,14 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const currentPath = useRef<{ x: number; y: number; }[]>([]);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
+  const [shapes, setShapes] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [initialPoint, setInitialPoint] = useState<{ x: number; y: number; }>({ x: 0, y: 0 });
   const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
-  const [Tokens, setTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
+  const [tokens, setTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [buildings, setBuildings] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
+  const [isDrawingShape, setIsDrawingShape] = useState(false);
+  const [rectangleStart, setRectangleStart] = useState<{ x: number; y: number; } | null>(null);
 
 
   //#endregion
@@ -53,23 +56,22 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
 
   //#region [Buttons]
-  const startactivity = (event: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const activeTool = getGlobalActiveTool();
     if (activeTool) {
       switch (activeTool) {
         case 'Pencil':
-          addActivity(`Used ${activeTool} Pen`);
-          usePencilDrawing(event,contextRef,setIsDrawing,currentColor,setInitialPoint,currentPath,scaleFactor);
+          usePencilDrawing(event,contextRef,setIsDrawing,strokeColor,setInitialPoint,currentPath,scaleFactor);
           break;
         case 'NPC Token':
           if (event.button === 0) {
             //createNPCToken(event);
-            createToken(event, 'npc', canvasRef, Tokens, setTokens, scaleFactor);
+            createToken(event, 'npc', canvasRef, tokens, setTokens, scaleFactor);
           }
           break;
         case 'Item Token':
           if (event.button === 0) {
-            createToken(event, 'item', canvasRef, Tokens, setTokens, scaleFactor);
+            createToken(event, 'item', canvasRef, tokens, setTokens, scaleFactor);
           }
           break;    
         case 'Move Tool':
@@ -99,6 +101,12 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           createRandomBuilding(event,canvasRef,contextRef,setCurrentBuildingPoints,buildings,setBuildings,scaleFactor); // Call the function to generate shape with 
         }
           break;
+        case 'Rectangle Tool':
+          addActivity('rectangle tool');
+          setIsDrawingShape(true);
+          setInitialPoint({ x: event.nativeEvent.offsetX, y: event.nativeEvent.offsetY });
+          //useShapeCreator(event,contextRef,setIsDrawingShape,currentColor,setInitialPoint,currentPath,scaleFactor);
+          break;
         default:
           addActivity(`Selected ${activeTool}`);
           break;
@@ -108,15 +116,48 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     }
   };
 
-  const draw = (event: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if(isDrawing)
       drawPencil(event,contextRef,currentPath,scaleFactor);
+    else if (isDrawingShape)
+      drawRectangle(event,canvasRef,strokeColor,initialPoint,scaleFactor);
+    /* else if(isDrawingShape)
+      drawShape(event,contextRef,initialPoint,scaleFactor); */
   };
-  const finishDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    finishDrawingPencil(event,contextRef,setIsDrawing,currentColor,initialPoint,currentPath,setStrokes,scaleFactor);
+  const handleMouseUp = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if(isDrawing)
+      finishDrawingPencil(event,contextRef,setIsDrawing,strokeColor,initialPoint,currentPath,setStrokes,scaleFactor);
+    else if (isDrawingShape)
+      finishDrawingRectangle(setIsDrawingShape);
   };
 //#endregion
  
+
+
+/* const drawRectangle = (event: React.MouseEvent<HTMLCanvasElement>) => {
+  if (!isDrawingShape || !initialPoint) return;
+
+  const canvas = canvasRef.current;
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const { x: startX, y: startY } = initialPoint;
+  const width = event.nativeEvent.offsetX - startX;
+  const height = event.nativeEvent.offsetY - startY;
+
+  ctx.strokeStyle = currentColor;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(startX, startY, width, height);
+};
+
+const finishDrawingRectangle = () => {
+  setIsDrawingShape(false);
+};
+ */
   //#region deletion
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -170,7 +211,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         // Render tokens
-        Tokens.forEach((token) => {
+        tokens.forEach((token) => {
           if (React.isValidElement(token)) {
             const { x = 0, y = 0 } = token.props;
             // Draw token at scaled coordinates
@@ -196,7 +237,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       }
     }
 
-  }, [strokes, Tokens, selectedObject, mousePosition, currentBuildingPoints]);
+  }, [strokes, tokens, selectedObject, mousePosition, currentBuildingPoints]);
 
   //#endregion
   // Update the context value to include isDragging
@@ -204,15 +245,11 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     canvasRef,
     contextRef,
     prepareCanvas,
-    startactivity,
-    draw,
-    finishDrawing,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
     clearCanvas,
     strokes,
-    strokeColor,
-    setStrokeColor: setCurrentColor,
-    Tokens,
-    buildings,
     canvasId,
     selectedObject,
     setSelectedObject,
@@ -241,7 +278,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           height: parseInt(canvasRef?.current?.style?.height || '0', 10), 
           areaOfSquare: 3
         })}
-        {Tokens}
+        {tokens}
         {buildings}
       </div>
       

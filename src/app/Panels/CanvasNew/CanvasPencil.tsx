@@ -10,13 +10,13 @@ export const usePencilDrawing = (
 contextRef: React.RefObject<CanvasRenderingContext2D | null>,
 setIsDrawing: React.Dispatch<React.SetStateAction<boolean>>,
 currentColor: string,
-setInitialPoint: React.Dispatch<React.SetStateAction<{ x: number; y: number; }>>,
+setInitialPoint: React.Dispatch<React.SetStateAction<{ x: number; y: number; }>>|null,
 currentPath: React.MutableRefObject<{ x: number; y: number; }[]>,
 scaleFactor: number
 ) => {
- 
+    
     const { offsetX = 0, offsetY = 0 } = nativeEvent;
-    if (contextRef.current) {
+    if (contextRef.current && setInitialPoint) {
       contextRef.current.strokeStyle = currentColor;
       contextRef.current.lineWidth = 3; // Set the width of the stroke (adjust as needed) add this as a meter to palette
       contextRef.current.beginPath();
@@ -59,14 +59,14 @@ export const finishDrawingPencil = (
     contextRef: React.RefObject<CanvasRenderingContext2D | null>,
     setIsDrawing: React.Dispatch<React.SetStateAction<boolean>>,
     currentColor: string,
-    initialPoint: { x: number; y: number; },
+    initialPoint: { x: number; y: number; } | null,
     currentPath: React.MutableRefObject<{ x: number; y: number; }[]>,
     setStrokes: React.Dispatch<React.SetStateAction<Stroke[]>>,
     scaleFactor: number
     ) => {
     setIsDrawing(false);
 
-    if (contextRef.current) {
+    if (contextRef.current && initialPoint) {
       const offsetX = nativeEvent.clientX;
       const offsetY = nativeEvent.clientY;
       const distance = Math.sqrt(

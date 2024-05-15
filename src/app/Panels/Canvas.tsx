@@ -7,9 +7,9 @@ export function Canvas() {
   const {
     canvasRef,
     prepareCanvas,
-    startactivity,
-    finishDrawing,
-    draw,
+    handleMouseDown,
+    handleMouseUp,
+    handleMouseMove,
     strokes,
     mousePosition, // Add mousePosition
     deleteToken,
@@ -71,9 +71,9 @@ export function Canvas() {
 
   return (
     <canvas id="canvas"
-      onMouseDown={(e) => startactivity(e)}
-      onMouseUp={finishDrawing}
-      onMouseMove={(e) => draw(e)}
+      onMouseDown={(e) => handleMouseDown(e)}
+      onMouseUp={handleMouseUp}
+      onMouseMove={(e) => handleMouseMove(e)}
       ref={canvasRef}
     />
   );
