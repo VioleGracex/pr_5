@@ -166,6 +166,25 @@ const startDrawingRectangle = (event: MouseEvent<HTMLCanvasElement>) => {
 const updateRectangle = (event: MouseEvent<HTMLCanvasElement>) => {
   if (isDrawingRectangle && rectangle) {
     const { offsetX, offsetY } = event.nativeEvent;
+    const updatedWidth = (offsetX / scaleFactor) - rectangle.startX;
+    const updatedHeight = (offsetY / scaleFactor) - rectangle.startY;
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const context = canvas.getContext('2d');
+      if (context) {
+        // Clear the canvas
+        context.clearRect(rectangle.startX, rectangle.startY, updatedWidth, updatedHeight);
+
+        context.strokeStyle = 'rgba(173, 216, 230, 0.5)';
+        context.lineWidth = 2;
+        context.strokeRect(
+          (updatedWidth >= 0 ? rectangle.startX : rectangle.startX + updatedWidth) * scaleFactor,
+          rectangle.startY * scaleFactor,
+          Math.abs(updatedWidth) * scaleFactor,
+          Math.abs(updatedHeight) * scaleFactor
+        );
+      }
+    }
     setRectangle(prevState => {
       if (!prevState) return null; // Handle null state
       return {
@@ -276,12 +295,10 @@ const finishDrawingRectangle = () => {
           }
         });
         
-
         // Render buildings and connect points
         RenderBuildingArea(buildings, context);
 
         buildingInConstruction(context, currentBuildingPoints);
-        
         
       }
     }
@@ -329,10 +346,10 @@ const finishDrawingRectangle = () => {
         })}
         
         {buildings}
-        {rectangles}
-        {tokens}
-        
+        {tokens}  
       </div>
+
+      
       
 
     </CanvasContext.Provider>
