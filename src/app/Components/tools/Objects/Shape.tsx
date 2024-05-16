@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 export interface ShapeProps {
   id: string;
+  type: string;
   points: { x: number; y: number }[];
   size: { width: number; height: number };
   color: string;

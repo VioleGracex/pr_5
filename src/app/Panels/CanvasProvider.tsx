@@ -11,25 +11,31 @@ import {createWireBuilding, createRandomBuilding} from "./CanvasNew/BuildingCrea
 import createSquareGrid from "./CanvasNew/SquareGrid";
 import { usePencilDrawing, drawPencil, finishDrawingPencil } from "./CanvasNew/CanvasPencil";
 import { drawRectangle, finishDrawingRectangle } from "./CanvasNew/ShapeCreator";
+import Shape, { ShapeProps } from "../Components/tools/Objects/Shape";
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   //#region [consts]
   const [isDrawing, setIsDrawing] = useState(false);
-  const [currentColor, setCurrentColor] = useState("black");
+  const [isDrawingShape, setIsDrawingShape] = useState(false);
+  const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
+
   const [selectedObject, setSelectedObject] = useState<typeof Token | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number; } | null>(null);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+
+  const [initialPoint, setInitialPoint] = useState<{ x: number; y: number; }>({ x: 0, y: 0 });
   const currentPath = useRef<{ x: number; y: number; }[]>([]);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
-  const [shapes, setShapes] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
-  const [initialPoint, setInitialPoint] = useState<{ x: number; y: number; }>({ x: 0, y: 0 });
-  const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
+  const [shapes, setShapes] = useState<React.ReactNode[]>([]);
+  const [currentShapePoints, setCurrentShapePoints] = useState<{ x: number; y: number; width: number; height: number; }[]>([]);
+
+
   const [tokens, setTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [buildings, setBuildings] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
-  const [isDrawingShape, setIsDrawingShape] = useState(false);
-  const [rectangleStart, setRectangleStart] = useState<{ x: number; y: number; } | null>(null);
+
 
 
   //#endregion
@@ -102,9 +108,11 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
         }
           break;
         case 'Rectangle Tool':
-          addActivity('rectangle tool');
-          setIsDrawingShape(true);
-          setInitialPoint({ x: event.nativeEvent.offsetX, y: event.nativeEvent.offsetY });
+          if (event.button === 0) {
+            addActivity('rectangle tool');
+            setIsDrawingShape(true);
+            setInitialPoint({ x: event.nativeEvent.offsetX, y: event.nativeEvent.offsetY });
+          }
           //useShapeCreator(event,contextRef,setIsDrawingShape,currentColor,setInitialPoint,currentPath,scaleFactor);
           break;
         default:
@@ -120,7 +128,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     if(isDrawing)
       drawPencil(event,contextRef,currentPath,scaleFactor);
     else if (isDrawingShape)
-      drawRectangle(event,canvasRef,strokeColor,initialPoint,scaleFactor);
+      drawRectangle(event,canvasRef,strokeColor,initialPoint,shapes,setCurrentShapePoints,scaleFactor);
     /* else if(isDrawingShape)
       drawShape(event,contextRef,initialPoint,scaleFactor); */
   };
@@ -128,7 +136,11 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     if(isDrawing)
       finishDrawingPencil(event,contextRef,setIsDrawing,strokeColor,initialPoint,currentPath,setStrokes,scaleFactor);
     else if (isDrawingShape)
-      finishDrawingRectangle(setIsDrawingShape);
+      {
+        finishDrawingRectangle(setIsDrawingShape,strokeColor,shapes,setShapes,currentShapePoints,setCurrentShapePoints);
+        addActivity('shapes size' + shapes.length);
+      }
+      
   };
 //#endregion
  
@@ -201,12 +213,10 @@ const finishDrawingRectangle = () => {
   //#region Rendering
   useEffect(() => {
     const canvas = canvasRef.current;
-    
 
     if (canvas) {
       const context = canvas.getContext("2d");
       if (context) {
-        //rendering bg  HERE ! make grid here
         context.fillStyle = "#898989";
         context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -229,15 +239,24 @@ const finishDrawingRectangle = () => {
           context.stroke();
         });
 
+        
+        
+
         // Render buildings and connect points
         RenderBuildingArea(buildings, context);
 
         buildingInConstruction(context, currentBuildingPoints);
 
+        shapes.forEach((shape: React.ReactNode) => {
+          if (React.isValidElement(shape)) {
+            const shapeProps = shape.props as ShapeProps;
+            context.fillRect(shapeProps.points[0].x, shapeProps.points[0].y, shapeProps.size.width, shapeProps.size.height);
+          }
+        });
       }
     }
 
-  }, [strokes, tokens, selectedObject, mousePosition, currentBuildingPoints]);
+  }, [strokes,shapes, tokens, selectedObject, mousePosition, currentBuildingPoints]);
 
   //#endregion
   // Update the context value to include isDragging
@@ -278,8 +297,11 @@ const finishDrawingRectangle = () => {
           height: parseInt(canvasRef?.current?.style?.height || '0', 10), 
           areaOfSquare: 3
         })}
-        {tokens}
+        
         {buildings}
+
+        {tokens}
+        {shapes}
       </div>
       
 
