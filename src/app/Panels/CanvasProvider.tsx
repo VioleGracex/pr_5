@@ -10,13 +10,10 @@ import createToken from "./CanvasNew/TokenCreator";
 import {createWireBuilding, createRandomBuilding} from "./CanvasNew/BuildingCreator";
 import createSquareGrid from "./CanvasNew/SquareGrid";
 import { usePencilDrawing, drawPencil, finishDrawingPencil } from "./CanvasNew/CanvasPencil";
-import { drawRectangle, finishDrawingRectangle } from "./CanvasNew/ShapeCreator";
-import Shape, { ShapeProps } from "../Components/tools/Objects/Shape";
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   //#region [consts]
   const [isDrawing, setIsDrawing] = useState(false);
-  const [isDrawingShape, setIsDrawingShape] = useState(false);
   const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
 
   const [selectedObject, setSelectedObject] = useState<typeof Token | null>(null);
@@ -28,8 +25,6 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [initialPoint, setInitialPoint] = useState<{ x: number; y: number; }>({ x: 0, y: 0 });
   const currentPath = useRef<{ x: number; y: number; }[]>([]);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
-  const [shapes, setShapes] = useState<React.ReactNode[]>([]);
-  const [currentShapePoints, setCurrentShapePoints] = useState<{ x: number; y: number; width: number; height: number; }[]>([]);
 
 
   const [tokens, setTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
@@ -109,9 +104,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           break;
         case 'Rectangle Tool':
           if (event.button === 0) {
-            addActivity('rectangle tool');
-            setIsDrawingShape(true);
-            setInitialPoint({ x: event.nativeEvent.offsetX, y: event.nativeEvent.offsetY });
+           startDrawingRectangle(event);
           }
           //useShapeCreator(event,contextRef,setIsDrawingShape,currentColor,setInitialPoint,currentPath,scaleFactor);
           break;
@@ -127,49 +120,86 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if(isDrawing)
       drawPencil(event,contextRef,currentPath,scaleFactor);
-    else if (isDrawingShape)
-      drawRectangle(event,canvasRef,strokeColor,initialPoint,shapes,setCurrentShapePoints,scaleFactor);
+    else if(isDrawingRectangle)
+      {
+        updateRectangle(event);
+      }
+    
     /* else if(isDrawingShape)
       drawShape(event,contextRef,initialPoint,scaleFactor); */
   };
   const handleMouseUp = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if(isDrawing)
       finishDrawingPencil(event,contextRef,setIsDrawing,strokeColor,initialPoint,currentPath,setStrokes,scaleFactor);
-    else if (isDrawingShape)
-      {
-        finishDrawingRectangle(setIsDrawingShape,strokeColor,shapes,setShapes,currentShapePoints,setCurrentShapePoints);
-        addActivity('shapes size' + shapes.length);
-      }
-      
+    else if(isDrawingRectangle)
+    {
+      finishDrawingRectangle();
+    }
   };
 //#endregion
- 
+interface Rectangle {
+  startX: number;
+  startY: number;
+  width: number;
+  height: number;
+  color: string;
+}
 
-
-/* const drawRectangle = (event: React.MouseEvent<HTMLCanvasElement>) => {
-  if (!isDrawingShape || !initialPoint) return;
-
-  const canvas = canvasRef.current;
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const { x: startX, y: startY } = initialPoint;
-  const width = event.nativeEvent.offsetX - startX;
-  const height = event.nativeEvent.offsetY - startY;
-
-  ctx.strokeStyle = currentColor;
-  ctx.lineWidth = 2;
-  ctx.strokeRect(startX, startY, width, height);
+const [rectangle, setRectangle] = useState<Rectangle | null>(null);
+const [isDrawingRectangle, setIsDrawingRectangle] = useState(false);
+const [rectangles, setRectangles] = useState<React.ReactNode[]>([]); // New state for rectangles
+// Function to start drawing a rectangle
+const startDrawingRectangle = (event: MouseEvent<HTMLCanvasElement>) => {
+    setIsDrawingRectangle(true);
+    const { offsetX, offsetY } = event.nativeEvent;
+    setRectangle({
+      startX: offsetX / scaleFactor,
+      startY: offsetY / scaleFactor,
+      width: 0,
+      height: 0,
+      color: strokeColor
+    });
+    addActivity("start rec");
 };
 
+// Function to update the rectangle dimensions while drawing
+const updateRectangle = (event: MouseEvent<HTMLCanvasElement>) => {
+  if (isDrawingRectangle && rectangle) {
+    const { offsetX, offsetY } = event.nativeEvent;
+    setRectangle(prevState => {
+      if (!prevState) return null; // Handle null state
+      return {
+        ...prevState,
+        width: (offsetX / scaleFactor) - prevState.startX,
+        height: (offsetY / scaleFactor) - prevState.startY
+      };
+    });
+  }
+};
+
+
+// Function to finish drawing the rectangle
 const finishDrawingRectangle = () => {
-  setIsDrawingShape(false);
+  if (isDrawingRectangle && rectangle) {
+    setIsDrawingRectangle(false);
+    // Add the drawn rectangle to the rectangles array
+    const newRectangle = (
+      <rect
+        x={rectangle.startX}
+        y={rectangle.startY}
+        width={rectangle.width}
+        height={rectangle.height}
+        fill={rectangle.color}
+        key={rectangles.length} // Ensure unique key for React
+      />
+    );
+    setRectangles(prevRectangles => [...prevRectangles, newRectangle]);
+    setRectangle(null); // Reset rectangle state
+  }
 };
- */
+
+
+
   //#region deletion
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -239,24 +269,24 @@ const finishDrawingRectangle = () => {
           context.stroke();
         });
 
-        
+        rectangles.forEach(rectangle => {
+          if (React.isValidElement(rectangle)) {
+          context.fillStyle = rectangle.props.fill;
+          context.fillRect(rectangle.props.x, rectangle.props.y, rectangle.props.width, rectangle.props.height);
+          }
+        });
         
 
         // Render buildings and connect points
         RenderBuildingArea(buildings, context);
 
         buildingInConstruction(context, currentBuildingPoints);
-
-        shapes.forEach((shape: React.ReactNode) => {
-          if (React.isValidElement(shape)) {
-            const shapeProps = shape.props as ShapeProps;
-            context.fillRect(shapeProps.points[0].x, shapeProps.points[0].y, shapeProps.size.width, shapeProps.size.height);
-          }
-        });
+        
+        
       }
     }
 
-  }, [strokes,shapes, tokens, selectedObject, mousePosition, currentBuildingPoints]);
+  }, [strokes,rectangles, tokens, selectedObject, mousePosition, currentBuildingPoints]);
 
   //#endregion
   // Update the context value to include isDragging
@@ -299,9 +329,9 @@ const finishDrawingRectangle = () => {
         })}
         
         {buildings}
-
+        {rectangles}
         {tokens}
-        {shapes}
+        
       </div>
       
 
