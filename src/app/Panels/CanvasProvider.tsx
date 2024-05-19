@@ -4,14 +4,14 @@ import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/InstrumentsTools/ToolPanel";
 import Token from "../Components/tools/Objects/Token";
 import { setActiveElement, setActiveToken } from "../state/ActiveElement";
-import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext, roadInConstruction, RenderRoadsArea } from "./CanvasContext";
+import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext, wireInConstruction, renderWireShapesWithTexture } from "./CanvasContext";
 import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
 import createToken from "./CanvasNew/TokenCreator";
-import {createWireBuilding, createRandomBuilding, createWireRoad} from "./CanvasNew/BuildingCreator";
+import {createWireBuilding, createRandomBuilding} from "./CanvasNew/BuildingCreator";
 import createSquareGrid from "./CanvasNew/SquareGrid";
 import { usePencilDrawing, drawPencil, finishDrawingPencil } from "./CanvasNew/CanvasPencil";
-import dirtRoad from "../../Components/imgs/dirt-road.png";
-
+import dirtRoad from "./textures/dirt-road.png";
+import grassRoad from "./textures/grass-road.jpg";
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   //#region [consts]
@@ -31,10 +31,10 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
 
   const [tokens, setTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [buildings, setBuildings] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
-  const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
+  const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number; contentType?: string; }[]>([]);
 
   const [roads, setRoads] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
-  const [currentRoadPoints, setCurrenRoadPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
+  const [currentRoadPoints, setCurrentRoadPoints] = useState<{ x: number; y: number; contentType?: string; }[]>([]);
 
 
 
@@ -94,7 +94,7 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
             if (canvas) {
               // Start creating building placing points
               //createBuilding(event);
-              createWireBuilding(event,canvasRef,contextRef,currentBuildingPoints,setCurrentBuildingPoints,buildings,setBuildings,scaleFactor);
+              createWireBuilding(event,canvasRef,contextRef,currentBuildingPoints,setCurrentBuildingPoints,buildings,setBuildings,scaleFactor,'building');
             }
           } else if (event.button === 2) {
             // Right-click: Cancel building construction by clearing all points
@@ -121,7 +121,13 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           break;
         case 'Road Tool':
           if (event.button === 0) {
-            createWireBuilding(event,canvasRef,contextRef,currentRoadPoints,setCurrenRoadPoints,roads,setRoads,scaleFactor);
+            createWireBuilding(event,canvasRef,contextRef,currentRoadPoints,setCurrentRoadPoints,roads,setRoads,scaleFactor,'road', dirtRoad.src);
+          }
+          //useShapeCreator(event,contextRef,setIsDrawingShape,currentColor,setInitialPoint,currentPath,scaleFactor);
+          break;
+        case 'Grass Tool':
+          if (event.button === 0) {
+            createWireBuilding(event,canvasRef,contextRef,currentRoadPoints,setCurrentRoadPoints,roads,setRoads,scaleFactor,'grass', grassRoad.src);
           }
           //useShapeCreator(event,contextRef,setIsDrawingShape,currentColor,setInitialPoint,currentPath,scaleFactor);
           break;
@@ -406,12 +412,23 @@ const finishDrawingRectangle = () => {
           }
         });
              
-        // Render buildings and connect points
+        buildingInConstruction(context, currentBuildingPoints);
         RenderBuildingArea(buildings, context);
 
-        buildingInConstruction(context, currentBuildingPoints);
-        roadInConstruction(context, currentRoadPoints);
-        RenderRoadsArea(roads,context);
+        //roads
+        if (currentRoadPoints.length > 0) 
+        {
+          if (currentRoadPoints[0].contentType) {
+            if (currentRoadPoints[0].contentType === 'road') {
+              wireInConstruction(context, currentRoadPoints, dirtRoad.src);
+            } else if(currentRoadPoints[0].contentType === 'grass'){
+              wireInConstruction(context, currentRoadPoints, grassRoad.src);
+            }
+          }
+        }
+    
+        renderWireShapesWithTexture(roads, context);
+        
         
       }
     }

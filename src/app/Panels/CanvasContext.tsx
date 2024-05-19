@@ -3,7 +3,6 @@ import React, { createContext, useContext, ReactNode, SetStateAction, Dispatch }
 import Token from "../Components/tools/Objects/Token";
 import { getActiveToken } from "../state/ActiveElement";
 import { BuildingProps } from "../Components/tools/Objects/Building";
-import dirtRoad from "./dirt-road.png";
 
 export interface CanvasContextProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -72,7 +71,7 @@ export function buildingInConstruction(
     const pointRadius = 6; // Adjust the radius of the point as needed
     context.beginPath();
     context.arc(x, y, pointRadius, 0, Math.PI * 2);
-    context.fillStyle = index === 0 ? 'red' : index === currentBuildingPoints.length - 1 ? 'blue' : 'white'; // Adjust the color of the point as needed
+    context.fillStyle = index === 0 ? '#0ce84a' : index === currentBuildingPoints.length - 1 ? 'red' : 'white'; // Adjust the color of the point as needed
     context.fill();
     context.closePath();
   });
@@ -113,13 +112,15 @@ export function RenderBuildingArea(
   });
 }
 
-export function roadInConstruction(
+
+export function wireInConstruction(
   context: CanvasRenderingContext2D,
-  currentBuildingPoints: { x: number; y: number; }[]
+  currentBuildingPoints: { x: number; y: number; }[],
+  texture: string,
 ) {
   // Create a pattern with the dirt road texture image
   const dirtTexture = new Image();
-  dirtTexture.src = dirtRoad.src; // Use the src property to get the URL string
+  dirtTexture.src = texture; // Use the src property to get the URL string
 
   // Once the image is loaded, create a pattern with it
   dirtTexture.onload = function () {
@@ -156,7 +157,7 @@ export function roadInConstruction(
         const pointRadius = 6; // Adjust the radius of the point as needed
         context.beginPath();
         context.arc(x, y, pointRadius, 0, Math.PI * 2);
-        context.fillStyle = index === 0 ? 'green' : index === currentBuildingPoints.length - 1 ? 'blue' : 'white'; // Adjust the color of the point as needed
+        context.fillStyle = index === 0 ? '#0ce84a' : index === currentBuildingPoints.length - 1 ? 'red' : 'white'; // Adjust the color of the point as needed
         context.fill();
         context.closePath();
       });
@@ -164,45 +165,45 @@ export function roadInConstruction(
   };
 }
 
-// Modified RenderRoadsArea function
-export function RenderRoadsArea(
+export function renderWireShapesWithTexture(
   roads: React.ReactNode[],
-  context: CanvasRenderingContext2D
+  context: CanvasRenderingContext2D,
 ) {
-  const dirtTexture = new Image();
-  dirtTexture.src = dirtRoad.src;
+  roads.forEach((building: React.ReactNode) => {
+    if (React.isValidElement(building)) {
+      const { points, texturePath } = building.props as BuildingProps;
+      if (points && points.length > 1) {
+        // Draw the outer wall (black border)
+        context.strokeStyle = 'black'; // Set border color
+        context.lineWidth = 4; // Set border width
+        context.beginPath();
+        context.moveTo(points[0].x, points[0].y);
+        points.slice(1).forEach((point) => {
+          context.lineTo(point.x, point.y);
+        });
+        context.lineTo(points[0].x, points[0].y);
+        context.stroke();
 
-  dirtTexture.onload = function () {
-    const pattern = context.createPattern(dirtTexture, 'repeat');
-
-    roads.forEach((building: React.ReactNode) => {
-      if (React.isValidElement(building)) {
-        const { points } = building.props as BuildingProps;
-        if (points && points.length > 1) {
-          // Draw the outer wall (black border)
-          context.strokeStyle = 'black'; // Set border color
-          context.lineWidth = 4; // Set border width
-          context.beginPath();
-          context.moveTo(points[0].x, points[0].y);
-          points.slice(1).forEach((point) => {
-            context.lineTo(point.x, point.y);
-          });
-          context.lineTo(points[0].x, points[0].y);
-          context.stroke();
-
-          // Fill the interior with the dirt road texture
-          if (pattern) {
-            context.fillStyle = pattern;
-            context.beginPath();
-            context.moveTo(points[0].x, points[0].y);
-            points.slice(1).forEach((point) => {
-              context.lineTo(point.x, point.y);
-            });
-            context.lineTo(points[0].x, points[0].y);
-            context.fill();
-          }
+        // Fill the interior with the texture if texturePath exists
+        if (texturePath) {
+          const texture = new Image();
+          texture.src = texturePath;
+          texture.onload = function () {
+            const pattern = context.createPattern(texture, 'repeat');
+            if (pattern) {
+              context.fillStyle = pattern;
+              context.beginPath();
+              context.moveTo(points[0].x, points[0].y);
+              points.slice(1).forEach((point) => {
+                context.lineTo(point.x, point.y);
+              });
+              context.lineTo(points[0].x, points[0].y);
+              context.fill();
+            }
+          };
         }
       }
-    });
-  };
+    }
+  });
 }
+

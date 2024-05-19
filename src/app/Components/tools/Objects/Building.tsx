@@ -6,6 +6,8 @@ export interface BuildingProps {
   name?: string;
   points?: { x: number; y: number }[];
   strokes?: { path: { x: number; y: number }[]; color: string }[];
+  contentType?:string;
+  texturePath?:string;
 }
 
 interface BuildingState {
@@ -13,6 +15,8 @@ interface BuildingState {
   name: string;
   points: { x: number; y: number }[];
   strokes: Stroke[];
+  contentType: string;
+  texturePath: string;
 }
 
 class Building extends Component<BuildingProps, BuildingState> {
@@ -23,6 +27,8 @@ class Building extends Component<BuildingProps, BuildingState> {
       name: props.name || '',
       points: props.points || [],
       strokes: props.strokes || [],
+      contentType:props.contentType || 'building',
+      texturePath: props.texturePath || '',
     };
   }
 
@@ -118,6 +124,8 @@ export class Road extends Component<BuildingProps, BuildingState> {
       name: props.name || '',
       points: props.points || [],
       strokes: props.strokes || [],
+      contentType:props.contentType || 'building',
+      texturePath: props.texturePath || '',
     };
   }
 

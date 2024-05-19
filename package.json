@@ -26,6 +26,8 @@
     "@mantine/nprogress": "^7.3.2",
     "@mantine/spotlight": "^7.3.2",
     "@mantine/tiptap": "^7.3.2",
+    "@mui/icons-material": "^5.15.18",
+    "@mui/material": "^5.15.18",
     "@tabler/icons-react": "^2.44.0",
     "@tauri-apps/api": "^1.5.3",
     "@tiptap/extension-link": "^2.1.13",

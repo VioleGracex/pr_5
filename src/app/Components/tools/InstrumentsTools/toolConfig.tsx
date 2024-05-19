@@ -23,6 +23,7 @@ import {
   faMousePointer,
   faDice,
   faRoad,
+  faSpa
 } from '@fortawesome/free-solid-svg-icons';
 import MarqueeToolImage from '../../imgs/MarqueeTool.png';
 import RandomBuilding from '../../imgs/RandomBuilding.png';
@@ -70,6 +71,7 @@ const toolsExtra: Tool[] = [
   { icon: faUser, name: `NPC Token`, shortcut: ``, group: `objects`, toolFunction: () => console.log('handleNPCTokenCreation'), inBound: false, isToggle: true },
   { icon: faPaintBrush, name: `Brush`, shortcut: ``, group: `draw`, toolFunction: () => console.log('Brush function'), inBound: false, isToggle: true },
   {icon: faEraser, name: `Eraser`, shortcut: ``, group: `draw`, toolFunction: () => console.log('Brush function'), inBound: false, isToggle: true },
+  { icon: faSpa, name: `Grass Tool`, shortcut: ``, group: `Objects2`, toolFunction: () => console.log('Grass Tool function'), inBound: true, isToggle: true },
   // Add more tools as needed
 ];
 
