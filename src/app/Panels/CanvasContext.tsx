@@ -175,7 +175,7 @@ export function renderWireShapesWithTexture(
       if (points && points.length > 1) {
         // Draw the outer wall (black border)
         context.strokeStyle = 'black'; // Set border color
-        context.lineWidth = 4; // Set border width
+        context.lineWidth = 1; // Set border width
         context.beginPath();
         context.moveTo(points[0].x, points[0].y);
         points.slice(1).forEach((point) => {
