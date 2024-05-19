@@ -146,48 +146,52 @@ const ToolPanel: React.FC = () => {
   const handleKeyDown = (event: KeyboardEvent) => {
     if(getIsWriting())
       return;
-    if (document.hasFocus()) {
-      const matchingTool = tools.find((tool) => tool.shortcut === event.key.toUpperCase());
+    if (document.hasFocus()) 
+    {
+      if(event.key)
+      {
+        const matchingTool = tools.find((tool) => tool.shortcut === event.key.toUpperCase());
 
-      // Check if only the specified key is pressed without any modifier keys
-      const isOnlyKey = !event.ctrlKey
-
-      const isOnlyKeys = 
-            (!event.ctrlKey && !event.altKey) && 
-            (tools.find((tool) => tool.shortcut === event.key.toUpperCase()) !== undefined);
-
-        if (!isOnlyKeys) {return}
-  
-      if (event.shiftKey && matchingTool) { //swap active tool while swapping !!!! FIX
-        const matchingToolEx = toolsEx.find((tool) => tool.group === matchingTool.group);
-        if (matchingToolEx) {
-          swapTools(matchingTool, matchingToolEx);
-        }
-      } else {
-        setShowMenu(false);
-        if (matchingTool) {
-          if(matchingTool.isToggle)
-            setActiveTool(matchingTool.name);
-          else if(matchingTool.toolFunction)
-            matchingTool.toolFunction();
-        }
-        if(matchingTool?.isToggle)
-        {
-            if(matchingTool.toolFunction)
-            {
+        // Check if only the specified key is pressed without any modifier keys
+        const isOnlyKey = !event.ctrlKey
+    
+        const isOnlyKeys = 
+              (!event.ctrlKey && !event.altKey) && 
+              (tools.find((tool) => tool.shortcut === event.key.toUpperCase()) !== undefined);
+    
+          if (!isOnlyKeys) {return}
+    
+        if (event.shiftKey && matchingTool) { //swap active tool while swapping !!!! FIX
+          const matchingToolEx = toolsEx.find((tool) => tool.group === matchingTool.group);
+          if (matchingToolEx) {
+            swapTools(matchingTool, matchingToolEx);
+          }
+        } else {
+          setShowMenu(false);
+          if (matchingTool) {
+            if(matchingTool.isToggle)
+              setActiveTool(matchingTool.name);
+            else if(matchingTool.toolFunction)
               matchingTool.toolFunction();
-            }
-              
-          
-            var newGlobalActiveTool = getGlobalActiveTool();
-            if (activeTool === newGlobalActiveTool) {
-              setActiveTool(null);
-              addActivity(`Unselected tool: ${newGlobalActiveTool}`);
-              setGlobalActiveTool(null);
-            } else {
-              setActiveTool(newGlobalActiveTool);
-              addActivity(`Selected tool: ${newGlobalActiveTool}`);
-            }
+          }
+          if(matchingTool?.isToggle)
+          {
+              if(matchingTool.toolFunction)
+              {
+                matchingTool.toolFunction();
+              }
+                
+            
+              var newGlobalActiveTool = getGlobalActiveTool();
+              if (activeTool === newGlobalActiveTool) {
+                setActiveTool(null);
+                addActivity(`Unselected tool: ${newGlobalActiveTool}`);
+                setGlobalActiveTool(null);
+              } else {
+                setActiveTool(newGlobalActiveTool);
+                addActivity(`Selected tool: ${newGlobalActiveTool}`);
+              }
+          }
         }
       }
     }
