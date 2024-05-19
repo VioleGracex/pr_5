@@ -22,6 +22,7 @@ import {
   faEraser,
   faMousePointer,
   faDice,
+  faRoad,
 } from '@fortawesome/free-solid-svg-icons';
 import MarqueeToolImage from '../../imgs/MarqueeTool.png';
 import RandomBuilding from '../../imgs/RandomBuilding.png';
@@ -53,7 +54,8 @@ const toolsMain: Tool[] = [
   { icon: faPencil, name: `Pencil`, shortcut: `B`, group: `draw`, toolFunction: usePencil, inBound: false, isToggle: true },
   { icon: faSearch, name: `Zoom Tool`, shortcut: `Z`, group: `view`, toolFunction: () => setGlobalActiveTool(`Zoom Tool`), inBound: false, isToggle: true },
   { icon: faFont, name: `Text Tool`, shortcut: `T`, group: `text`, toolFunction: () => console.log('Text Tool function'), inBound: false, isToggle: true },
-  { icon: faHandPaper, name: `Hand Tool`, shortcut: `H`, group: `view`, toolFunction: () => console.log('Hand Tool function'), inBound: false, isToggle: true },
+  /* { icon: faHandPaper, name: `Hand Tool`, shortcut: `H`, group: `view`, toolFunction: () => console.log('Hand Tool function'), inBound: false, isToggle: true }, */
+  { icon: faRoad, name: `Road Tool`, shortcut: `R`, group: `Objects2`, toolFunction: () => console.log('Road Tool function'), inBound: true, isToggle: true },
   { icon: faRectangleAd, name: `Rectangle Tool`, shortcut: `U`, group: `shapes`, toolFunction: () => console.log('Rectangle Tool function'), inBound: true, isToggle: true },
   { icon: faFillDrip, name: `Bucket Tool`, shortcut: `G`, group: `draw`, toolFunction: () => console.log('Bucket Tool function'), inBound: false, isToggle: true },
   { icon: faRuler, name: `Show Rulers`, shortcut: `R`, group: `view`, toolFunction: () => console.log('Show Rulers function'), inBound: false, isToggle: true},

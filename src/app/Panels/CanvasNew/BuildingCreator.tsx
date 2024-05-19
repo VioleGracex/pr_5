@@ -1,6 +1,6 @@
 import React from 'react'; // Don't forget to import useState
 import { addActivity } from '@/app/Panels/ConsoleBar'; // Import addActivity function
-import Building, { BuildingProps } from '@/app/Components/tools/Objects/Building'; // Import Building component
+import Building, { BuildingProps, Road } from '@/app/Components/tools/Objects/Building'; // Import Building component
 
 
 export const createWireBuilding = (
@@ -180,3 +180,94 @@ export const createWireBuilding = (
 
   }
 
+
+
+  export const createWireRoad = (
+    { nativeEvent }: React.MouseEvent<HTMLCanvasElement>,
+    canvasRef: React.RefObject<HTMLCanvasElement>,
+    contextRef: React.RefObject<CanvasRenderingContext2D | null>, // Corrected type
+    currentRoadPoints:{ x: number; y: number; }[],
+    setCurrenRoadPoints: React.Dispatch<React.SetStateAction<{ x: number; y: number }[]>>,
+    roads: React.ReactNode[], // Assuming these are passed from a parent component
+    setRoads: React.Dispatch<React.SetStateAction<React.ReactNode[]>>,
+    scaleFactor:number
+  ) => {
+    
+    const finishRoad = () => {
+      if (currentRoadPoints.length < 2) {
+        // Building requires at least two points
+        return;
+      }
+      // Close the building shape by connecting the last point to the first
+      const closedRoadPoints = [...currentRoadPoints, currentRoadPoints[0]];
+  
+      // Create a new Building object with the closed points
+      const newRoad = (
+        <Road
+          key={roads.length} // Use a unique key for each building
+          id={"road_" + roads.length} // Pass the id as a prop
+          points={closedRoadPoints}
+        />
+      );
+      // Update the state to include the new building
+      setRoads((prevRoads) => [...prevRoads, newRoad]);
+      // Clear the current building points
+      setCurrenRoadPoints([]);
+  
+      // Log the activity
+      addActivity("Road created" + `road length ${roads.length}`);
+    };
+  
+    if (nativeEvent.button !== 0) {
+      // Right mouse click: Delete all points of the building currently under construction
+      setCurrenRoadPoints([]);
+      return;
+    }
+  
+    const canvas = canvasRef.current;
+    const context = contextRef.current;
+  
+    if (!canvas || !context) return;
+  
+    const canvasRect = canvas.getBoundingClientRect();
+    const offsetX = nativeEvent.clientX - canvasRect.left - window.scrollX;
+    const offsetY = nativeEvent.clientY - canvasRect.top - window.scrollY;
+
+    // Adjust the offset based on the scale factor
+    const scaledOffsetX = (offsetX / scaleFactor) ;
+    const scaledOffsetY = (offsetY / scaleFactor) ;
+    const newPoint = { x: scaledOffsetX, y: scaledOffsetY };
+    const thresholdDistance = 10; // Define the threshold distance
+  
+    // Check if the point is the first point
+    if (currentRoadPoints.length > 2) {
+      // Calculate the distance between the new point and the first point
+      const distance = Math.sqrt((currentRoadPoints[0].x - newPoint.x) ** 2 + (currentRoadPoints[0].y - newPoint.y) ** 2);
+  
+      // Check if the distance is within the threshold range
+      if (distance <= thresholdDistance) {
+        // If it is near the first point, call the finishBuilding function
+        finishRoad();
+        return;
+      }
+    }
+  
+    // Check if the new point is too close to existing points
+    const isTooClose = currentRoadPoints.some((point) => {
+      const distance = Math.sqrt((point.x - newPoint.x) ** 2 + (point.y - newPoint.y) ** 2);
+      return distance < thresholdDistance; // Adjust the threshold distance as needed
+    });
+  
+    // If the new point is too close to existing points, return without adding it
+    if (isTooClose) {
+      return;
+    }
+  
+    // If there are no points yet, set the initial point and return
+    if (currentRoadPoints.length === 0) {
+      setCurrenRoadPoints([newPoint]);
+      return;
+    }
+    // Push the new point into the points array
+    setCurrenRoadPoints((prevPoints) => [...prevPoints, newPoint]);
+  };

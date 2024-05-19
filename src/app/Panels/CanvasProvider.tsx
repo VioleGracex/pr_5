@@ -4,12 +4,14 @@ import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/InstrumentsTools/ToolPanel";
 import Token from "../Components/tools/Objects/Token";
 import { setActiveElement, setActiveToken } from "../state/ActiveElement";
-import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext } from "./CanvasContext";
+import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext, roadInConstruction, RenderRoadsArea } from "./CanvasContext";
 import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
 import createToken from "./CanvasNew/TokenCreator";
-import {createWireBuilding, createRandomBuilding} from "./CanvasNew/BuildingCreator";
+import {createWireBuilding, createRandomBuilding, createWireRoad} from "./CanvasNew/BuildingCreator";
 import createSquareGrid from "./CanvasNew/SquareGrid";
 import { usePencilDrawing, drawPencil, finishDrawingPencil } from "./CanvasNew/CanvasPencil";
+import dirtRoad from "../../Components/imgs/dirt-road.png";
+
 
 export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
   //#region [consts]
@@ -30,6 +32,9 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const [tokens, setTokens] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [buildings, setBuildings] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
   const [currentBuildingPoints, setCurrentBuildingPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
+
+  const [roads, setRoads] = useState<React.ReactNode[]>([]); // Changed the type to React.ReactNode[]
+  const [currentRoadPoints, setCurrenRoadPoints] = useState<{ x: number; y: number; }[]>([]); // New state to store building points
 
 
 
@@ -108,6 +113,18 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
           }
           //useShapeCreator(event,contextRef,setIsDrawingShape,currentColor,setInitialPoint,currentPath,scaleFactor);
           break;
+        case 'Circle Tool':
+          if (event.button === 0) {
+            startDrawingCircle(event);
+          }
+          //useShapeCreator(event,contextRef,setIsDrawingShape,currentColor,setInitialPoint,currentPath,scaleFactor);
+          break;
+        case 'Road Tool':
+          if (event.button === 0) {
+            createWireBuilding(event,canvasRef,contextRef,currentRoadPoints,setCurrenRoadPoints,roads,setRoads,scaleFactor);
+          }
+          //useShapeCreator(event,contextRef,setIsDrawingShape,currentColor,setInitialPoint,currentPath,scaleFactor);
+          break;
         default:
           addActivity(`Selected ${activeTool}`);
           break;
@@ -121,12 +138,13 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     if(isDrawing)
       drawPencil(event,contextRef,currentPath,scaleFactor);
     else if(isDrawingRectangle)
-      {
-        updateRectangle(event);
-      }
-    
-    /* else if(isDrawingShape)
-      drawShape(event,contextRef,initialPoint,scaleFactor); */
+    {
+      updateRectangle(event);
+    }
+    else if(isDrawingCircle)
+    {
+      updateCircle(event);
+    }
   };
   const handleMouseUp = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if(isDrawing)
@@ -135,68 +153,153 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
     {
       finishDrawingRectangle();
     }
+    else if(isDrawingCircle)
+    {
+      finishDrawingCircle();
+    }
   };
 //#endregion
-interface Rectangle {
-  startX: number;
-  startY: number;
-  width: number;
-  height: number;
-  color: string;
-}
 
-const [rectangle, setRectangle] = useState<Rectangle | null>(null);
-const [isDrawingRectangle, setIsDrawingRectangle] = useState(false);
-const [rectangles, setRectangles] = useState<React.ReactNode[]>([]); // New state for rectangles
-// Function to start drawing a rectangle
-const startDrawingRectangle = (event: MouseEvent<HTMLCanvasElement>) => {
-    setIsDrawingRectangle(true);
+
+  //#region [shapes]
+  interface Rectangle {
+    startX: number;
+    startY: number;
+    width: number;
+    height: number;
+    color: string;
+  }
+
+  const [rectangle, setRectangle] = useState<Rectangle | null>(null);
+  const [isDrawingRectangle, setIsDrawingRectangle] = useState(false);
+  const [rectangles, setRectangles] = useState<React.ReactNode[]>([]); // New state for rectangles
+  // Function to start drawing a rectangle
+  const startDrawingRectangle = (event: MouseEvent<HTMLCanvasElement>) => {
+      setIsDrawingRectangle(true);
+      const { offsetX, offsetY } = event.nativeEvent;
+      setRectangle({
+        startX: offsetX / scaleFactor,
+        startY: offsetY / scaleFactor,
+        width: 0,
+        height: 0,
+        color: strokeColor
+      });
+      addActivity("start rec");
+  };
+
+  // Function to update the rectangle dimensions while drawing
+  const updateRectangle = (event: MouseEvent<HTMLCanvasElement>) => {
+    if (isDrawingRectangle && rectangle) {
+      const { offsetX, offsetY } = event.nativeEvent;
+      const updatedWidth = (offsetX / scaleFactor) - rectangle.startX;
+      const updatedHeight = (offsetY / scaleFactor) - rectangle.startY;
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const context = canvas.getContext('2d');
+        if (context) {
+          // Clear the canvas
+          context.clearRect(rectangle.startX, rectangle.startY, updatedWidth, updatedHeight);
+
+          context.strokeStyle = 'rgba(173, 216, 230, 0.5)';
+          context.lineWidth = 2;
+          context.strokeRect(
+            (updatedWidth >= 0 ? rectangle.startX : rectangle.startX + updatedWidth) * scaleFactor,
+            rectangle.startY * scaleFactor,
+            Math.abs(updatedWidth) * scaleFactor,
+            Math.abs(updatedHeight) * scaleFactor
+          );
+        }
+      }
+      setRectangle(prevState => {
+        if (!prevState) return null; // Handle null state
+        return {
+          ...prevState,
+          width: (offsetX / scaleFactor) - prevState.startX,
+          height: (offsetY / scaleFactor) - prevState.startY
+        };
+      });
+    }
+  };
+
+  interface Circle {
+    centerX: number;
+    centerY: number;
+    radius: number;
+    color: string;
+  }
+  
+  const [circle, setCircle] = useState<Circle | null>(null);
+  const [isDrawingCircle, setIsDrawingCircle] = useState(false);
+  const [circles, setCircles] = useState<React.ReactNode[]>([]);
+  
+  const startDrawingCircle = (event: MouseEvent<HTMLCanvasElement>) => {
+    setIsDrawingCircle(true);
     const { offsetX, offsetY } = event.nativeEvent;
-    setRectangle({
-      startX: offsetX / scaleFactor,
-      startY: offsetY / scaleFactor,
-      width: 0,
-      height: 0,
+    setCircle({
+      centerX: offsetX / scaleFactor,
+      centerY: offsetY / scaleFactor,
+      radius: 0,
       color: strokeColor
     });
-    addActivity("start rec");
-};
+    addActivity("Начало рисования окружности");
+  };
+  
+  const updateCircle = (event: MouseEvent<HTMLCanvasElement>) => {
+    if (isDrawingCircle && circle) {
+        const { offsetX, offsetY } = event.nativeEvent;
+        const dx = (offsetX / scaleFactor) - circle.centerX;
+        const dy = (offsetY / scaleFactor) - circle.centerY;
+        const radius = Math.sqrt(dx ** 2 + dy ** 2);
+        const canvas = canvasRef.current;
+        
+        if (canvas) {
+            const context = canvas.getContext('2d');
+            if (context) {
+                /* const clearX = (circle.centerX - radius) * scaleFactor;
+                const clearY = (circle.centerY - radius) * scaleFactor;
+                const clearSize = radius * 2 * scaleFactor;
 
-// Function to update the rectangle dimensions while drawing
-const updateRectangle = (event: MouseEvent<HTMLCanvasElement>) => {
-  if (isDrawingRectangle && rectangle) {
-    const { offsetX, offsetY } = event.nativeEvent;
-    const updatedWidth = (offsetX / scaleFactor) - rectangle.startX;
-    const updatedHeight = (offsetY / scaleFactor) - rectangle.startY;
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const context = canvas.getContext('2d');
-      if (context) {
-        // Clear the canvas
-        context.clearRect(rectangle.startX, rectangle.startY, updatedWidth, updatedHeight);
-
-        context.strokeStyle = 'rgba(173, 216, 230, 0.5)';
-        context.lineWidth = 2;
-        context.strokeRect(
-          (updatedWidth >= 0 ? rectangle.startX : rectangle.startX + updatedWidth) * scaleFactor,
-          rectangle.startY * scaleFactor,
-          Math.abs(updatedWidth) * scaleFactor,
-          Math.abs(updatedHeight) * scaleFactor
-        );
-      }
+                // Clear a rectangle that encompasses the circle plus a buffer
+                const buffer = 1; // Adjust buffer size as needed
+                context.clearRect(clearX - buffer, clearY - buffer, clearSize + buffer * 2, clearSize + buffer * 2); */
+                
+                // Draw the circle with updated dimensions
+                context.strokeStyle = 'rgba(173, 216, 230, 0.5)';
+                context.lineWidth = 2;
+                context.beginPath();
+                context.arc(circle.centerX * scaleFactor, circle.centerY * scaleFactor, radius * scaleFactor, 0, 2 * Math.PI);
+                context.stroke();
+            }
+        }
+        setCircle(prevState => {
+            if (!prevState) return null;
+            return {
+                ...prevState,
+                radius
+            };
+        });
     }
-    setRectangle(prevState => {
-      if (!prevState) return null; // Handle null state
-      return {
-        ...prevState,
-        width: (offsetX / scaleFactor) - prevState.startX,
-        height: (offsetY / scaleFactor) - prevState.startY
-      };
-    });
-  }
 };
 
 
+  
+  const finishDrawingCircle = () => {
+    if (isDrawingCircle && circle) {
+      setIsDrawingCircle(false);
+      const newCircle = (
+        <circle
+          cx={circle.centerX}
+          cy={circle.centerY}
+          r={circle.radius}
+          fill={circle.color}
+          key={circles.length}
+        />
+      );
+      setCircles(prevCircles => [...prevCircles, newCircle]);
+      setCircle(null);
+    }
+  };
+  
 // Function to finish drawing the rectangle
 const finishDrawingRectangle = () => {
   if (isDrawingRectangle && rectangle) {
@@ -217,8 +320,7 @@ const finishDrawingRectangle = () => {
   }
 };
 
-
-
+//#endregion
   //#region deletion
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -294,16 +396,27 @@ const finishDrawingRectangle = () => {
           context.fillRect(rectangle.props.x, rectangle.props.y, rectangle.props.width, rectangle.props.height);
           }
         });
-        
+        circles.forEach(circle => {
+          if (React.isValidElement(circle)) {
+            const circleProps = circle.props;
+            context.fillStyle = circleProps.fill;
+            context.beginPath();
+            context.arc(circleProps.cx, circleProps.cy, circleProps.r, 0, 2 * Math.PI);
+            context.fill();
+          }
+        });
+             
         // Render buildings and connect points
         RenderBuildingArea(buildings, context);
 
         buildingInConstruction(context, currentBuildingPoints);
+        roadInConstruction(context, currentRoadPoints);
+        RenderRoadsArea(roads,context);
         
       }
     }
 
-  }, [strokes,rectangles, tokens, selectedObject, mousePosition, currentBuildingPoints]);
+  }, [strokes,circles,rectangles, tokens, selectedObject, mousePosition, currentBuildingPoints,currentRoadPoints]);
 
   //#endregion
   // Update the context value to include isDragging
