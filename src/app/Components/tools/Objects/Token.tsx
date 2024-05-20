@@ -120,14 +120,22 @@ class Token extends Component<TokenProps, TokenState> {
     const { isDragging, position, offsetX, offsetY } = this.state;
     if (isDragging && this.tokenRef.current) {
       const scaleFactor = getZoomScaleFactor();
-      const canvasOffsetX = offsetX / scaleFactor;
-      const canvasOffsetY = offsetY / scaleFactor;
-      const updatedX = (event.clientX - canvasOffsetX - this.tokenRef.current.offsetWidth / 2) / scaleFactor;
-      const updatedY = (event.clientY - canvasOffsetY - this.tokenRef.current.offsetHeight / 2) / scaleFactor;
-      this.setState({ position: { x: updatedX, y: updatedY } });
+      const canvas = document.getElementById('canvas'); // Replace 'your-canvas-id' with the actual ID of your canvas
+      if (!canvas) return;
+      const canvasRect = canvas.getBoundingClientRect();
+      // Calculate the offset of the mouse event relative to the canvas
+      const offsetX = event.clientX - canvasRect.left - window.scrollX;
+      const offsetY = event.clientY - canvasRect.top - window.scrollY;
+      /* const offsetX = nativeEvent.clientX - window.scrollX;
+      const offsetY = nativeEvent.clientY - window.scrollY; */
+
+      // Adjust the offset based on the scale factor
+      const scaledOffsetX = (offsetX / scaleFactor) - 30;
+      const scaledOffsetY = (offsetY / scaleFactor) - 20;
+      this.setState({ position: { x: scaledOffsetX, y: scaledOffsetY } });
     }
   };
-
+  
   handleMouseUp = () => {
     this.setState({ isDragging: false });
   };
