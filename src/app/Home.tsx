@@ -56,7 +56,7 @@ const MainPage: React.FC<HomeProps> = ({
       if (event.ctrlKey && event.key === 's') {
         addActivity("ZBI");
         //event.preventDefault(); // Prevent the default browser save dialog
-        saveDCanvasDataToJson(); // Call the function to save DCanvas data to JSON
+        // Call the function to save DCanvas data to JSON
       }
     };
 
@@ -116,22 +116,6 @@ const MainPage: React.FC<HomeProps> = ({
 };
 
 
-  const DCanvas = <React.Fragment key={canvasList.length}>
-    {!isCanvasHidden[canvasList.length] && (
-      <div id='canvas' style={{
-        zIndex: canvasList.length + 1,
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)'
-      }}>
-        <CanvasProvider canvasId={canvasList.length.toString()} strokeColor={currentColor} scaleFactor={getZoomScaleFactor()}>
-          <Canvas />
-        </CanvasProvider>
-      </div>
-    )}
-  </React.Fragment>;
-
 const renderDCanvas = (canvasId: string) => (
   <React.Fragment key={canvasId}>
     {!isCanvasHidden[canvasId] && (
@@ -140,59 +124,13 @@ const renderDCanvas = (canvasId: string) => (
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)' }}>
-        <CanvasProvider canvasId={canvasId} strokeColor={currentColor} scaleFactor={getZoomScaleFactor()}>
+        <CanvasProvider canvasId={canvasId} strokeColor={currentColor} scaleFactor={getZoomScaleFactor()} canvasWidth={5000} canvasHeight={5000}>
           <Canvas />
         </CanvasProvider>
       </div>
     )}
   </React.Fragment>
 );
-
-// Render a list of DCanvases
-const DCanvases = canvasList.map((canvasId) => renderDCanvas(canvasId));
-
-const saveDCanvasDataToJson = () => {
-  const dCanvasData: { canvasId: string, npcTokens: React.ReactNode[], buildings: React.ReactNode[], strokes: { path: { x: number; y: number }[]; color: string }[] }[] = [];
-
-  // Loop over each canvas in canvasList
-  canvasList.forEach((canvasId) => {
-    // Access the CanvasProvider using the canvasId
-    const canvasProvider = document.getElementById(`canvas-${canvasId}`);
-    if (canvasProvider) {
-      // Access the CanvasContextProps using the context value of CanvasProvider
-      const canvasContextProps = (canvasProvider as any);
-      if (canvasContextProps) {
-        const canvasData = canvasContextProps.contextvalue;
-        // Push the canvas data to the array
-        dCanvasData.push({
-          canvasId,
-          npcTokens: canvasData.npcTokens,
-          buildings: canvasData.buildings,
-          strokes: canvasData.strokes
-        });
-      }
-    }
-  });
-
-  // Convert the array to JSON format
-  const jsonData = JSON.stringify(dCanvasData, null, 2);
-
-  // Create a Blob from the JSON data
-  const blob = new Blob([jsonData], { type: 'application/json' });
-
-  // Create a URL from the Blob
-  const url = URL.createObjectURL(blob);
-
-  // Create an anchor element to trigger the download
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'data.wise'; // Set the download filename with ".wise" extension
-  a.click();
-
-  // Revoke the URL to free up memory
-  URL.revokeObjectURL(url);
-};
-
 
 
   return (

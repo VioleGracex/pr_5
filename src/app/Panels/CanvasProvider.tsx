@@ -13,7 +13,7 @@ import { usePencilDrawing, drawPencil, finishDrawingPencil } from "./CanvasNew/C
 import dirtRoad from "./textures/dirt-road.png";
 import grassRoad from "./textures/grass-road.jpg";
 
-export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor }) => {
+export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvasId, strokeColor, scaleFactor,canvasWidth,canvasHeight }) => {
   //#region [consts]
   const [isDrawing, setIsDrawing] = useState(false);
   const [isCanvasPrepared, setIsCanvasPrepared] = useState(false);
@@ -42,14 +42,14 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
     if (canvas && !isCanvasPrepared) {
-      canvas.width = window.innerWidth * 2;
-      canvas.height = window.innerHeight * 2;
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      canvas.style.width = `${canvasWidth}px`;
+      canvas.style.height = `${canvasHeight}px`;
 
       const context = canvas.getContext("2d");
       if (context) {
-        context.scale(2, 2);
+        //context.scale(2, 2);
         context.lineCap = "round";
         context.lineWidth = 5;
 

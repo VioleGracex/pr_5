@@ -29,6 +29,8 @@ export interface CanvasProviderProps {
   canvasId: string;
   strokeColor: string;
   scaleFactor: number;
+  canvasWidth:number;
+  canvasHeight:number;
 }
 
 export interface Stroke {
