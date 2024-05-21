@@ -1,6 +1,6 @@
 import React from 'react'; // Don't forget to import useState
 import { addActivity } from '@/app/Panels/ConsoleBar'; // Import addActivity function
-import Building, { BuildingProps, Road } from '@/app/Components/tools/Objects/Building'; // Import Building component
+import Building, { BuildingProps } from '@/app/Components/tools/Objects/Building'; // Import Building component
 
 
 export const createWireBuilding = (
@@ -151,12 +151,14 @@ export const createWireBuilding = (
       const canvasRect = canvas.getBoundingClientRect();
       const offsetX = mouseX- canvasRect.left - window.scrollX;
       const offsetY = mouseY - canvasRect.top - window.scrollY;
+      const scaledOffsetX = (offsetX / scaleFactor) ;
+      const scaledOffsetY = (offsetY / scaleFactor) ;
       const points = shapePoints[shape];
       const randomizedPoints = points.map(point => ({
         /* x: point.x + mouseX,
         y: point.y + mouseY */
-        x: point.x + offsetX,
-        y: point.y + offsetY
+        x: point.x + scaledOffsetX,
+        y: point.y + scaledOffsetY
       }));
       return randomizedPoints;
     };
