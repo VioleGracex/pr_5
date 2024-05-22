@@ -6,8 +6,8 @@ export interface BuildingProps {
   name?: string;
   points?: { x: number; y: number }[];
   strokes?: { path: { x: number; y: number }[]; color: string }[];
-  contentType?:string;
-  texturePath?:string;
+  contentType?: string;
+  texturePath?: string;
 }
 
 interface BuildingState {
@@ -17,6 +17,7 @@ interface BuildingState {
   strokes: Stroke[];
   contentType: string;
   texturePath: string;
+  isEditingName: boolean; // Add new state variable
 }
 
 class Building extends Component<BuildingProps, BuildingState> {
@@ -27,14 +28,25 @@ class Building extends Component<BuildingProps, BuildingState> {
       name: props.name || '',
       points: props.points || [],
       strokes: props.strokes || [],
-      contentType:props.contentType || 'building',
+      contentType: props.contentType || 'building',
       texturePath: props.texturePath || '',
+      isEditingName: false, // Initialize editing state
     };
   }
 
   handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     // Add any necessary mouse event handling logic here
     event.preventDefault();
+  };
+
+  handleNameDoubleClick = () => {
+    // Toggle editing state when the text area is double-clicked
+    this.setState(prevState => ({ isEditingName: !prevState.isEditingName }));
+  };
+
+  handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Update the name in state when input value changes
+    this.setState({ name: event.target.value });
   };
 
   componentDidMount() {
@@ -46,7 +58,7 @@ class Building extends Component<BuildingProps, BuildingState> {
   }
 
   render() {
-    const { points, name, id, strokes } = this.state;
+    const { points, name, id, strokes, isEditingName } = this.state;
     const nameToDisplay = name || id;
 
     // Calculate the center of the shape
@@ -89,9 +101,40 @@ class Building extends Component<BuildingProps, BuildingState> {
         })}
 
         {/* Render building name */}
-        <p style={{ color: 'black', margin: 0, textAlign: 'center', position: 'absolute', top: centerY, left: centerX, transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
-          {nameToDisplay}
-        </p>
+        {isEditingName ? (
+          <input
+            type="text"
+            value={name}
+            onChange={this.handleNameChange}
+            onBlur={this.handleNameDoubleClick} // Exit editing mode on blur
+            style={{
+              color: 'black',
+              textAlign: 'center',
+              position: 'absolute',
+              top: centerY,
+              left: centerX,
+              transform: 'translate(-50%, -50%)',
+              zIndex: 9999,
+            }}
+            autoFocus // Automatically focus on the input field when rendered
+          />
+        ) : (
+          <p
+            onDoubleClick={this.handleNameDoubleClick} // Enter editing mode on double-click
+            style={{
+              color: 'black',
+              margin: 0,
+              textAlign: 'center',
+              position: 'absolute',
+              top: centerY,
+              left: centerX,
+              transform: 'translate(-50%, -50%)',
+              zIndex: 9999,
+            }}
+          >
+            {nameToDisplay}
+          </p>
+        )}
 
         {/* Render strokes */}
         {strokes.map((stroke, index) => (
@@ -116,4 +159,3 @@ class Building extends Component<BuildingProps, BuildingState> {
 }
 
 export default Building;
-
