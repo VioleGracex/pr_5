@@ -457,7 +457,7 @@ const finishDrawingRectangle = () => {
 
   const saveThisCanvasData = () => {
     // Call saveCanvasDataToJson with the correct argument, which is contextValue
-    saveCanvasData(contextValue);
+    saveCanvasData(contextValue,tokens,buildings,roads);
   };
   return (
     <CanvasContext.Provider value={contextValue} >

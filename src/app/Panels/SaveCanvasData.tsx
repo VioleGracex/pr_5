@@ -22,8 +22,6 @@ const SaveDataButton: React.FC<{ canvasData: CanvasContextProps }> = ({ canvasDa
   const handleSaveClick = () => {
     const dataToSave = {
       strokes: canvasData.strokes,
-      Tokens: canvasData.Tokens,
-      buildings: canvasData.buildings
     };
     // Construct the file path with folder "project" and file name as canvas ID
     const filePath = `project/${canvasData.canvasId}`;
@@ -40,11 +38,12 @@ const SaveDataButton: React.FC<{ canvasData: CanvasContextProps }> = ({ canvasDa
 export default SaveDataButton;
 
 // Function to save canvas data directly from CanvasContextProps to local storage
-export const saveCanvasData = (canvasData: CanvasContextProps) => {
+export const saveCanvasData = (canvasData: CanvasContextProps, tokens: React.ReactNode[], buildings: React.ReactNode[], roads: React.ReactNode[]) => {
   const dataToSave = {
     strokes: canvasData.strokes,
-    Tokens: canvasData.Tokens,
-    buildings: canvasData.buildings
+    tokens: tokens,
+    buildings:buildings,
+    roads:roads,
   };
   // Construct the file path with folder "project" and file name as canvas ID
   const filePath = `project/${canvasData.canvasId}`;
