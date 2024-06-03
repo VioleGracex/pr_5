@@ -53,11 +53,11 @@ const MainPage: React.FC<HomeProps> = ({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       handleShortcuts(event, allBarShortcuts)
-      if (event.ctrlKey && event.key === 's') {
+      /* if (event.ctrlKey && event.key === 's') {
         addActivity("ZBI");
         //event.preventDefault(); // Prevent the default browser save dialog
         // Call the function to save DCanvas data to JSON
-      }
+      } */
     };
 
     const handleMouseDown = (event: MouseEvent) => {

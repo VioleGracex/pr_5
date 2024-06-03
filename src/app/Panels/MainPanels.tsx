@@ -211,7 +211,7 @@ const races: string[] = RacesData.categories.reduce((acc: string[], category: an
       }
 
       // Check file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif','image/webp'];
       if (!allowedTypes.includes(file.type)) {
         addActivity('Invalid file type. Please select a JPEG, PNG, or GIF file.');
         return;

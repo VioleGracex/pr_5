@@ -2,10 +2,10 @@
 import React, { useRef, useState, useEffect, MouseEvent } from "react";
 import { addActivity } from "./ConsoleBar";
 import { getGlobalActiveTool } from "../Components/tools/InstrumentsTools/ToolPanel";
-import Token from "../Components/tools/Objects/Token";
+import Token, { TokenProps } from "../Components/tools/Objects/Token";
 import { setActiveElement, setActiveToken } from "../state/ActiveElement";
 import { CanvasProviderProps, Stroke, RenderBuildingArea, buildingInConstruction, CanvasContextProps, CanvasContext, wireInConstruction, renderWireShapesWithTexture } from "./CanvasContext";
-import SaveDataButton, { saveCanvasData } from "./SaveCanvasData";
+/* import SaveDataButton, { saveCanvasData } from "./SaveCanvasData"; */
 import createToken from "./CanvasNew/TokenCreator";
 import {createWireBuilding, createRandomBuilding} from "./CanvasNew/BuildingCreator";
 import createSquareGrid from "./CanvasNew/SquareGrid";
@@ -164,6 +164,69 @@ export const CanvasProvider: React.FC<CanvasProviderProps> = ({ children, canvas
       finishDrawingCircle();
     }
   };
+
+  const handlekeydown = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
+      if (event.ctrlKey && event.key === 's') 
+      {
+        event.preventDefault(); // Prevent default browser behavior (e.g., saving the page)
+        // Call your save function here
+        addActivity("ASSSASADSAD");
+        //saveCanvasDataToJson(); // Call your save function here
+      }
+
+    };
+
+    const saveCanvasDataToJson = () => {
+      const canvasData = {
+        strokes: contextValue.strokes,
+        tokens: tokens.map((token) => {
+          if (React.isValidElement(token) && token.props) {
+            const tokenProps = token.props as TokenProps;
+            return {
+              type: tokenProps.type,
+              name: tokenProps.name,
+              race: tokenProps.race,
+              job: tokenProps.job,
+              description: tokenProps.description,
+              x: tokenProps.x,
+              y: tokenProps.y,
+              src: tokenProps.src,
+            };
+          }
+          return null;
+        }).filter(token => token !== null),
+        buildings: buildings.map((building) => {
+          if (React.isValidElement(building)) {
+            return {
+              x: building.props.x,
+              y: building.props.y,
+              // Add other properties as needed
+            };
+          }
+          return null;
+        }).filter(building => building !== null),
+        roads: roads.map((road) => {
+          if (React.isValidElement(road)) {
+            return {
+              x: road.props.x,
+              y: road.props.y,
+              contentType: road.props.contentType,
+              // Add other properties as needed
+            };
+          }
+          return null;
+        }).filter(road => road !== null),
+      };
+    
+      const json = JSON.stringify(canvasData, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "canvasData.json";
+      link.click();
+    }; 
+
 //#endregion
 
 
@@ -389,6 +452,7 @@ const finishDrawingRectangle = () => {
         // Render strokes
         strokes.forEach(({ path, color }) => {
           context.strokeStyle = color;
+          context.lineWidth = 3;
           context.beginPath();
           path.forEach((point) => {
             context.lineTo(point.x, point.y);
@@ -428,8 +492,6 @@ const finishDrawingRectangle = () => {
         }
     
         renderWireShapesWithTexture(roads, context);
-        
-        
       }
     }
 
@@ -444,7 +506,9 @@ const finishDrawingRectangle = () => {
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
+    handlekeydown,
     clearCanvas,
+    saveCanvasDataToJson,
     strokes,
     canvasId,
     selectedObject,
@@ -455,16 +519,13 @@ const finishDrawingRectangle = () => {
     deleteBuilding,
   };
 
-  const saveThisCanvasData = () => {
-    // Call saveCanvasDataToJson with the correct argument, which is contextValue
-    saveCanvasData(contextValue,tokens,buildings,roads);
-  };
+
+
   return (
     <CanvasContext.Provider value={contextValue} >
       
       {/* <SaveDataButton canvasData={contextValue} /> */}
       <div style={{ position: 'absolute', zIndex: '25' }}>
-        
       </div>
       
       <div style={{ zIndex: '15' }}>

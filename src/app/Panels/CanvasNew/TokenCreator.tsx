@@ -31,6 +31,7 @@ const createToken = (
     <Token
       type={type}
       key={tokens.length} // Use a unique key for each token
+      name=''
       x={scaledOffsetX}
       y={scaledOffsetY}
     />

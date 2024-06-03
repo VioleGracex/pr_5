@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { useCanvas } from "./CanvasContext";
 import { getActiveToken } from "../state/ActiveElement";
+import { addActivity } from "./ConsoleBar";
 
 export function Canvas() {
   const {
@@ -10,6 +11,8 @@ export function Canvas() {
     handleMouseDown,
     handleMouseUp,
     handleMouseMove,
+    handlekeydown,
+    saveCanvasDataToJson,
     strokes,
     mousePosition, // Add mousePosition
     deleteToken,
@@ -24,6 +27,12 @@ export function Canvas() {
           deleteToken(activeIndex);
         }
       }
+    }
+    if (event.ctrlKey && event.key === 's') {
+      event.preventDefault(); // Prevent default browser behavior (e.g., saving the page)
+      // Call your save function here
+      addActivity("ASSSASADSAD");
+      saveCanvasDataToJson(); // Call your save function here
     }
   };
   
@@ -74,6 +83,7 @@ export function Canvas() {
       onMouseDown={(e) => handleMouseDown(e)}
       onMouseUp={handleMouseUp}
       onMouseMove={(e) => handleMouseMove(e)}
+      onKeyDown={(e) =>handlekeydown(e)}
       ref={canvasRef}
     />
   );

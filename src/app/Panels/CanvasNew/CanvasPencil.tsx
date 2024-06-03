@@ -13,19 +13,22 @@ currentColor: string,
 setInitialPoint: React.Dispatch<React.SetStateAction<{ x: number; y: number; }>>|null,
 currentPath: React.MutableRefObject<{ x: number; y: number; }[]>,
 scaleFactor: number
-) => {
+) => { //fix scale factor
     
     const { offsetX = 0, offsetY = 0 } = nativeEvent;
     if (contextRef.current && setInitialPoint) {
       contextRef.current.strokeStyle = currentColor;
       contextRef.current.lineWidth = 3; // Set the width of the stroke (adjust as needed) add this as a meter to palette
+      const { offsetX = 0, offsetY = 0 } = nativeEvent;
+      const scaledOffsetX = offsetX / scaleFactor;
+      const scaledOffsetY = offsetY / scaleFactor;
       contextRef.current.beginPath();
-      contextRef.current.moveTo(offsetX, offsetY);
+      contextRef.current.moveTo(scaledOffsetX, scaledOffsetY);
       setIsDrawing(true);
-      setInitialPoint({ x: offsetX, y: offsetY });
+      setInitialPoint({ x: scaledOffsetX, y: scaledOffsetY });
 
       // Create a new path for the current stroke
-      currentPath.current = [{ x: offsetX, y: offsetY }];
+      currentPath.current = [{ x: scaledOffsetX, y: scaledOffsetY }];
     }
 
 };

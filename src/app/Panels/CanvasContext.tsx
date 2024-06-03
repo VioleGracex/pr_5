@@ -11,6 +11,8 @@ export interface CanvasContextProps {
   handleMouseDown: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   handleMouseMove: (event: React.MouseEvent<HTMLCanvasElement>) => void;
   handleMouseUp: (event: React.MouseEvent<HTMLCanvasElement>) => void;
+  handlekeydown: (event: React.KeyboardEvent<HTMLCanvasElement>) => void;
+  saveCanvasDataToJson: () => void
   clearCanvas: () => void;
   strokes: { path: { x: number; y: number }[]; color: string }[];
   canvasId: string;

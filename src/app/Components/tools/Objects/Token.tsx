@@ -11,7 +11,7 @@ import { addActivity } from '@/app/Panels/ConsoleBar';
 // Define the type for the token, e.g., 'npc' or 'item'
 export type TokenType = 'npc' | 'item';
 
-interface TokenProps {
+export interface TokenProps {
   type: string;
   name?: string;
   race?: string;
@@ -22,7 +22,7 @@ interface TokenProps {
   src?: string; // Change src type to string for file paths
 }
 
-interface TokenState {
+export interface TokenState {
   isDragging: boolean;
   position: { x: number; y: number };
   offsetX: number;
